@@ -5,6 +5,7 @@ export interface Idea {
   title: string;
   description: string;
   category?: { name: string } | null;
+  votes?: { userId: string; type: "UP" | "DOWN" }[];
 }
 
 export async function getIdeas(): Promise<Idea[]> {
