@@ -4,23 +4,29 @@ import Cookies from "js-cookie";
 
 
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
-    headers:{
+    // Use the client env that already exists: NEXT_PUBLIC_API_URL=http://localhost:5000/api
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${Cookies.get("token")}`
-
-    }
-})
+        // Use the accessToken that comes from the backend
+        Authorization: Cookies.get("accessToken")
+            ? `Bearer ${Cookies.get("accessToken")}`
+            : undefined,
+    },
+});
 api.interceptors.request.use((config) => {
-      const token = Cookies.get("token");
-      if (token) {
+    const token = Cookies.get("accessToken");
+    if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
-      }
-        return config;
+    } else {
+        delete config.headers["Authorization"];
+    }
+    return config;
 })
 api.interceptors.response.use((res) =>res ,(err) =>{
     if (err.response.status === 401) {
-        Cookies.remove("token");
+                Cookies.remove("accessToken");
+                Cookies.remove("refreshToken");
         
     
     if(typeof window !== "undefined"){

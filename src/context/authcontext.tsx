@@ -37,52 +37,74 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMe = async () => {
-      try {
-        const token = Cookies.get("token");
-        if (!token) {
-          setLoading(false);
-          return;
-        }
+    // Clean up any legacy token cookie that might have an invalid value
+    if (Cookies.get("token")) {
+      Cookies.remove("token");
+    }
+    const stored = Cookies.get("ecospark_user");
 
-        const { data } = await api.get<User>("/auth/me");
-        setUser(data);
-      } catch (err) {
-        Cookies.remove("token");
-      } finally {
-        setLoading(false);
+    // Guard against invalid values like the literal string "undefined" or "null"
+    if (!stored || stored === "undefined" || stored === "null") {
+      if (stored) {
+        Cookies.remove("ecospark_user");
       }
-    };
+      setLoading(false);
+      return;
+    }
 
-    fetchMe();
+    try {
+      const parsed = JSON.parse(stored) as User;
+      setUser(parsed);
+    } catch (err) {
+      console.error("Failed to parse stored user", err);
+      Cookies.remove("ecospark_user");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { data } = await api.post<{ token: string; user: User }>(
-      "/auth/login",
-      { email, password }
-    );
+    const { data } = await api.post<{
+      message: string;
+      accessToken: string;
+      refreshToken: string;
+      user: User;
+    }>("auth/login", { email, password });
 
-    Cookies.set("token", data.token, { expires: 7 });
-    setUser(data.user);
+    const { accessToken, refreshToken, user: loggedInUser } = data;
+
+    if (!accessToken || !refreshToken) {
+      console.error("Auth response missing tokens", data);
+      throw new Error("Authentication failed: tokens not provided by server");
+    }
+
+    Cookies.set("accessToken", accessToken, { sameSite: "lax" });
+    Cookies.set("refreshToken", refreshToken, { sameSite: "lax" });
+    Cookies.set("ecospark_user", JSON.stringify(loggedInUser), {
+      sameSite: "lax",
+    });
+    setUser(loggedInUser);
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const { data } = await api.post<{ token: string; user: User }>(
-      "/auth/register",
-      {
-        name,
-        email,
-        password,
-      }
-    );
-
-    Cookies.set("token", data.token, { expires: 7 });
-    setUser(data.user);
+    await api.post<{
+      message: string;
+      accessToken: string;
+      refreshToken: string;
+      user: User;
+    }>("auth/register", {
+      name,
+      email,
+      password,
+    });
+    // Do NOT auto-login after registration.
+    // The user must explicitly log in to populate `user` state.
   };
 
   const logout = () => {
-    Cookies.remove("token");
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    Cookies.remove("ecospark_user");
     setUser(null);
   };
 
@@ -97,11 +119,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export const  useAuths = (): AuthContextType => {
+export const useAuth = (): AuthContextType => {
   const ctx = useContext(AuthContext);
   if (!ctx) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return ctx;
 };
-export const useAuth = () => useContext(AuthContext);
