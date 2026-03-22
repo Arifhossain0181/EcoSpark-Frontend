@@ -4,7 +4,7 @@ export function starRating({
     value ,onChange,readonly=false
 }: {
     value: number;
-    onChange: (value: number) => void;
+  onChange?: (value: number) => void;
     readonly?: boolean;
 }){
     return (

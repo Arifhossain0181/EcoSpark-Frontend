@@ -70,7 +70,7 @@ const Navbar1 = ({
     { title: "Home", url: "/" },
     {
       title: "Ideas",
-      url: "/Pages/Ideas",
+      url: "/ideas",
     },
     {
       title: "About Us",
@@ -137,6 +137,20 @@ const Navbar1 = ({
             </Button>
             {user ? (
               <>
+                {/* Dashboard link depends on user role */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    router.push(
+                      user.role === "ADMIN"
+                        ? "/dashboard/admin"
+                        : "/dashboard/member"
+                    )
+                  }
+                >
+                  Dashboard
+                </Button>
                 <span className="text-sm font-medium hidden md:inline">
                   {user.name}
                 </span>
