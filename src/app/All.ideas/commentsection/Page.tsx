@@ -28,20 +28,21 @@ export function CommentSection(
   const [text, setText] = useState("");
 
 
-    const { data: comments, isLoading } = useQuery<Comment[]>({
+  const { data: comments, isLoading } = useQuery<Comment[]>({
     queryKey: ["comments", ideaId],
     queryFn: async () => {
-      const { data } = await api.get(`/comments/${ideaId}`);
-        return data.comments as Comment[];
-    }
-    })
+      const { data } = await api.get(`comments/${ideaId}`);
+      // Backend returns the array directly, not wrapped in { comments }
+      return data as Comment[];
+    },
+  });
     
 
 
 
     const { mutate: addComment, isPending } = useMutation({
     mutationFn: async (text: string) => {
-      await api.post(`/comments/${ideaId}`, { text });
+      await api.post(`comments/${ideaId}`, { text });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", ideaId] });

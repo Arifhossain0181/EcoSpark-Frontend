@@ -23,7 +23,7 @@ export default function VoteButtons({ idea }: { idea: Idea }) {
 
   const { mutate: vote, isPending } = useMutation({
     mutationFn: async (type: "UP" | "DOWN") => {
-      await api.post(`/votes/${idea.id}`, { type });
+      await api.post(`votes/${idea.id}`, { type });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["idea", idea.id] });

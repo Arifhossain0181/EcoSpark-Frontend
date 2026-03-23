@@ -34,7 +34,7 @@ export default function CommentItem({
 
   const { mutate: addReply, isPending: replyPending } = useMutation({
     mutationFn: async (text: string) => {
-      await api.post(`/comments/${ideaId}/reply`, { text, parentId: comment.id });
+      await api.post(`comments/${ideaId}`, { text, parentId: comment.id });
     },
     onSuccess: () => {
       queryclient.invalidateQueries({ queryKey: ["comments", ideaId] });
@@ -48,7 +48,7 @@ export default function CommentItem({
   });
   const { mutate: deleteComment } = useMutation({
     mutationFn: async () => {
-      await api.delete(`/comments/${comment.id}`);
+      await api.delete(`comments/${comment.id}`);
     },
     onSuccess: () => {
       queryclient.invalidateQueries({ queryKey: ["comments", ideaId] });

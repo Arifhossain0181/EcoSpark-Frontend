@@ -61,7 +61,7 @@ export default function IdeaDetailsPage() {
   } = useQuery<Idea>({
     queryKey: ["idea", ideaId],
     queryFn: async () => {
-      const { data } = await api.get(`/ideas/${ideaId}`);
+      const { data } = await api.get(`ideas/${ideaId}`);
       return data as Idea;
     },
   });
@@ -69,7 +69,7 @@ export default function IdeaDetailsPage() {
   const { data: accessData } = useQuery<PaymentAccess>({
     queryKey: ["access", ideaId],
     queryFn: async () => {
-      const { data } = await api.get(`/payment/access/${ideaId}`);
+      const { data } = await api.get(`payments/access/${ideaId}`);
       return data as PaymentAccess;
     },
     enabled: !!user && !!idea?.isPaid,
@@ -79,7 +79,7 @@ export default function IdeaDetailsPage() {
 
   const { mutate: toggleWatchlist } = useMutation<WatchlistResponse, ApiError>({
     mutationFn: async () => {
-      const { data } = await api.post<WatchlistResponse>(`/watchlist/${ideaId}`);
+      const { data } = await api.post<WatchlistResponse>(`watchlist/${ideaId}`);
       return data;
     },
     onSuccess: (data) => {
@@ -95,7 +95,7 @@ export default function IdeaDetailsPage() {
   });
 
   const { mutate: approveIdea } = useMutation({
-    mutationFn: () => api.patch(`/admin/ideas/${ideaId}/approve`),
+    mutationFn: () => api.patch(`admin/ideas/${ideaId}/approve`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["idea", ideaId] });
       toast.success("Idea approved!");
@@ -105,7 +105,7 @@ export default function IdeaDetailsPage() {
   const [rejectFeedback, setRejectFeedback] = useState("");
   const { mutate: rejectIdea, isPending: rejecting } = useMutation({
     mutationFn: () =>
-      api.patch(`/admin/ideas/${ideaId}/reject`, {
+      api.patch(`admin/ideas/${ideaId}/reject`, {
         feedback: rejectFeedback,
       }),
     onSuccess: () => {
@@ -347,21 +347,17 @@ export default function IdeaDetailsPage() {
             )}
 
             {/* Votes */}
-            {idea.status === "APPROVED" && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
-                  Vote on this Idea
-                </h2>
-                <VoteButtons idea={idea} />
-              </div>
-            )}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
+                Vote on this Idea
+              </h2>
+              <VoteButtons idea={idea} />
+            </div>
 
             {/* Comments */}
-            {idea.status === "APPROVED" && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <CommentSection ideaId={ideaId} />
-              </div>
-            )}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <CommentSection ideaId={ideaId} />
+            </div>
 
             {/* Reviews */}
             {idea.status === "APPROVED" && hasAccess && (

@@ -61,10 +61,10 @@ interface Navbar1Props {
 
 const Navbar1 = ({
   logo = {
-    url: "https://www.shadcnblocks.com",
+    url: "/",
     src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
-    alt: "logo",
-    title: "Shadcnblocks.com",
+    alt: "EcoSpark logo",
+    title: "EcoSpark Hub",
   },
   menu = [
     { title: "Home", url: "/" },
@@ -76,10 +76,13 @@ const Navbar1 = ({
       title: "About Us",
       url: "/Pages/About",
     },
-    
     {
-      title: "Pricing",
-      url: "",
+      title: "Blog",
+      url: "/blog",
+    },
+    {
+      title: "Dashboard",
+      url: "/dashboard",
     },
     
   ],
@@ -137,19 +140,13 @@ const Navbar1 = ({
             </Button>
             {user ? (
               <>
-                {/* Dashboard link depends on user role */}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() =>
-                    router.push(
-                      user.role === "ADMIN"
-                        ? "/dashboard/admin"
-                        : "/dashboard/member"
-                    )
-                  }
+                  onClick={() => router.push("/profile")}
+                  className="hidden md:inline-flex"
                 >
-                  Dashboard
+                  My profile
                 </Button>
                 <span className="text-sm font-medium hidden md:inline">
                   {user.name}
