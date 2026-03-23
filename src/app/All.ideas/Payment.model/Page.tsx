@@ -15,11 +15,16 @@ function PaymentModal({
 })
 {
     const {mutate :initPayment ,isPending} = useMutation({
-        mutationFn: async () => {
-            const res = await api.post(`/payments/${idea.id}/initiate`)
-            return res.data
+      mutationFn: async () => {
+        const res = await api.post("payments/init", { ideaId: idea.id });
+        return res.data as { url?: string };
         },
-        onSuccess: (data) => {            window.location.href = data.paymentUrl
+      onSuccess: (data) => {
+        if (data?.url) {
+          window.location.href = data.url;
+        } else {
+          toast.error("Payment session creation failed");
+        }
         },
         onError: (err: any) => {
             toast.error(err?.response?.data?.message || "Failed to initiate payment")
