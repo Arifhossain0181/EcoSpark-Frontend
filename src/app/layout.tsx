@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Navbar1 } from "@/components/navbar1";
-import { Footer2 } from "@/components/footer2";
+import RouteLayoutShell from "@/components/route-layout-shell";
 import { Toaster } from "@/components/ui/sonner";
 
 import QueryProvider from "@/context/queryProvider";
@@ -35,13 +34,11 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <QueryProvider>
             <AuthProvider>
-              <Navbar1 />
-              {children}
-              <Footer2 />
+              <RouteLayoutShell>{children}</RouteLayoutShell>
               <Toaster />
             </AuthProvider>
           </QueryProvider>

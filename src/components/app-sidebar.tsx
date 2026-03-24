@@ -5,8 +5,13 @@ import {
   Lightbulb,
   ListTree,
   User,
-  Settings,
+  Bookmark,
   LayoutDashboard,
+  PlusCircle,
+  FileText,
+  MessageSquare,
+  CreditCard,
+  Users,
 } from "lucide-react";
 
 import {
@@ -23,25 +28,32 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/authcontext";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Menu items based on user role
 const memberMenuItems = [
-  { title: "Overview", url: "/dashboard/member", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard/member", icon: LayoutDashboard },
+  { title: "Create Idea", url: "/dashboard/member/create-ideas", icon: PlusCircle },
+  { title: "My Ideas", url: "/dashboard/member/my-ideas", icon: FileText },
   { title: "Ideas", url: "/ideas", icon: Lightbulb },
-  { title: "Categories", url: "/categories", icon: ListTree },
+  { title: "Watchlist", url: "/dashboard/member/watchlist", icon: Bookmark },
+  { title: "My Profile", url: "/profile", icon: User },
   { title: "Home", url: "/", icon: Home },
 ];
 
 const adminMenuItems = [
-  { title: "Overview", url: "/dashboard/admin", icon: LayoutDashboard },
-  { title: "Ideas", url: "/ideas", icon: Lightbulb },
-  { title: "Categories", url: "/categories", icon: ListTree },
-  { title: "Settings", url: "/dashboard/admin", icon: Settings },
+  { title: "Dashboard", url: "/dashboard/admin", icon: LayoutDashboard },
+  { title: "Manage Ideas", url: "/dashboard/admin/Manage.ideas", icon: Lightbulb },
+  { title: "Categories", url: "/dashboard/admin/categories", icon: ListTree },
+  { title: "Comments", url: "/dashboard/admin/Comments", icon: MessageSquare },
+  { title: "Payments", url: "/dashboard/admin/Payments", icon: CreditCard },
+  { title: "Users", url: "/dashboard/admin/Users", icon: Users },
   { title: "Home", url: "/", icon: Home },
 ];
 
 export function AppSidebar() {
   const { user } = useAuth();
+  const pathname = usePathname();
 
   // Determine which menu items to show based on role
   let menuItems = memberMenuItems;
@@ -77,7 +89,13 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={
+                      pathname === item.url ||
+                      (item.url !== "/" && pathname.startsWith(`${item.url}/`))
+                    }
+                  >
                     <Link href={item.url}>
                       <item.icon className="size-4" />
                       <span>{item.title}</span>

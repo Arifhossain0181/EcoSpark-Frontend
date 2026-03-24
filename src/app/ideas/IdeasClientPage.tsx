@@ -281,6 +281,8 @@ export default function IdeasClientPage({
   const { data, isLoading, isError } = useQuery({
     queryKey: ["ideas"],
     queryFn: getIdeas,
+    staleTime: 3 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const ideas: Idea[] = data ?? [];

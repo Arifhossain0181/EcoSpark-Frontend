@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -22,10 +23,27 @@ import { useAuth } from "@/context/authcontext";
 import api from "@/lib/axios";
 import { Idea } from "@/services/ideas";
 
-import PaymentModal from "../Payment.model/Page";
-import { CommentSection } from "../commentsection/Page";
-import VoteButtons from "../voteing/Pages";
-import ReviewSection from "../Review.section/Page";
+const PaymentModal = dynamic(() => import("../Payment.model/Page"), {
+  ssr: false,
+});
+
+const VoteButtons = dynamic(() => import("../voteing/Pages"), {
+  ssr: false,
+  loading: () => <p className="text-sm text-gray-400">Loading votes...</p>,
+});
+
+const CommentSection = dynamic(
+  () => import("../commentsection/Page").then((mod) => mod.CommentSection),
+  {
+    ssr: false,
+    loading: () => <p className="text-sm text-gray-400">Loading comments...</p>,
+  }
+);
+
+const ReviewSection = dynamic(() => import("../Review.section/Page"), {
+  ssr: false,
+  loading: () => <p className="text-sm text-gray-400">Loading reviews...</p>,
+});
 
 interface PaymentAccess {
   hasAccess: boolean;
@@ -64,6 +82,8 @@ export default function IdeaDetailsPage() {
       const { data } = await api.get(`ideas/${ideaId}`);
       return data as Idea;
     },
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const { data: accessData } = useQuery<PaymentAccess>({
@@ -72,7 +92,9 @@ export default function IdeaDetailsPage() {
       const { data } = await api.get(`payments/access/${ideaId}`);
       return data as PaymentAccess;
     },
-    enabled: !!user && !!idea?.isPaid,
+    enabled: !!user && !!ideaId,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const hasAccess = !idea?.isPaid || accessData?.hasAccess;
@@ -340,7 +362,7 @@ export default function IdeaDetailsPage() {
                     href="/auth/login"
                     className="bg-[#2d6a4f] hover:bg-[#1a3a2a] text-white font-semibold px-8 py-3.5 rounded-xl transition-colors inline-block"
                   >
-                    Login to Purchase
+                    Login & Pay
                   </Link>
                 )}
               </div>
@@ -437,6 +459,33 @@ export default function IdeaDetailsPage() {
                 </div>
               </div>
             </div>
+
+            {/* Payment CTA */}
+            {idea.isPaid && !hasAccess && (
+              <div className="bg-white rounded-2xl border-2 border-amber-200 p-5">
+                <h3 className="font-bold text-[#1a3a2a] mb-2 text-sm uppercase tracking-wide">
+                  Premium Access
+                </h3>
+                <p className="text-xs text-gray-500 mb-4">
+                  This idea is paid content. Unlock full access for ${idea.price}.
+                </p>
+                {user ? (
+                  <button
+                    onClick={() => setShowPayment(true)}
+                    className="w-full bg-[#2d6a4f] hover:bg-[#1a3a2a] text-white font-semibold py-3 rounded-xl transition-colors"
+                  >
+                    Pay Now
+                  </button>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="w-full bg-[#2d6a4f] hover:bg-[#1a3a2a] text-white font-semibold py-3 rounded-xl transition-colors inline-flex items-center justify-center"
+                  >
+                    Login & Pay
+                  </Link>
+                )}
+              </div>
+            )}
 
             {/* Watchlist */}
             {user && (

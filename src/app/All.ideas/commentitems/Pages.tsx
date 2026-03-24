@@ -38,6 +38,7 @@ export default function CommentItem({
     },
     onSuccess: () => {
       queryclient.invalidateQueries({ queryKey: ["comments", ideaId] });
+      queryclient.invalidateQueries({ queryKey: ["idea", ideaId] });
       setReplyText("");
       setShowReply(false);
       toast.success("Reply added");
@@ -52,6 +53,7 @@ export default function CommentItem({
     },
     onSuccess: () => {
       queryclient.invalidateQueries({ queryKey: ["comments", ideaId] });
+      queryclient.invalidateQueries({ queryKey: ["idea", ideaId] });
       toast.success("Comment deleted");
     },
     onError: (err: any) => {

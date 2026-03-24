@@ -35,6 +35,8 @@ export function CommentSection(
       // Backend returns the array directly, not wrapped in { comments }
       return data as Comment[];
     },
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: false,
   });
     
 
@@ -46,6 +48,7 @@ export function CommentSection(
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments", ideaId] });
+      queryClient.invalidateQueries({ queryKey: ["idea", ideaId] });
       setText("");
         toast.success("Comment added");
     },

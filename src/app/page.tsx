@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 
 import CategoriesPage from "./categories/page";
 import HeroSection from "./comPonentslayout/HeroSection/page";
@@ -9,7 +9,7 @@ import FeaturedIdeas from "./comPonentslayout/FeaturedIdeas/page";
 import TopVoted from "./comPonentslayout/TopVoted/page";
 import NewsletterSection from "./comPonentslayout/NewsletterSection/page";
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("search") || "";
@@ -78,5 +78,13 @@ export default function Home() {
       {/* Newsletter */}
       <NewsletterSection />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }
