@@ -76,14 +76,14 @@ export default function MyIdeasPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#1a3a2a]">My Ideas</h1>
+          <h1 className="text-2xl font-bold text-foreground">My Ideas</h1>
           <p className="text-gray-500 text-sm mt-0.5">
             Manage and track your submitted ideas
           </p>
         </div>
         <Link
           href="/dashboard/member/create-ideas"
-          className="flex items-center gap-2 bg-[#2d6a4f] hover:bg-[#1a3a2a] text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors w-fit"
+          className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors w-fit"
         >
           + New Idea
         </Link>
@@ -97,8 +97,8 @@ export default function MyIdeasPage() {
             onClick={() => setFilter(key)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors shrink-0 ${
               filter === key
-                ? "bg-[#2d6a4f] text-white"
-                : "bg-white border border-gray-200 text-gray-600 hover:border-[#40916c]"
+                ? "bg-primary text-primary-foreground"
+                : "bg-white border border-gray-200 text-gray-600 hover:border-primary"
             }`}
           >
             {label}
@@ -133,7 +133,8 @@ export default function MyIdeasPage() {
             {filter !== "ALL" && (
               <button
                 onClick={() => setFilter("ALL")}
-                className="text-xs text-[#40916c] hover:underline mt-2"
+                
+                className="text-xs text-primary hover:underline mt-2"
               >
                 View all ideas
               </button>
@@ -150,7 +151,7 @@ export default function MyIdeasPage() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="text-sm font-semibold text-[#1a3a2a] truncate">
+                      <h3 className="text-sm font-semibold text-foreground truncate">
                         {idea.title}
                       </h3>
                       <span
@@ -195,7 +196,7 @@ export default function MyIdeasPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <Link
                       href={`/ideas/${idea.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#2d6a4f] bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
                       title="View"
                     >
                       <Eye className="w-3.5 h-3.5" />

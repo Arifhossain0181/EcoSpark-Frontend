@@ -40,7 +40,7 @@ export default function WatchlistPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-[#1a3a2a]">
+        <h1 className="text-2xl font-bold text-foreground">
           Watchlist 
         </h1>
         <p className="text-gray-500 text-sm mt-0.5">
@@ -63,7 +63,7 @@ export default function WatchlistPage() {
           </p>
           <Link
             href="/ideas"
-            className="text-[#2d6a4f] font-semibold text-sm hover:underline"
+            className="text-primary font-semibold text-sm hover:underline"
           >
             Browse Ideas →
           </Link>
@@ -89,7 +89,7 @@ export default function WatchlistPage() {
                         </span>
                       )}
                     </div>
-                    <h3 className="text-sm font-semibold text-[#1a3a2a] line-clamp-2">
+                    <h3 className="text-sm font-semibold text-foreground line-clamp-2">
                       {idea.title}
                     </h3>
                   </div>
@@ -108,7 +108,7 @@ export default function WatchlistPage() {
                   </p>
                   <Link
                     href={`/ideas/${idea.id}`}
-                    className="flex items-center gap-1 text-xs text-[#2d6a4f] font-semibold hover:underline"
+                    className="flex items-center gap-1 text-xs text-primary font-semibold hover:underline"
                   >
                     <Eye className="w-3.5 h-3.5" /> View
                   </Link>

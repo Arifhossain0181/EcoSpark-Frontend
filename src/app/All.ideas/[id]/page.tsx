@@ -10,9 +10,11 @@ import {
   Bookmark,
   CheckCircle,
   Clock,
+  FileText,
   Loader2,
   Lock,
   MessageSquare,
+  PlayCircle,
   Tag,
   ThumbsUp,
   XCircle,
@@ -61,6 +63,33 @@ interface ApiError {
   };
 }
 
+const isPdfUrl = (url: string) => /\.pdf(\?|#|$)/i.test(url);
+
+const isVideoUrl = (url: string) => {
+  if (/\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) return true;
+  return /(youtube\.com|youtu\.be|vimeo\.com)/i.test(url);
+};
+
+const getYoutubeEmbedUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname.includes("youtu.be")) {
+      const id = parsed.pathname.replace("/", "");
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (parsed.hostname.includes("youtube.com")) {
+      const id = parsed.searchParams.get("v");
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+};
+
 export default function IdeaDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -98,6 +127,12 @@ export default function IdeaDetailsPage() {
   });
 
   const hasAccess = !idea?.isPaid || accessData?.hasAccess;
+  const imageUrls = (idea?.images ?? []).filter(
+    (url) => !isPdfUrl(url) && !isVideoUrl(url),
+  );
+  const mediaUrls = (idea?.images ?? []).filter(
+    (url) => isPdfUrl(url) || isVideoUrl(url),
+  );
 
   const { mutate: toggleWatchlist } = useMutation<WatchlistResponse, ApiError>({
     mutationFn: async () => {
@@ -175,10 +210,10 @@ export default function IdeaDetailsPage() {
       )}
 
       {/* Hero Image */}
-      <div className="relative h-72 md:h-96 bg-gradient-to-br from-[#1a3a2a] to-[#40916c] overflow-hidden">
-        {idea.images?.[0] && (
+      <div className="relative h-72 md:h-96 bg-linear-to-br from-[#1a3a2a] to-[#40916c] overflow-hidden">
+        {imageUrls[0] && (
           <img
-            src={idea.images[0]}
+            src={imageUrls[0]}
             alt={idea.title}
             className="w-full h-full object-cover opacity-40"
           />
@@ -317,13 +352,13 @@ export default function IdeaDetailsPage() {
                 </div>
 
                 {/* Images */}
-                {(idea.images?.length ?? 0) > 1 && (
+                {imageUrls.length > 1 && (
                   <div className="bg-white rounded-2xl border border-gray-100 p-6">
                     <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
                       Gallery
                     </h2>
                     <div className="grid grid-cols-2 gap-3">
-                      {(idea.images ?? []).slice(1).map((img, i) => (
+                      {imageUrls.slice(1).map((img, i) => (
                         <img
                           key={i}
                           src={img}
@@ -331,6 +366,71 @@ export default function IdeaDetailsPage() {
                           className="w-full h-40 object-cover rounded-xl"
                         />
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Optional Media Attachments */}
+                {mediaUrls.length > 0 && (
+                  <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+                    <h2 className="text-lg font-bold text-[#1a3a2a]">Media Attachments</h2>
+
+                    <div className="space-y-4">
+                      {mediaUrls.map((url, index) => {
+                        const youtubeEmbed = getYoutubeEmbedUrl(url);
+
+                        if (isPdfUrl(url)) {
+                          return (
+                            <a
+                              key={`${url}-${index}`}
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-between rounded-xl border border-gray-200 p-4 hover:border-[#40916c] transition-colors"
+                            >
+                              <div className="flex items-center gap-2 text-sm text-[#1a3a2a] font-medium">
+                                <FileText className="w-4 h-4 text-[#40916c]" />
+                                View PDF Attachment
+                              </div>
+                              <span className="text-xs text-[#2d6a4f] font-semibold">Open</span>
+                            </a>
+                          );
+                        }
+
+                        if (youtubeEmbed) {
+                          return (
+                            <div key={`${url}-${index}`} className="space-y-2">
+                              <div className="flex items-center gap-2 text-sm font-medium text-[#1a3a2a]">
+                                <PlayCircle className="w-4 h-4 text-[#40916c]" />
+                                Video Attachment
+                              </div>
+                              <div className="overflow-hidden rounded-xl border border-gray-200">
+                                <iframe
+                                  src={youtubeEmbed}
+                                  title={`Video attachment ${index + 1}`}
+                                  className="w-full h-64"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div key={`${url}-${index}`} className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm font-medium text-[#1a3a2a]">
+                              <PlayCircle className="w-4 h-4 text-[#40916c]" />
+                              Video Attachment
+                            </div>
+                            <video
+                              src={url}
+                              controls
+                              className="w-full rounded-xl border border-gray-200"
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

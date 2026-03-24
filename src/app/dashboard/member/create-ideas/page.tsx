@@ -29,8 +29,10 @@ export default function CreateIdeaPage() {
   };
 
   const [urlImages, setUrlImages] = useState<string[]>([]);
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [localImages, setLocalImages] = useState<LocalImage[]>([]);
   const [imageInput, setImageInput] = useState("");
+  const [mediaInput, setMediaInput] = useState("");
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -79,6 +81,7 @@ export default function CreateIdeaPage() {
 
       const { data } = await api.post("/ideas", {
         ...payload,
+        images: [...payload.images, ...mediaUrls],
       });
 
       if (!asDraft) {
@@ -137,6 +140,21 @@ export default function CreateIdeaPage() {
       }
       return prev.filter((img) => img.id !== value);
     });
+  };
+
+  const addMediaUrl = () => {
+    const value = mediaInput.trim();
+    if (!value) return;
+    if (mediaUrls.includes(value)) {
+      toast.error("This media URL is already added");
+      return;
+    }
+    setMediaUrls((prev) => [...prev, value]);
+    setMediaInput("");
+  };
+
+  const removeMediaUrl = (value: string) => {
+    setMediaUrls((prev) => prev.filter((item) => item !== value));
   };
 
   const handleImageFiles = async (files: FileList | null) => {
@@ -200,7 +218,7 @@ export default function CreateIdeaPage() {
     <div>
       <label
         htmlFor={`idea-${String(id)}`}
-        className="block text-sm font-semibold text-[#1a3a2a] mb-1.5"
+        className="block text-sm font-semibold text-foreground mb-1.5"
       >
         {label}
       </label>
@@ -215,7 +233,7 @@ export default function CreateIdeaPage() {
     `w-full border-2 rounded-xl px-4 py-3 text-sm outline-none transition-colors ${
       errors[id]
         ? "border-red-400 focus:border-red-500"
-        : "border-gray-200 focus:border-[#40916c]"
+        : "border-gray-200 focus:border-primary"
     }`;
 
   return (
@@ -223,7 +241,7 @@ export default function CreateIdeaPage() {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#1a3a2a]">
+        <h1 className="text-2xl font-bold text-foreground">
           Create New Idea 
         </h1>
         <p className="text-gray-500 text-sm mt-1">
@@ -313,7 +331,7 @@ export default function CreateIdeaPage() {
 
         {/* Images */}
         <div>
-          <label className="block text-sm font-semibold text-[#1a3a2a] mb-1.5">
+          <label className="block text-sm font-semibold text-foreground mb-1.5">
             Images (URL or Upload)
           </label>
           <input
@@ -331,7 +349,7 @@ export default function CreateIdeaPage() {
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploadingImages}
-            className="w-full mb-3 border-2 border-dashed border-gray-300 hover:border-[#40916c] rounded-xl px-4 py-3 text-sm font-medium text-gray-600 hover:text-[#2d6a4f] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full mb-3 border-2 border-dashed border-gray-300 hover:border-primary rounded-xl px-4 py-3 text-sm font-medium text-gray-600 hover:text-primary transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {isUploadingImages ? (
               <>
@@ -355,12 +373,12 @@ export default function CreateIdeaPage() {
               onChange={(e) => setImageInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addImage()}
               placeholder="Paste image URL and press Enter"
-              className="flex-1 border-2 border-gray-200 focus:border-[#40916c] rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+              className="flex-1 border-2 border-gray-200 focus:border-primary rounded-xl px-4 py-3 text-sm outline-none transition-colors"
             />
             <button
               type="button"
               onClick={addImage}
-              className="bg-[#2d6a4f] text-white px-4 py-3 rounded-xl hover:bg-[#1a3a2a] transition-colors"
+              className="bg-primary text-primary-foreground px-4 py-3 rounded-xl hover:bg-primary/90 transition-colors"
             >
               <Upload className="w-4 h-4" />
             </button>
@@ -403,11 +421,56 @@ export default function CreateIdeaPage() {
           )}
         </div>
 
+        {/* Optional Media Attachments */}
+        <div>
+          <label className="block text-sm font-semibold text-foreground mb-1.5">
+            Optional Media Attachment (Video / PDF URL)
+          </label>
+          <div className="flex gap-2 mb-3">
+            <input
+              id="idea-media-url"
+              name="mediaUrl"
+              type="url"
+              value={mediaInput}
+              onChange={(e) => setMediaInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && addMediaUrl()}
+              placeholder="Paste video or PDF URL"
+              className="flex-1 border-2 border-gray-200 focus:border-primary rounded-xl px-4 py-3 text-sm outline-none transition-colors"
+            />
+            <button
+              type="button"
+              onClick={addMediaUrl}
+              className="bg-primary text-primary-foreground px-4 py-3 rounded-xl hover:bg-primary/90 transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+            </button>
+          </div>
+
+          {mediaUrls.length > 0 && (
+            <div className="space-y-2">
+              {mediaUrls.map((url) => (
+                <div
+                  key={url}
+                  className="flex items-center justify-between rounded-xl border border-gray-200 px-3 py-2"
+                >
+                  <p className="text-xs text-gray-600 truncate pr-2">{url}</p>
+                  <button
+                    onClick={() => removeMediaUrl(url)}
+                    className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Paid toggle */}
         <div className="bg-gray-50 rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <p className="text-sm font-semibold text-[#1a3a2a]">
+              <p className="text-sm font-semibold text-foreground">
                 Paid Idea
               </p>
               <p className="text-xs text-gray-500 mt-0.5">
@@ -423,7 +486,7 @@ export default function CreateIdeaPage() {
                 }))
               }
               className={`relative w-12 h-6 rounded-full transition-colors ${
-                form.isPaid ? "bg-[#2d6a4f]" : "bg-gray-300"
+                form.isPaid ? "bg-primary" : "bg-gray-300"
               }`}
             >
               <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
@@ -450,7 +513,7 @@ export default function CreateIdeaPage() {
                 className={`w-full sm:w-40 border-2 rounded-xl px-4 py-2.5 text-sm outline-none transition-colors ${
                   errors.price
                     ? "border-red-400"
-                    : "border-gray-200 focus:border-[#40916c]"
+                    : "border-gray-200 focus:border-primary"
                 }`}
               />
               {errors.price && (
@@ -479,8 +542,8 @@ export default function CreateIdeaPage() {
           <button
             onClick={() => handleSubmit(false)}
             disabled={isPending}
-            className="flex-1 bg-[#2d6a4f] hover:bg-[#1a3a2a]
-                       text-white font-semibold py-3 rounded-xl
+            className="flex-1 bg-primary hover:bg-primary/90
+                       text-primary-foreground font-semibold py-3 rounded-xl
                        transition-colors text-sm disabled:opacity-50
                        flex items-center justify-center gap-2"
           >

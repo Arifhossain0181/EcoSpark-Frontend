@@ -28,57 +28,54 @@ interface Footer2Props {
 
 const Footer2 = ({
   logo = {
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/block-1.svg",
-    alt: "blocks for shadcn/ui",
-    title: "Shadcnblocks.com",
-    url: "https://www.shadcnblocks.com",
+    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+    alt: "EcoSpark Hub",
+    title: "EcoSpark Hub",
+    url: "/",
   },
   className,
-  tagline = "Components made easy.",
+  tagline = "Building practical sustainability solutions together.",
   menuItems = [
     {
-      title: "Product",
+      title: "Portal",
       links: [
-        { text: "Overview", url: "#" },
-        { text: "Pricing", url: "#" },
-        { text: "Marketplace", url: "#" },
-        { text: "Features", url: "#" },
-        { text: "Integrations", url: "#" },
-        { text: "Pricing", url: "#" },
+        { text: "Home", url: "/" },
+        { text: "Ideas", url: "/ideas" },
+        { text: "About Us", url: "/Pages/About" },
+        { text: "Blog", url: "/blog" },
+        { text: "Dashboard", url: "/dashboard" },
       ],
     },
     {
-      title: "Company",
+      title: "Support",
       links: [
-        { text: "About", url: "#" },
-        { text: "Team", url: "#" },
-        { text: "Blog", url: "#" },
-        { text: "Careers", url: "#" },
-        { text: "Contact", url: "#" },
-        { text: "Privacy", url: "#" },
+        { text: "Contact", url: "mailto:support@ecosparkhub.org" },
+        { text: "Help Center", url: "/blog" },
+        { text: "Terms of Use", url: "/terms" },
+        { text: "Privacy Policy", url: "/privacy" },
       ],
     },
     {
-      title: "Resources",
+      title: "Contact",
       links: [
-        { text: "Help", url: "#" },
-        { text: "Sales", url: "#" },
-        { text: "Advertise", url: "#" },
+        { text: "Email: support@ecosparkhub.org", url: "mailto:support@ecosparkhub.org" },
+        { text: "Phone: +880 1700-000000", url: "tel:+8801700000000" },
+        { text: "Dhaka, Bangladesh", url: "#" },
       ],
     },
     {
       title: "Social",
       links: [
-        { text: "Twitter", url: "#" },
-        { text: "Instagram", url: "#" },
+        { text: "Facebook", url: "#" },
         { text: "LinkedIn", url: "#" },
+        { text: "YouTube", url: "#" },
       ],
     },
   ],
-  copyright = "© 2024 Shadcnblocks.com. All rights reserved.",
+  copyright = "© 2026 EcoSpark Hub. All rights reserved.",
   bottomLinks = [
-    { text: "Terms and Conditions", url: "#" },
-    { text: "Privacy Policy", url: "#" },
+    { text: "Terms and Conditions", url: "/terms" },
+    { text: "Privacy Policy", url: "/privacy" },
   ],
 }: Footer2Props) => {
   return (
@@ -88,7 +85,7 @@ const Footer2 = ({
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
             <div className="col-span-2 mb-8 lg:mb-0">
               <div className="flex items-center gap-2 lg:justify-start">
-                <Logo url="https://shadcnblocks.com">
+                <Logo url={logo.url}>
                   <LogoImage
                     src={logo.src}
                     alt={logo.alt}
