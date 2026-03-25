@@ -29,6 +29,7 @@ import {
 import { useAuth } from "@/context/authcontext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 // Menu items based on user role
 const memberMenuItems = [
@@ -65,16 +66,14 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b">
+    <Sidebar className="bg-white dark:bg-emerald-950 border-r border-emerald-100 dark:border-emerald-900/70">
+      <SidebarHeader className="border-b border-emerald-100 dark:border-emerald-900/70">
         <div className="flex items-center gap-2 px-4 py-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Lightbulb className="size-5" />
-          </div>
+          <Image src="/ecospark-logo.svg" alt="EcoSpark Hub" width={132} height={36} className="h-9 w-auto" priority />
           <div className="flex flex-col">
-            <span className="font-semibold text-lg">EcoSpark</span>
+           
             {user && (
-              <span className="text-xs text-muted-foreground capitalize">
+              <span className="text-xs text-emerald-700/80 dark:text-emerald-300/80 capitalize">
                 {dashboardTitle}
               </span>
             )}
@@ -84,13 +83,14 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-emerald-700 dark:text-emerald-300">Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
+                    className="text-emerald-900 dark:text-emerald-100 hover:bg-emerald-50 dark:hover:bg-emerald-900/50 hover:text-emerald-700 dark:hover:text-emerald-200 data-[active=true]:bg-emerald-600 data-[active=true]:text-white data-[active=true]:hover:bg-emerald-700"
                     isActive={
                       pathname === item.url ||
                       (item.url !== "/" && pathname.startsWith(`${item.url}/`))
@@ -108,21 +108,21 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t">
+      <SidebarFooter className="border-t border-emerald-100 dark:border-emerald-900/70">
         {user && (
           <div className="p-4">
             <div className="flex items-center gap-3 mb-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+              <div className="flex size-10 items-center justify-center rounded-full bg-emerald-50 dark:bg-emerald-900/60">
                 <User className="size-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user.name}</p>
-                <p className="text-xs text-muted-foreground truncate">
+                <p className="text-sm font-medium truncate text-emerald-900 dark:text-emerald-100">{user.name}</p>
+                <p className="text-xs text-emerald-700/70 dark:text-emerald-300/70 truncate">
                   {user.email}
                 </p>
               </div>
             </div>
-            <div className="px-2 py-1 rounded-md bg-muted text-xs text-center">
+            <div className="px-2 py-1 rounded-md bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs text-center">
               <span className="font-medium">{user.role}</span>
             </div>
           </div>

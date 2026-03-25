@@ -95,6 +95,11 @@ const Navbar1 = ({
   const { user, logout } = useAuth();
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
+  const userRole = user?.role?.toLowerCase();
+  const canSeeDashboard = userRole === "member" || userRole === "admin";
+  const visibleMenu = menu.filter(
+    (item) => item.title !== "Dashboard" || canSeeDashboard,
+  );
 
   const handleLogout = () => {
     logout();
@@ -118,7 +123,7 @@ const Navbar1 = ({
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
+                  {visibleMenu.map((item) => renderMenuItem(item))}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
@@ -127,7 +132,7 @@ const Navbar1 = ({
             <Button
               variant="outline"
               size="icon"
-              className="border-emerald-200 dark:border-emerald-800"
+              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
               onClick={() =>
                 setTheme(resolvedTheme === "dark" ? "light" : "dark")
               }
@@ -142,7 +147,7 @@ const Navbar1 = ({
                   variant="outline"
                   size="sm"
                   onClick={() => router.push("/profile")}
-                  className="hidden md:inline-flex border-emerald-200 dark:border-emerald-800"
+                  className="hidden md:inline-flex border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
                 >
                   My profile
                 </Button>
@@ -152,7 +157,7 @@ const Navbar1 = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-emerald-200 dark:border-emerald-800"
+                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
                   onClick={handleLogout}
                 >
                   Logout
@@ -160,7 +165,12 @@ const Navbar1 = ({
               </>
             ) : (
               <>
-                <Button asChild variant="outline" size="sm">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                >
                   <a href={auth.login.url}>{auth.login.title}</a>
                 </Button>
                 <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
@@ -184,7 +194,11 @@ const Navbar1 = ({
             </a>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="border-emerald-200 dark:border-emerald-800">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                >
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -206,12 +220,13 @@ const Navbar1 = ({
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
+                    {visibleMenu.map((item) => renderMobileMenuItem(item))}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
                     <Button
                       variant="outline"
+                      className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
                       onClick={() =>
                         setTheme(resolvedTheme === "dark" ? "light" : "dark")
                       }
@@ -219,15 +234,23 @@ const Navbar1 = ({
                       Toggle theme
                     </Button>
                     {user ? (
-                      <Button variant="outline" onClick={handleLogout}>
+                      <Button
+                        variant="outline"
+                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                        onClick={handleLogout}
+                      >
                         Logout
                       </Button>
                     ) : (
                       <>
-                        <Button asChild variant="outline">
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                        >
                           <a href={auth.login.url}>{auth.login.title}</a>
                         </Button>
-                        <Button asChild>
+                        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
                           <a href={auth.signup.url}>{auth.signup.title}</a>
                         </Button>
                       </>
@@ -263,7 +286,7 @@ const renderMenuItem = (item: MenuItem) => {
     <NavigationMenuItem key={item.title}>
       <NavigationMenuLink
         href={item.url}
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background dark:bg-emerald-950/40 px-4 py-2 text-sm font-medium transition-colors hover:bg-muted dark:hover:bg-emerald-900/60 hover:text-accent-foreground"
+        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-white/70 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-100"
       >
         {item.title}
       </NavigationMenuLink>
@@ -288,7 +311,11 @@ const renderMobileMenuItem = (item: MenuItem) => {
   }
 
   return (
-    <a key={item.title} href={item.url} className="text-md font-semibold">
+    <a
+      key={item.title}
+      href={item.url}
+      className="text-md rounded-md px-2 py-1 font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 hover:text-emerald-800 dark:text-emerald-200 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-100"
+    >
       {item.title}
     </a>
   );

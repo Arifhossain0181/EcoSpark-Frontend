@@ -8,34 +8,43 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <main className="container py-10 flex items-center justify-center">
-        <p className="text-sm text-muted-foreground">
-          Please log in to view your profile.
-        </p>
+        <div className="rounded-2xl border border-emerald-100 bg-white px-6 py-5 text-center shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40">
+          <p className="text-sm text-emerald-700 dark:text-emerald-200">
+            Please log in to view your profile.
+          </p>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="container py-10 max-w-2xl space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight mb-1">My profile</h1>
-        <p className="text-sm text-muted-foreground">
+    <main className="container py-10 max-w-3xl space-y-6">
+      <header className="relative overflow-hidden rounded-2xl bg-linear-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c] p-6 sm:p-8">
+        <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/5" />
+        <div className="absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-white/5" />
+
+        <h1 className="relative z-10 mb-1 text-3xl font-bold tracking-tight text-white">My profile</h1>
+        <p className="relative z-10 text-sm text-[#b7e4c7]">
           View your EcoSpark account details.
         </p>
       </header>
 
-      <section className="rounded-2xl border bg-card p-6 space-y-4">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Name</p>
-          <p className="text-sm font-semibold">{user.name}</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Email</p>
-          <p className="text-sm font-semibold">{user.email}</p>
-        </div>
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Role</p>
-          <p className="text-sm font-semibold capitalize">{user.role ?? "member"}</p>
+      <section className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-900/30">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Name</p>
+            <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100">{user.name}</p>
+          </div>
+
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-900/30">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Email</p>
+            <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100 break-all">{user.email}</p>
+          </div>
+
+          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-900/30">
+            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Role</p>
+            <p className="mt-1 text-sm font-semibold capitalize text-emerald-900 dark:text-emerald-100">{user.role ?? "member"}</p>
+          </div>
         </div>
       </section>
     </main>

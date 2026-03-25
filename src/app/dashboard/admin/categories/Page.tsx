@@ -189,7 +189,7 @@ export default function CategoryDashboardPage() {
           <button
             onClick={handleAdd}
             disabled={adding}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
           >
             {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : "Add"}
           </button>
@@ -222,7 +222,7 @@ export default function CategoryDashboardPage() {
                       <button
                         onClick={() => openEditModal(cat)}
                         disabled={updating || deleting}
-                        className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                         Update
@@ -231,7 +231,7 @@ export default function CategoryDashboardPage() {
                       <button
                         onClick={() => handleDelete(cat.id)}
                         disabled={deleting || updating}
-                        className="inline-flex items-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                       >
                         {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                         Delete
@@ -275,7 +275,7 @@ export default function CategoryDashboardPage() {
                   setEditName("");
                 }}
                 disabled={updating}
-                className="rounded-lg border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted disabled:opacity-60"
+                className="rounded-lg border border-emerald-200 px-3 py-1.5 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-200 dark:hover:bg-emerald-900/40 disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -283,7 +283,7 @@ export default function CategoryDashboardPage() {
               <button
                 onClick={handleUpdate}
                 disabled={updating}
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
               >
                 {updating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
               </button>

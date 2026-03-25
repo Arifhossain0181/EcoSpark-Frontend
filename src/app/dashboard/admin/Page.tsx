@@ -116,22 +116,25 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <section className="rounded-2xl border bg-card p-6 shadow-sm">
-        <p className="text-xs uppercase tracking-wide text-muted-foreground">
+    <div className="space-y-6 sm:space-y-8">
+      <section className="relative overflow-hidden rounded-2xl bg-linear-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c] p-6 sm:p-8">
+        <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-white/5" />
+        <div className="absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-white/5" />
+
+        <p className="relative z-10 text-xs uppercase tracking-wide text-[#b7e4c7]">
           Admin Dashboard
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+        <h1 className="relative z-10 mt-1 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
           Welcome, {user?.name ?? "Admin"}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="relative z-10 mt-2 text-sm text-[#b7e4c7]">
           Monitor and manage core platform operations from one place.
         </p>
       </section>
 
       <section>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 dark:text-emerald-200/70">
             Platform Overview
           </h2>
           {statsError && (
@@ -141,12 +144,15 @@ export default function AdminDashboardPage() {
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {statItems.map((item) => (
-            <div key={item.label} className="rounded-2xl border bg-card p-4 shadow-sm">
+            <div
+              key={item.label}
+              className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40"
+            >
               <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-lg ${item.tone}`}>
                 <item.icon className="h-4 w-4" />
               </div>
-              <p className="text-xs text-muted-foreground">{item.label}</p>
-              <p className="mt-1 text-2xl font-bold tracking-tight">
+              <p className="text-xs text-gray-500 dark:text-emerald-200/70">{item.label}</p>
+              <p className="mt-1 text-2xl font-bold tracking-tight text-[#1a3a2a] dark:text-emerald-100">
                 {statsLoading ? "..." : item.value}
               </p>
             </div>
@@ -159,13 +165,13 @@ export default function AdminDashboardPage() {
           <Link
             key={card.title}
             href={card.href}
-            className="rounded-2xl border bg-card p-5 shadow-sm transition-colors hover:bg-muted/40"
+            className="group rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:border-[#74c69d] hover:shadow-md dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:hover:border-emerald-700"
           >
-            <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-200">
               <card.icon className="h-5 w-5" />
             </div>
-            <h2 className="text-lg font-semibold">{card.title}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{card.hint}</p>
+            <h2 className="text-lg font-semibold text-[#1a3a2a] dark:text-emerald-100">{card.title}</h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-emerald-200/70">{card.hint}</p>
           </Link>
         ))}
       </section>

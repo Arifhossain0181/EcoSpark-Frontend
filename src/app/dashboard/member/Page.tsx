@@ -115,16 +115,25 @@ export default function MemberDashboardPage() {
     queryKey: ["member-dashboard", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
-      const [ideasRes, watchlistRes, reviewsRes] = await Promise.all([
+      const [ideasRes, watchlistRes, reviewsRes] = await Promise.allSettled([
         api.get("/ideas/my"),
         api.get("/watchlist"),
         api.get("/reviews/my"),
       ]);
 
       return {
-        myIdeas: asArray<any>(ideasRes.data),
-        watchlist: asArray<any>(watchlistRes.data),
-        reviews: asArray<any>(reviewsRes.data),
+        myIdeas:
+          ideasRes.status === "fulfilled"
+            ? asArray<any>(ideasRes.value.data)
+            : [],
+        watchlist:
+          watchlistRes.status === "fulfilled"
+            ? asArray<any>(watchlistRes.value.data)
+            : [],
+        reviews:
+          reviewsRes.status === "fulfilled"
+            ? asArray<any>(reviewsRes.value.data)
+            : [],
       };
     },
     staleTime: 2 * 60 * 1000,
@@ -239,21 +248,21 @@ export default function MemberDashboardPage() {
       icon:   <MessageSquare className="w-5 h-5 text-purple-600" />,
       title:  "My Reviews",
       desc:   "View and manage reviews you have submitted",
-      href:   "/dashboard/reviews",
+      href:   "/dashboard/member/reviews",
       accent: "bg-purple-50",
     },
     {
       icon:   <Bookmark className="w-5 h-5 text-pink-600" />,
       title:  "Watchlist",
       desc:   "Browse ideas you have saved for later",
-      href:   "/dashboard/watchlist",
+      href:   "/dashboard/member/watchlist",
       accent: "bg-pink-50",
     },
     {
       icon:   <UserCircle className="w-5 h-5 text-gray-600" />,
       title:  "My Profile",
       desc:   "Update your account info and preferences",
-      href:   "/dashboard/settings",
+      href:   "/profile",
       accent: "bg-gray-50",
     },
   ];
@@ -262,7 +271,7 @@ export default function MemberDashboardPage() {
     <div className="space-y-6 sm:space-y-8">
 
       {/* ── Welcome Banner ── */}
-      <div className="relative bg-gradient-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c]
+      <div className="relative bg-linear-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c]
                       rounded-2xl p-6 sm:p-8 overflow-hidden">
         {/* Decoration circles */}
         <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/5 rounded-full" />
@@ -483,7 +492,7 @@ export default function MemberDashboardPage() {
               My Reviews
             </h3>
             <Link
-              href="/dashboard/reviews"
+              href="/dashboard/member/reviews"
               className="text-xs text-[#40916c] font-semibold hover:underline"
             >
               View all →

@@ -204,8 +204,8 @@ export default function UsersDashboardPage() {
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                         user.role === "ADMIN"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-yellow-100 text-yellow-700"
+                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200"
+                          : "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                       }`}
                     >
                       {user.role}
@@ -216,8 +216,8 @@ export default function UsersDashboardPage() {
                     <span
                       className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                         user.isActive
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
+                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200"
+                          : "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                       }`}
                     >
                       {user.isActive ? "ACTIVE" : "INACTIVE"}
@@ -231,7 +231,7 @@ export default function UsersDashboardPage() {
                       <button
                         onClick={() => handleRoleChange(user)}
                         disabled={updatingUser || deletingUser}
-                        className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
                       >
                         {user.role === "ADMIN" ? <ShieldX className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
                         {user.role === "ADMIN" ? "Make Member" : "Make Admin"}
@@ -240,7 +240,7 @@ export default function UsersDashboardPage() {
                       <button
                         onClick={() => handleStatusChange(user)}
                         disabled={updatingUser || deletingUser}
-                        className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                       >
                         {user.isActive ? <UserX className="h-3.5 w-3.5" /> : <UserCheck className="h-3.5 w-3.5" />}
                         {user.isActive ? "Deactivate" : "Activate"}
@@ -249,7 +249,7 @@ export default function UsersDashboardPage() {
                       <button
                         onClick={() => handleDelete(user.id)}
                         disabled={updatingUser || deletingUser}
-                        className="inline-flex items-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-xs font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90 disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                       >
                         {deletingUser ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                         Delete
