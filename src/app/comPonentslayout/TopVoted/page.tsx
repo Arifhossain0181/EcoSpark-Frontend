@@ -29,14 +29,14 @@ const TopVoted = () => {
     }
 
     return (
-        <section className="bg-emerald-950/95 py-12 md:py-16">
+        <section className="bg-linear-to-br from-emerald-950 via-emerald-900 to-emerald-950 py-12 md:py-16">
             <div className="container space-y-6">
                 <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
                     <div>
                         <p className="text-xs uppercase tracking-[0.25em] text-emerald-200 mb-1">
                             Community favorites
                         </p>
-                        <h2 className="text-2xl md:text-3xl font-semibold text-white">
+                        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
                             Top voted ideas
                         </h2>
                         <p className="text-sm text-emerald-100/80 max-w-xl mt-1">
@@ -54,7 +54,7 @@ const TopVoted = () => {
                             <Link
                                 key={idea.id}
                                 href={`/All.ideas/${idea.id}`}
-                                className="relative overflow-hidden rounded-2xl border border-emerald-800/80 bg-gradient-to-br from-emerald-900/60 to-emerald-950 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer flex flex-col justify-between"
+                                className="relative overflow-hidden rounded-2xl border border-emerald-700/70 bg-linear-to-b from-emerald-900/60 to-emerald-950 p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer flex flex-col justify-between"
                             >
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 text-xs text-emerald-100/90">
@@ -68,12 +68,16 @@ const TopVoted = () => {
                                         </span>
                                     </div>
 
-                                    <p className="text-emerald-100 text-sm">
+                                    <p className="text-emerald-100 text-lg font-semibold leading-snug">
                                         "+ {idea.title}"
                                     </p>
                                     <p className="text-xs text-emerald-100/80 line-clamp-3">
                                         {idea.description}
                                     </p>
+                                </div>
+
+                                <div className="mt-5 pt-4 border-t border-emerald-700/60 text-xs text-emerald-200/90">
+                                    {idea.author?.name ? `By ${idea.author.name}` : "Community idea"}
                                 </div>
                             </Link>
                         );

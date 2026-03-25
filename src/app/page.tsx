@@ -30,35 +30,35 @@ function HomeContent() {
   };
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 md:space-y-16">
       <HeroSection />
 
       {/* Search and overview section */}
-      <section className="container -mt-10 md:-mt-16">
-        <div className="rounded-2xl bg-card/80 backdrop-blur border shadow-sm px-4 py-5 md:px-8 md:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h2 className="text-lg md:text-xl font-semibold">
+      <section className="container pt-2 md:pt-4">
+        <div className="rounded-3xl border border-emerald-100 dark:border-emerald-900/70 bg-linear-to-b from-white to-emerald-50/50 dark:from-emerald-950 dark:to-emerald-900/70 shadow-sm px-5 py-6 md:px-10 md:py-8 flex flex-col items-center gap-5 text-center">
+          <div className="flex flex-col items-center">
+            <h2 className="text-xl md:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
               Search sustainable ideas
             </h2>
-            <p className="text-sm text-muted-foreground max-w-md">
+            <p className="text-sm md:text-base text-muted-foreground max-w-2xl mt-2">
               Find community ideas by name or category to reduce waste,
               save energy, and build a greener future.
             </p>
           </div>
           <form
             onSubmit={handleSearch}
-            className="flex w-full md:w-auto gap-2"
+            className="flex w-full max-w-2xl gap-2"
           >
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by idea name or category..."
-              className="flex-1 md:w-72 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="flex-1 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-emerald-950/70 px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
             />
             <button
               type="submit"
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 transition-colors"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 transition-colors"
             >
               Search
             </button>

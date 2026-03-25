@@ -36,10 +36,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-emerald-100 dark:border-emerald-900/70 bg-white/80 dark:bg-emerald-950/60 backdrop-blur px-4">
           <SidebarTrigger />
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">Dashboard </h1>
+            <h1 className="text-xl font-semibold text-emerald-900 dark:text-emerald-100">Dashboard </h1>
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4">

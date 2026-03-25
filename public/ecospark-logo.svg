@@ -1,0 +1,25 @@
+<svg width="420" height="120" viewBox="0 0 420 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="20" y1="12" x2="102" y2="102" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9AD65E"/>
+      <stop offset="1" stop-color="#0F9D8A"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="113" y1="20" x2="130" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D5E64A"/>
+      <stop offset="1" stop-color="#34B38A"/>
+    </linearGradient>
+  </defs>
+
+  <g>
+    <path d="M54 14C39 31 36 53 48 67C56 77 68 84 69 100C86 88 88 70 82 56C76 44 63 35 54 14Z" fill="url(#g1)"/>
+    <path d="M72 95C85 95 95 85 95 72C95 59 85 49 72 49C59 49 49 59 49 72C49 85 59 95 72 95Z" stroke="#4BAE79" stroke-width="5"/>
+    <line x1="72" y1="95" x2="72" y2="111" stroke="#2E9E79" stroke-width="6" stroke-linecap="round"/>
+    <line x1="61" y1="106" x2="83" y2="106" stroke="#2E9E79" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="109" cy="25" r="5" fill="url(#g2)"/>
+    <circle cx="123" cy="37" r="3" fill="#34B38A"/>
+  </g>
+
+  <text x="145" y="74" font-family="Arial, sans-serif" font-size="48" font-weight="800" fill="#0D5A3E">ECOSPARK</text>
+  <text x="365" y="74" font-family="Arial, sans-serif" font-size="48" font-weight="700" fill="#3AA18E">HUB</text>
+  <text x="146" y="102" font-family="Arial, sans-serif" font-size="20" font-weight="500" fill="#1B4F3B" letter-spacing="1.8">SUSTAINABLE IDEA PORTAL</text>
+</svg>

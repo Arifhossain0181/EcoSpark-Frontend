@@ -32,14 +32,20 @@ function ReviewSection({ ideaId }: { ideaId: string }) {
     })
 
     const {mutate:addReview ,isPending} = useMutation({
-        mutationFn: async () =>api.post(`/reviews/${ideaId}`, {rating, comment}),
+      mutationFn: async () =>api.post(`/reviews`, { ideaId, rating, comment }),
         onSuccess: () => {
             queryClinet.invalidateQueries({queryKey: ["reviews", ideaId]})
             setComment("")
             setRating(5)
       toast.success("Review added")
         },
-        onError: (err: any) => {            toast.error(err?.response?.data?.message || "Failed to add review")
+        onError: (err: any) => {
+            const errorMessage =
+              err?.response?.data?.message ||
+              err?.response?.data?.error ||
+              err?.message ||
+              "Failed to add review";
+            toast.error(errorMessage)
         }
 
     })

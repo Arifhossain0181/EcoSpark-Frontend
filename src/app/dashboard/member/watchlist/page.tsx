@@ -43,7 +43,7 @@ export default function WatchlistPage() {
         <h1 className="text-2xl font-bold text-foreground">
           Watchlist 
         </h1>
-        <p className="text-gray-500 text-sm mt-0.5">
+        <p className="text-muted-foreground text-sm mt-0.5">
           Ideas you have saved for later
         </p>
       </div>
@@ -51,11 +51,11 @@ export default function WatchlistPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-28 bg-white rounded-2xl animate-pulse border border-gray-100" />
+            <div key={i} className="h-28 bg-white dark:bg-emerald-950/40 rounded-2xl animate-pulse border border-gray-100 dark:border-emerald-900/70" />
           ))}
         </div>
       ) : safeWatchlist.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 py-16 text-center">
+        <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 py-16 text-center">
           <Bookmark className="w-12 h-12 mx-auto mb-3 text-gray-200" />
           <p className="text-gray-600 font-semibold">No saved ideas</p>
           <p className="text-gray-400 text-sm mt-1 mb-4">
@@ -63,7 +63,7 @@ export default function WatchlistPage() {
           </p>
           <Link
             href="/ideas"
-            className="text-primary font-semibold text-sm hover:underline"
+            className="text-emerald-600 dark:text-emerald-300 font-semibold text-sm hover:underline"
           >
             Browse Ideas →
           </Link>
@@ -75,7 +75,7 @@ export default function WatchlistPage() {
             return (
               <div
                 key={item.id}
-                className="bg-white rounded-2xl border border-gray-100 p-4 hover:border-green-200 hover:shadow-sm transition-all"
+                className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 p-4 hover:border-green-200 dark:hover:border-emerald-700 hover:shadow-sm transition-all"
               >
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div className="min-w-0">
@@ -96,19 +96,19 @@ export default function WatchlistPage() {
                   <button
                     onClick={() => remove(idea.id)}
                     disabled={isPending}
-                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                    className="p-1.5 text-gray-400 dark:text-emerald-200/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors shrink-0"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-400">
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-emerald-900/70">
+                  <p className="text-xs text-gray-400 dark:text-emerald-200/70">
                     by {idea.author?.name}
                   </p>
                   <Link
                     href={`/ideas/${idea.id}`}
-                    className="flex items-center gap-1 text-xs text-primary font-semibold hover:underline"
+                    className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-300 font-semibold hover:underline"
                   >
                     <Eye className="w-3.5 h-3.5" /> View
                   </Link>

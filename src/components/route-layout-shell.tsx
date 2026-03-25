@@ -21,7 +21,7 @@ export default function RouteLayoutShell({
   return (
     <>
       <Navbar1 />
-      {children}
+      <main className="flex-1">{children}</main>
       <Footer2 />
     </>
   );

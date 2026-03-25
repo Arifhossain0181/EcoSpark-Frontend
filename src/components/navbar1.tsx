@@ -62,7 +62,7 @@ interface Navbar1Props {
 const Navbar1 = ({
   logo = {
     url: "/",
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+    src: "/ecospark-logo.svg",
     alt: "EcoSpark logo",
     title: "EcoSpark Hub",
   },
@@ -102,21 +102,18 @@ const Navbar1 = ({
   };
 
   return (
-    <section className={cn("py-4", className)}>
+    <section className={cn("sticky top-0 z-50 py-3", className)}>
       <div className="container">
         {/* Desktop Menu */}
-        <nav className="hidden items-center justify-between lg:flex">
+        <nav className="hidden items-center justify-between lg:flex max-w-6xl mx-auto rounded-2xl border border-emerald-100/80 dark:border-emerald-900/70 bg-white/90 dark:bg-emerald-950/80 backdrop-blur px-4 py-3 shadow-sm">
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
-                className="max-h-8 dark:invert"
+                className="h-9 w-auto"
                 alt={logo.alt}
               />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
-              </span>
             </a>
             <div className="flex items-center">
               <NavigationMenu>
@@ -130,6 +127,7 @@ const Navbar1 = ({
             <Button
               variant="outline"
               size="icon"
+              className="border-emerald-200 dark:border-emerald-800"
               onClick={() =>
                 setTheme(resolvedTheme === "dark" ? "light" : "dark")
               }
@@ -144,7 +142,7 @@ const Navbar1 = ({
                   variant="outline"
                   size="sm"
                   onClick={() => router.push("/profile")}
-                  className="hidden md:inline-flex"
+                  className="hidden md:inline-flex border-emerald-200 dark:border-emerald-800"
                 >
                   My profile
                 </Button>
@@ -154,6 +152,7 @@ const Navbar1 = ({
                 <Button
                   variant="outline"
                   size="sm"
+                  className="border-emerald-200 dark:border-emerald-800"
                   onClick={handleLogout}
                 >
                   Logout
@@ -164,7 +163,7 @@ const Navbar1 = ({
                 <Button asChild variant="outline" size="sm">
                   <a href={auth.login.url}>{auth.login.title}</a>
                 </Button>
-                <Button asChild size="sm">
+                <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
                   <a href={auth.signup.url}>{auth.signup.title}</a>
                 </Button>
               </>
@@ -174,18 +173,18 @@ const Navbar1 = ({
 
         {/* Mobile Menu */}
         <div className="block lg:hidden">
-          <div className="flex items-center justify-between">
+          <div className="max-w-6xl mx-auto flex items-center justify-between rounded-2xl border border-emerald-100/80 dark:border-emerald-900/70 bg-white/90 dark:bg-emerald-950/80 backdrop-blur px-4 py-3 shadow-sm">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
               <img
                 src={logo.src}
-                className="max-h-8 dark:invert"
+                className="h-8 w-auto"
                 alt={logo.alt}
               />
             </a>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button variant="outline" size="icon" className="border-emerald-200 dark:border-emerald-800">
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
@@ -195,7 +194,7 @@ const Navbar1 = ({
                     <a href={logo.url} className="flex items-center gap-2">
                       <img
                         src={logo.src}
-                        className="max-h-8 dark:invert"
+                        className="h-8 w-auto"
                         alt={logo.alt}
                       />
                     </a>
@@ -264,7 +263,7 @@ const renderMenuItem = (item: MenuItem) => {
     <NavigationMenuItem key={item.title}>
       <NavigationMenuLink
         href={item.url}
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-accent-foreground"
+        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background dark:bg-emerald-950/40 px-4 py-2 text-sm font-medium transition-colors hover:bg-muted dark:hover:bg-emerald-900/60 hover:text-accent-foreground"
       >
         {item.title}
       </NavigationMenuLink>

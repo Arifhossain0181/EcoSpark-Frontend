@@ -77,13 +77,13 @@ export default function MyIdeasPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-foreground">My Ideas</h1>
-          <p className="text-gray-500 text-sm mt-0.5">
+          <p className="text-muted-foreground text-sm mt-0.5">
             Manage and track your submitted ideas
           </p>
         </div>
         <Link
           href="/dashboard/member/create-ideas"
-          className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors w-fit"
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors w-fit"
         >
           + New Idea
         </Link>
@@ -97,8 +97,8 @@ export default function MyIdeasPage() {
             onClick={() => setFilter(key)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors shrink-0 ${
               filter === key
-                ? "bg-primary text-primary-foreground"
-                : "bg-white border border-gray-200 text-gray-600 hover:border-primary"
+                ? "bg-emerald-600 text-white"
+                : "bg-white dark:bg-emerald-950/40 border border-gray-200 dark:border-emerald-900/70 text-gray-600 dark:text-emerald-200 hover:border-emerald-500"
             }`}
           >
             {label}
@@ -106,7 +106,7 @@ export default function MyIdeasPage() {
               className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${
                 filter === key
                   ? "bg-white/20 text-white"
-                  : "bg-gray-100 text-gray-500"
+                  : "bg-gray-100 dark:bg-emerald-900/60 text-gray-500 dark:text-emerald-200"
               }`}
             >
               {counts[key]}
@@ -116,36 +116,36 @@ export default function MyIdeasPage() {
       </div>
 
       {/* List */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 overflow-hidden">
         {isLoading ? (
           <div className="p-6 space-y-3">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-16 bg-gray-50 rounded-xl animate-pulse"
+                className="h-16 bg-gray-50 dark:bg-emerald-900/40 rounded-xl animate-pulse"
               />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <div className="py-16 text-center text-gray-400">
+          <div className="py-16 text-center text-gray-400 dark:text-emerald-200/60">
             <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
             <p className="text-sm font-medium">No ideas found</p>
             {filter !== "ALL" && (
               <button
                 onClick={() => setFilter("ALL")}
                 
-                className="text-xs text-primary hover:underline mt-2"
+                className="text-xs text-emerald-600 dark:text-emerald-300 hover:underline mt-2"
               >
                 View all ideas
               </button>
             )}
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-100 dark:divide-emerald-900/70">
             {filtered.map((idea: any) => (
               <div
                 key={idea.id}
-                className="p-4 sm:p-5 hover:bg-gray-50 transition-colors"
+                className="p-4 sm:p-5 hover:bg-gray-50 dark:hover:bg-emerald-900/30 transition-colors"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   {/* Info */}
@@ -168,7 +168,7 @@ export default function MyIdeasPage() {
                         {idea.status.replace("_", " ")}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 dark:text-emerald-200/70">
                       <span>{idea.category?.name}</span>
                       <span>·</span>
                       <span>
@@ -196,7 +196,7 @@ export default function MyIdeasPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <Link
                       href={`/ideas/${idea.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-emerald-700 dark:text-emerald-200 bg-emerald-50 dark:bg-emerald-900/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/70 rounded-lg transition-colors"
                       title="View"
                     >
                       <Eye className="w-3.5 h-3.5" />
@@ -208,10 +208,11 @@ export default function MyIdeasPage() {
                       <>
                         <Link
                           href={`/dashboard/edit-idea/${idea.id}`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
                           title="Edit"
                         >
                           <Pencil className="w-4 h-4" />
+                          Edit
                         </Link>
                         <button
                           onClick={() => submitIdea(idea.id)}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/authcontext";
-import { Eye, EyeOff, Leaf, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -60,10 +60,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="flex items-center gap-3 z-10">
-          <div className="w-10 h-10 bg-[#74c69d] rounded-xl flex items-center justify-center">
-            <Leaf className="w-5 h-5 text-[#1a3a2a]" />
-          </div>
-          <span className="text-white font-bold text-xl">EcoSpark Hub</span>
+          <img src="/ecospark-logo.svg" alt="EcoSpark Hub" className="h-10 w-auto" />
         </div>
 
         {/* Quote */}
@@ -102,10 +99,7 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-9 h-9 bg-[#2d6a4f] rounded-xl flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-[#1a3a2a] font-bold text-xl">EcoSpark Hub</span>
+            <img src="/ecospark-logo.svg" alt="EcoSpark Hub" className="h-9 w-auto" />
           </div>
 
           <div className="mb-8">

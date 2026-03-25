@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/authcontext";
-import { Eye, EyeOff, Leaf, Mail, User, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, User, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -86,16 +86,13 @@ return (
     <div className="min-h-screen bg-[#f8f4e9] flex">
 
       {/* ── Left Panel ── */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c] flex-col justify-between p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c] flex-col justify-between p-12 relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/5" />
         <div className="absolute -bottom-16 -left-16 w-96 h-96 rounded-full bg-white/5" />
 
         {/* Logo */}
         <div className="flex items-center gap-3 z-10">
-          <div className="w-10 h-10 bg-[#74c69d] rounded-xl flex items-center justify-center">
-            <Leaf className="w-5 h-5 text-[#1a3a2a]" />
-          </div>
-          <span className="text-white font-bold text-xl">EcoSpark Hub</span>
+          <img src="/ecospark-logo.svg" alt="EcoSpark Hub" className="h-10 w-auto" />
         </div>
 
         {/* Features */}
@@ -136,10 +133,7 @@ return (
 
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-9 h-9 bg-[#2d6a4f] rounded-xl flex items-center justify-center">
-              <Leaf className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-[#1a3a2a] font-bold text-xl">EcoSpark Hub</span>
+            <img src="/ecospark-logo.svg" alt="EcoSpark Hub" className="h-9 w-auto" />
           </div>
 
           <div className="mb-8">

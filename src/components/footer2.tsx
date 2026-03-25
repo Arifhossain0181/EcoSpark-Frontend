@@ -28,7 +28,7 @@ interface Footer2Props {
 
 const Footer2 = ({
   logo = {
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/logos/shadcnblockscom-icon.svg",
+    src: "/ecospark-logo.svg",
     alt: "EcoSpark Hub",
     title: "EcoSpark Hub",
     url: "/",
@@ -79,32 +79,31 @@ const Footer2 = ({
   ],
 }: Footer2Props) => {
   return (
-    <section className={cn("py-32", className)}>
-      <div className="container">
-        <footer>
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-6">
-            <div className="col-span-2 mb-8 lg:mb-0">
-              <div className="flex items-center gap-2 lg:justify-start">
+    <section className={cn("w-full mt-auto border-t border-emerald-100 dark:border-emerald-900/70 bg-linear-to-br from-white via-emerald-50/40 to-emerald-100/30 dark:from-emerald-950 dark:via-emerald-950/95 dark:to-emerald-900/90", className)}>
+      <div className="container py-10 md:py-12">
+        <footer className="px-2 md:px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 lg:grid-cols-6 text-center sm:text-left">
+            <div className="col-span-1 sm:col-span-2 mb-2 lg:mb-0">
+              <div className="flex items-center justify-center gap-2 sm:justify-start">
                 <Logo url={logo.url}>
                   <LogoImage
                     src={logo.src}
                     alt={logo.alt}
                     title={logo.title}
-                    className="h-10 dark:invert"
+                    className="h-10 w-auto"
                   />
-                  <LogoText className="text-xl">{logo.title}</LogoText>
                 </Logo>
               </div>
-              <p className="mt-4 font-bold">{tagline}</p>
+              <p className="mt-4 font-semibold text-emerald-900/90 dark:text-emerald-100/90 max-w-sm mx-auto sm:mx-0">{tagline}</p>
             </div>
             {menuItems.map((section, sectionIdx) => (
               <div key={sectionIdx}>
-                <h3 className="mb-4 font-bold">{section.title}</h3>
-                <ul className="space-y-4 text-muted-foreground">
+                <h3 className="mb-4 font-bold text-emerald-900 dark:text-emerald-100">{section.title}</h3>
+                <ul className="space-y-3 text-muted-foreground">
                   {section.links.map((link, linkIdx) => (
                     <li
                       key={linkIdx}
-                      className="font-medium hover:text-primary"
+                      className="font-medium hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
                     >
                       <a href={link.url}>{link.text}</a>
                     </li>
@@ -113,11 +112,11 @@ const Footer2 = ({
               </div>
             ))}
           </div>
-          <div className="mt-24 flex flex-col justify-between gap-4 border-t pt-8 text-sm font-medium text-muted-foreground md:flex-row md:items-center">
+          <div className="mt-10 flex flex-col justify-between gap-4 border-t border-emerald-100 dark:border-emerald-900/70 pt-6 text-sm font-medium text-muted-foreground dark:text-emerald-100/70 md:flex-row md:items-center">
             <p>{copyright}</p>
             <ul className="flex gap-4">
               {bottomLinks.map((link, linkIdx) => (
-                <li key={linkIdx} className="underline hover:text-primary">
+                <li key={linkIdx} className="underline hover:text-emerald-700 dark:hover:text-emerald-300">
                   <a href={link.url}>{link.text}</a>
                 </li>
               ))}
