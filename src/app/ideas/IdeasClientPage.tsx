@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import Image from "next/image";
 import { getIdeas, Idea } from "@/services/ideas";
 import {
   Search,
@@ -18,7 +19,7 @@ import {
 } from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 10;
 
 const ECO = {
   forest: "#1a3a2a",
@@ -73,9 +74,11 @@ function IdeaCard({ idea }: { idea: Idea }) {
           style={{ background: `linear-gradient(135deg, ${ECO.leaf}, ${ECO.moss})` }}
         >
           {idea.images?.[0] && (
-            <img
+            <Image
               src={idea.images[0]}
               alt={idea.title}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="w-full h-full object-cover opacity-80
                          group-hover:scale-105 transition-transform duration-500"
             />
@@ -272,6 +275,7 @@ export default function IdeasClientPage({
   const [searchInput, setSearchInput] = useState(initialSearch);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
+  const [authorFilter, setAuthorFilter] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
   const [minVotes, setMinVotes] = useState(0);
   const [page, setPage] = useState(1);
@@ -285,7 +289,7 @@ export default function IdeasClientPage({
     refetchOnWindowFocus: false,
   });
 
-  const ideas: Idea[] = data ?? [];
+  const ideas: Idea[] = useMemo(() => data ?? [], [data]);
 
   // ── Categories ───────────────────────────
   const categories = useMemo(
@@ -296,6 +300,19 @@ export default function IdeasClientPage({
             .map((i) => i.category?.name)
             .filter((n): n is string => Boolean(n))
         )
+      ),
+    [ideas]
+  );
+
+  const authors = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          ideas
+            .map((i) => ({ id: i.author?.id ?? i.authorId ?? "", name: i.author?.name ?? "Unknown" }))
+            .filter((a) => a.id)
+            .map((a) => [a.id, a])
+        ).values()
       ),
     [ideas]
   );
@@ -318,6 +335,9 @@ export default function IdeasClientPage({
     }
     if (paymentFilter === "free") r = r.filter((i) => !i.isPaid);
     if (paymentFilter === "paid") r = r.filter((i) => i.isPaid);
+    if (authorFilter !== "all") {
+      r = r.filter((i) => (i.author?.id ?? i.authorId) === authorFilter);
+    }
     if (minVotes > 0) {
       r = r.filter(
         (i) => (i._count?.votes ?? i.votes?.length ?? 0) >= minVotes
@@ -337,7 +357,7 @@ export default function IdeasClientPage({
     });
 
     return r;
-  }, [ideas, search, categoryFilter, paymentFilter, sortBy, minVotes]);
+  }, [ideas, search, categoryFilter, paymentFilter, authorFilter, sortBy, minVotes]);
 
   const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -347,7 +367,11 @@ export default function IdeasClientPage({
   );
 
   const hasFilter =
-    search || categoryFilter !== "all" || paymentFilter !== "all" || minVotes > 0;
+    search ||
+    categoryFilter !== "all" ||
+    paymentFilter !== "all" ||
+    authorFilter !== "all" ||
+    minVotes > 0;
 
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -360,6 +384,7 @@ export default function IdeasClientPage({
     setSearchInput("");
     setCategoryFilter("all");
     setPaymentFilter("all");
+    setAuthorFilter("all");
     setSortBy("recent");
     setMinVotes(0);
     setPage(1);
@@ -369,7 +394,7 @@ export default function IdeasClientPage({
   return (
     <div className="min-h-screen bg-[#f8f4e9]">
       {/* ── Hero Header ── */}
-      <div className="bg-gradient-to-br from-[#1a3a2a] to-[#2d6a4f] py-12 px-4">
+      <div className="bg-linear-to-br from-[#1a3a2a] to-[#2d6a4f] py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <p
             className="text-[#74c69d] text-xs font-semibold uppercase
@@ -473,7 +498,7 @@ export default function IdeasClientPage({
           <div
             className={`
             px-4 sm:px-5 pb-4 sm:pb-5
-            grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3
+            grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3
             sm:grid          /* always show on sm+ */
             ${showFilters ? "grid" : "hidden sm:grid"}
           `}
@@ -532,9 +557,30 @@ export default function IdeasClientPage({
                            rounded-xl px-3 py-2.5 text-sm text-gray-700
                            outline-none transition-colors bg-white w-full"
               >
-                <option value="recent">🕐 Most Recent</option>
-                <option value="topVoted">🔥 Top Voted</option>
-                <option value="mostCommented">💬 Most Discussed</option>
+                <option value="recent"> Most Recent</option>
+                <option value="topVoted"> Top Voted</option>
+                <option value="mostCommented"> Most Discussed</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Author</label>
+              <select
+                value={authorFilter}
+                onChange={(e) => {
+                  setAuthorFilter(e.target.value);
+                  setPage(1);
+                }}
+                className="border-2 border-gray-200 focus:border-[#40916c]
+                           rounded-xl px-3 py-2.5 text-sm text-gray-700
+                           outline-none transition-colors bg-white w-full"
+              >
+                <option value="all">All Contributors</option>
+                {authors.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -568,7 +614,7 @@ export default function IdeasClientPage({
                                px-3 py-1.5 rounded-full font-medium
                                flex items-center gap-1.5"
               >
-                🔍 &quot;{search}&quot;
+                 &quot;{search}&quot;
                 <button
                   onClick={() => {
                     setSearch("");
@@ -612,6 +658,24 @@ export default function IdeasClientPage({
                     setPage(1);
                   }}
                   className="hover:text-amber-900"
+                >
+                  ✕
+                </button>
+              </span>
+            )}
+            {authorFilter !== "all" && (
+              <span
+                className="bg-teal-100 text-teal-700 text-xs
+                               px-3 py-1.5 rounded-full font-medium
+                               flex items-center gap-1.5"
+              >
+                👤 {authors.find((a) => a.id === authorFilter)?.name ?? "Contributor"}
+                <button
+                  onClick={() => {
+                    setAuthorFilter("all");
+                    setPage(1);
+                  }}
+                  className="hover:text-teal-900"
                 >
                   ✕
                 </button>

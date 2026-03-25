@@ -1,37 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EcoSpark Hub Frontend
 
-## Getting Started
+Community portal frontend for sharing, reviewing, and discovering sustainability ideas.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js (App Router)
+- React + TypeScript
+- Tailwind CSS
+- TanStack Query
+- Axios
+
+## Core Features
+
+- Authentication (register/login, role-aware navigation)
+- Public Home, Ideas, About, Blog pages
+- All Ideas page with:
+	- search
+	- category filter
+	- payment filter (free/paid)
+	- author filter (contributor)
+	- vote-range filter
+	- sorting (recent, top voted, most commented)
+	- pagination (10 per page)
+- Idea details page:
+	- paid/free access logic
+	- reddit-style voting (up/down/remove)
+	- nested comments + replies
+	- watchlist toggle
+	- member reviews/ratings
+- Role-based dashboards:
+	- Member: create idea, submit for review, manage created ideas, purchased ideas
+	- Admin: users, ideas moderation, comments, payments, stats
+
+## Environment Variables
+
+Create `.env.local` in this folder:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Frontend runs on `http://localhost:3000`.
 
-## Learn More
+## Project Structure (High-Level)
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app` — routes and pages
+- `src/components` — reusable UI/layout components
+- `src/context` — auth/query providers
+- `src/services` — API service layer
+- `src/lib` — axios instance and utilities
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo Flow (for assignment video)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# EcoSpark-Frontend
+1. Register a new member
+2. Login
+3. Create idea (free or paid)
+4. Submit idea for review
+5. View approved free idea
+6. Purchase paid idea and verify access
+7. Vote (up/down/remove)
+8. Comment and nested reply
+9. Member dashboard walkthrough
+10. Admin moderation walkthrough
