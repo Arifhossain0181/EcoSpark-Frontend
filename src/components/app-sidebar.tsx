@@ -35,6 +35,7 @@ import Image from "next/image";
 const memberMenuItems = [
   { title: "Dashboard", url: "/dashboard/member", icon: LayoutDashboard },
   { title: "Create Idea", url: "/dashboard/member/create-ideas", icon: PlusCircle },
+  { title: "Created My Ideas", url: "/dashboard/member/created-my-ideas", icon: FileText },
   { title: "My Ideas", url: "/dashboard/member/my-ideas", icon: FileText },
   { title: "Ideas", url: "/ideas", icon: Lightbulb },
   { title: "Watchlist", url: "/dashboard/member/watchlist", icon: Bookmark },

@@ -93,7 +93,7 @@ export default function CommentItem({
           {comment.text}
         </p>
 
-        {user && depth < 2 && (
+        {user && (
           <button
             onClick={() => setShowReply(!showReply)}
             className="text-xs text-[#40916c] hover:text-[#2d6a4f] font-medium transition-colors"

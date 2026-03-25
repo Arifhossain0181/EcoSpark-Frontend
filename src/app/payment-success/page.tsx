@@ -30,8 +30,8 @@ function PaymentSuccessContent() {
 
   useEffect(() => {
     if (data?.ideaId) {
-      // Payment verified – redirect user to the blog page
-      router.replace("/blog");
+      // Payment verified – redirect user to My Ideas page
+      router.replace("/dashboard/member/my-ideas");
     }
   }, [data, router]);
 
@@ -87,13 +87,13 @@ function PaymentSuccessContent() {
         <CheckCircle2 className="w-10 h-10 text-green-600 mx-auto mb-3" />
         <p className="font-semibold text-[#1a3a2a] mb-1">Payment successful!</p>
         <p className="text-sm text-gray-500 mb-4">
-          Redirecting you to the blog page...
+          Redirecting you to your ideas page...
         </p>
         <button
-          onClick={() => router.push("/blog")}
+          onClick={() => router.push("/dashboard/member/my-ideas")}
           className="px-4 py-2 rounded-xl bg-[#2d6a4f] text-white text-sm font-semibold"
         >
-          Go to Blog
+          Go to My Ideas
         </button>
       </div>
     </div>
