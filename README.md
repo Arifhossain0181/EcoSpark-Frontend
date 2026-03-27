@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs on `http://localhost:3000`.
+Frontend runs on https://ecospark-client.vercel.app.
 
 ## Project Structure (High-Level)
 
