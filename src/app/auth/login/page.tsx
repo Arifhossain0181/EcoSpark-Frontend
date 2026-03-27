@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/authcontext";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -60,7 +61,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="flex items-center gap-3 z-10">
-          <img src="/ecospark-logo.svg" alt="EcoSpark Hub" className="h-10 w-auto" />
+          <Image src="/ecospark-logo.svg" alt="EcoSpark Hub" width={140} height={40} className="h-10 w-auto" priority />
         </div>
 
         {/* Quote */}
@@ -99,7 +100,7 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <img src="/ecospark-logo.svg" alt="EcoSpark Hub" className="h-9 w-auto" />
+            <Image src="/ecospark-logo.svg" alt="EcoSpark Hub" width={126} height={36} className="h-9 w-auto" priority />
           </div>
 
           <div className="mb-8">

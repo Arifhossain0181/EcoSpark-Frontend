@@ -27,21 +27,36 @@ type AdminDashboardStats = {
 
 export default function ManageDashboardPage() {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
   const [rejectFeedback, setRejectFeedback] = useState<Record<string, string>>({});
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
 
   const {
-    data: ideas = [],
+    data: ideasResponse,
     isLoading,
     isError,
-  } = useQuery<IdeaItem[]>({
-    queryKey: ["admin-ideas"],
+  } = useQuery<{
+    ideas: IdeaItem[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>({
+    queryKey: ["admin-ideas", page],
     queryFn: async () => {
-      const { data } = await api.get("/admin/ideas");
-      return (data?.data ?? []) as IdeaItem[];
+      const { data } = await api.get("/admin/ideas", {
+        params: { page, limit: pageSize },
+      });
+      return data?.data;
     },
     staleTime: 60 * 1000,
     refetchOnWindowFocus: false,
   });
+
+  const ideas = useMemo(() => ideasResponse?.ideas ?? [], [ideasResponse]);
+  const totalPages = ideasResponse?.totalPages ?? 1;
 
   const { data: dashboardStats } = useQuery<AdminDashboardStats>({
     queryKey: ["admin-dashboard-stats"],
@@ -54,13 +69,25 @@ export default function ManageDashboardPage() {
   });
 
   const { mutate: approveIdea, isPending: approving } = useMutation({
-    mutationFn: (id: string) => api.patch(`/admin/ideas/${id}/approve`),
+    mutationFn: async (id: string) => {
+      setApprovingId(id);
+      return api.patch(`/admin/ideas/${id}/approve`);
+    },
     onSuccess: (_, id) => {
-      queryClient.setQueryData<IdeaItem[]>(["admin-ideas"], (previous) => {
+      queryClient.setQueryData<{
+        ideas: IdeaItem[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>(["admin-ideas", page], (previous) => {
         if (!previous) return previous;
-        return previous.map((item) =>
-          item.id === id ? { ...item, status: "APPROVED" } : item,
-        );
+        return {
+          ...previous,
+          ideas: previous.ideas.map((item) =>
+            item.id === id ? { ...item, status: "APPROVED" } : item,
+          ),
+        };
       });
 
       queryClient.setQueryData<AdminDashboardStats>(
@@ -83,17 +110,29 @@ export default function ManageDashboardPage() {
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || "Failed to approve idea");
     },
+    onSettled: () => setApprovingId(null),
   });
 
   const { mutate: rejectIdea, isPending: rejecting } = useMutation({
-    mutationFn: ({ id, feedback }: { id: string; feedback: string }) =>
-      api.patch(`/admin/ideas/${id}/reject`, { feedback }),
+    mutationFn: async ({ id, feedback }: { id: string; feedback: string }) => {
+      setRejectingId(id);
+      return api.patch(`/admin/ideas/${id}/reject`, { feedback });
+    },
     onSuccess: (_, variables) => {
-      queryClient.setQueryData<IdeaItem[]>(["admin-ideas"], (previous) => {
+      queryClient.setQueryData<{
+        ideas: IdeaItem[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>(["admin-ideas", page], (previous) => {
         if (!previous) return previous;
-        return previous.map((item) =>
-          item.id === variables.id ? { ...item, status: "REJECTED" } : item,
-        );
+        return {
+          ...previous,
+          ideas: previous.ideas.map((item) =>
+            item.id === variables.id ? { ...item, status: "REJECTED" } : item,
+          ),
+        };
       });
 
       queryClient.setQueryData<AdminDashboardStats>(
@@ -117,6 +156,7 @@ export default function ManageDashboardPage() {
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || "Failed to reject idea");
     },
+    onSettled: () => setRejectingId(null),
   });
 
   const stats = useMemo(
@@ -229,10 +269,13 @@ export default function ManageDashboardPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => approveIdea(idea.id)}
-                            disabled={approving || rejecting}
+                            disabled={
+                              (approving && approvingId === idea.id) ||
+                              (rejecting && rejectingId === idea.id)
+                            }
                             className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
                           >
-                            {approving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Approve"}
+                            {approving && approvingId === idea.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Approve"}
                           </button>
 
                           <button
@@ -244,10 +287,13 @@ export default function ManageDashboardPage() {
                               }
                               rejectIdea({ id: idea.id, feedback });
                             }}
-                            disabled={approving || rejecting}
+                            disabled={
+                              (approving && approvingId === idea.id) ||
+                              (rejecting && rejectingId === idea.id)
+                            }
                             className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                           >
-                            {rejecting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Reject"}
+                            {rejecting && rejectingId === idea.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Reject"}
                           </button>
                         </div>
 
@@ -280,6 +326,28 @@ export default function ManageDashboardPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
+          <span className="text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={page <= 1}
+              className="rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={page >= totalPages}
+              className="rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </main>

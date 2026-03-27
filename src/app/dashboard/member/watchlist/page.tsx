@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import Link from "next/link";
@@ -18,6 +19,7 @@ function asArray<T>(value: unknown): T[] {
 
 export default function WatchlistPage() {
   const queryClient = useQueryClient();
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const { data: watchlist = [], isLoading } = useQuery({
     queryKey: ["watchlist"],
@@ -30,11 +32,15 @@ export default function WatchlistPage() {
   const safeWatchlist = asArray<any>(watchlist);
 
   const { mutate: remove, isPending } = useMutation({
-    mutationFn: (ideaId: string) => api.post(`/watchlist/${ideaId}`),
+    mutationFn: async (ideaId: string) => {
+      setRemovingId(ideaId);
+      return api.post(`/watchlist/${ideaId}`);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["watchlist"] });
       toast.success("Removed from watchlist");
     },
+    onSettled: () => setRemovingId(null),
   });
 
   return (
@@ -95,7 +101,7 @@ export default function WatchlistPage() {
                   </div>
                   <button
                     onClick={() => remove(idea.id)}
-                    disabled={isPending}
+                    disabled={isPending && removingId === idea.id}
                     className="p-1.5 text-gray-400 dark:text-emerald-200/70 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors shrink-0"
                   >
                     <Trash2 className="w-4 h-4" />

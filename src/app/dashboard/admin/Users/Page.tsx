@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, ShieldCheck, ShieldX, Trash2, UserCheck, UserX } from "lucide-react";
 import { toast } from "sonner";
@@ -43,6 +43,8 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
 export default function UsersDashboardPage() {
   const queryClient = useQueryClient();
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   const {
     data: users = [],
@@ -59,18 +61,24 @@ export default function UsersDashboardPage() {
   });
 
   const { mutate: updateUser, isPending: updatingUser } = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Partial<UserItem> }) =>
-      api.patch(`/admin/users/${id}`, payload),
+    mutationFn: async ({ id, payload }: { id: string; payload: Partial<UserItem> }) => {
+      setUpdatingUserId(id);
+      return api.patch(`/admin/users/${id}`, payload);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (error: unknown) => {
       toast.error(getErrorMessage(error, "Failed to update user"));
     },
+    onSettled: () => setUpdatingUserId(null),
   });
 
   const { mutate: deleteUser, isPending: deletingUser } = useMutation({
-    mutationFn: (id: string) => api.delete(`/admin/users/${id}`),
+    mutationFn: async (id: string) => {
+      setDeletingUserId(id);
+      return api.delete(`/admin/users/${id}`);
+    },
     onSuccess: () => {
       toast.success("User deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
@@ -79,6 +87,7 @@ export default function UsersDashboardPage() {
     onError: (error: unknown) => {
       toast.error(getErrorMessage(error, "Failed to delete user"));
     },
+    onSettled: () => setDeletingUserId(null),
   });
 
   const stats = useMemo(() => {
@@ -230,7 +239,10 @@ export default function UsersDashboardPage() {
                     <div className="inline-flex items-center gap-2">
                       <button
                         onClick={() => handleRoleChange(user)}
-                        disabled={updatingUser || deletingUser}
+                        disabled={
+                          (updatingUser && updatingUserId === user.id) ||
+                          (deletingUser && deletingUserId === user.id)
+                        }
                         className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
                       >
                         {user.role === "ADMIN" ? <ShieldX className="h-3.5 w-3.5" /> : <ShieldCheck className="h-3.5 w-3.5" />}
@@ -239,7 +251,10 @@ export default function UsersDashboardPage() {
 
                       <button
                         onClick={() => handleStatusChange(user)}
-                        disabled={updatingUser || deletingUser}
+                        disabled={
+                          (updatingUser && updatingUserId === user.id) ||
+                          (deletingUser && deletingUserId === user.id)
+                        }
                         className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                       >
                         {user.isActive ? <UserX className="h-3.5 w-3.5" /> : <UserCheck className="h-3.5 w-3.5" />}
@@ -248,10 +263,13 @@ export default function UsersDashboardPage() {
 
                       <button
                         onClick={() => handleDelete(user.id)}
-                        disabled={updatingUser || deletingUser}
+                        disabled={
+                          (updatingUser && updatingUserId === user.id) ||
+                          (deletingUser && deletingUserId === user.id)
+                        }
                         className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                       >
-                        {deletingUser ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        {deletingUser && deletingUserId === user.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                         Delete
                       </button>
                     </div>

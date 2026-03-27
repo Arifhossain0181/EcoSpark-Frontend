@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useParams, useRouter } from "next/navigation";
@@ -212,9 +213,12 @@ export default function IdeaDetailsPage() {
       {/* Hero Image */}
       <div className="relative h-72 md:h-96 bg-linear-to-br from-[#1a3a2a] to-[#40916c] overflow-hidden">
         {imageUrls[0] && (
-          <img
+          <Image
             src={imageUrls[0]}
             alt={idea.title}
+            fill
+            unoptimized
+            sizes="100vw"
             className="w-full h-full object-cover opacity-40"
           />
         )}
@@ -359,10 +363,13 @@ export default function IdeaDetailsPage() {
                     </h2>
                     <div className="grid grid-cols-2 gap-3">
                       {imageUrls.slice(1).map((img, i) => (
-                        <img
+                        <Image
                           key={i}
                           src={img}
                           alt={`Image ${i + 2}`}
+                          width={600}
+                          height={320}
+                          unoptimized
                           className="w-full h-40 object-cover rounded-xl"
                         />
                       ))}

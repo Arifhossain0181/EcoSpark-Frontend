@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -25,23 +25,40 @@ type AdminCommentItem = {
 
 export default function CommentsDashboardPage() {
     const queryClient = useQueryClient();
+    const [page, setPage] = useState(1);
+    const pageSize = 10;
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const {
-        data: comments = [],
+        data: commentsResponse,
         isLoading,
         isError,
-    } = useQuery<AdminCommentItem[]>({
-        queryKey: ["admin-comments"],
+    } = useQuery<{
+        comments: AdminCommentItem[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>({
+        queryKey: ["admin-comments", page],
         queryFn: async () => {
-            const { data } = await api.get("/comments/admin/all");
-            return (data?.data ?? []) as AdminCommentItem[];
+            const { data } = await api.get("/comments/admin/all", {
+                params: { page, limit: pageSize },
+            });
+            return data?.data;
         },
         staleTime: 60 * 1000,
         refetchOnWindowFocus: false,
     });
 
+    const comments = useMemo(() => commentsResponse?.comments ?? [], [commentsResponse]);
+    const totalPages = commentsResponse?.totalPages ?? 1;
+
     const { mutate: deleteComment, isPending: deleting } = useMutation({
-        mutationFn: (id: string) => api.delete(`/comments/${id}`),
+        mutationFn: async (id: string) => {
+            setDeletingId(id);
+            return api.delete(`/comments/${id}`);
+        },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["admin-comments"] });
             toast.success("Comment deleted successfully");
@@ -49,6 +66,7 @@ export default function CommentsDashboardPage() {
         onError: () => {
             toast.error("Failed to delete comment");
         },
+        onSettled: () => setDeletingId(null),
     });
 
     const stats = useMemo(() => {
@@ -158,10 +176,10 @@ export default function CommentsDashboardPage() {
                                     <td className="px-4 py-3 text-right">
                                         <button
                                             onClick={() => deleteComment(comment.id)}
-                                            disabled={deleting}
+                                            disabled={deleting && deletingId === comment.id}
                                             className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                                         >
-                                            {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                                            {deleting && deletingId === comment.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                                             Delete
                                         </button>
                                     </td>
@@ -177,6 +195,28 @@ export default function CommentsDashboardPage() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
+                    <span className="text-muted-foreground">
+                        Page {page} of {totalPages}
+                    </span>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+                            disabled={page <= 1}
+                            className="rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Previous
+                        </button>
+                        <button
+                            onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                            disabled={page >= totalPages}
+                            className="rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>

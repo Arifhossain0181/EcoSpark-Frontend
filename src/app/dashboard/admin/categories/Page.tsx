@@ -40,6 +40,7 @@ export default function CategoryDashboardPage() {
   const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [deletingCategoryId, setDeletingCategoryId] = useState<string | null>(null);
 
   const {
     data: categories = [],
@@ -76,7 +77,10 @@ export default function CategoryDashboardPage() {
   });
 
   const { mutate: deleteCategory, isPending: deleting } = useMutation({
-    mutationFn: (id: string) => api.delete(`/categories/${id}`),
+    mutationFn: async (id: string) => {
+      setDeletingCategoryId(id);
+      return api.delete(`/categories/${id}`);
+    },
     onSuccess: () => {
       toast.success("Category deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["admin-categories"] });
@@ -84,6 +88,7 @@ export default function CategoryDashboardPage() {
     onError: (error: unknown) => {
       toast.error(getErrorMessage(error, "Failed to delete category"));
     },
+    onSettled: () => setDeletingCategoryId(null),
   });
 
   const { mutate: updateCategory, isPending: updating } = useMutation({
@@ -221,7 +226,7 @@ export default function CategoryDashboardPage() {
                     <div className="inline-flex items-center gap-2">
                       <button
                         onClick={() => openEditModal(cat)}
-                        disabled={updating || deleting}
+                        disabled={updating || (deleting && deletingCategoryId === cat.id)}
                         className="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-emerald-700 disabled:opacity-60"
                       >
                         <Pencil className="h-3.5 w-3.5" />
@@ -230,10 +235,10 @@ export default function CategoryDashboardPage() {
 
                       <button
                         onClick={() => handleDelete(cat.id)}
-                        disabled={deleting || updating}
+                        disabled={(deleting && deletingCategoryId === cat.id) || updating}
                         className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60 disabled:opacity-60"
                       >
-                        {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                        {deleting && deletingCategoryId === cat.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                         Delete
                       </button>
                     </div>

@@ -1,4 +1,4 @@
-import { Logo, LogoImage, LogoText } from "@/components/logo";
+import { Logo, LogoImage } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
 interface MenuItem {

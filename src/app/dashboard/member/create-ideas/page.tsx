@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { getCategories } from "@/services/category";
@@ -97,12 +98,12 @@ export default function CreateIdeaPage() {
       return { asDraft };
     },
     onSuccess: ({ asDraft }) => {
-      queryClient.invalidateQueries({ queryKey: ["my-ideas"] });
+      queryClient.invalidateQueries({ queryKey: ["created-my-ideas"] });
       queryClient.invalidateQueries({ queryKey: ["ideas"] });
       toast.success(
         asDraft ? "Saved as draft! 📝" : "Submitted for review! 🌿"
       );
-      router.push("/dashboard/member/my-ideas");
+      router.push("/dashboard/member/created-my-ideas");
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) =>
@@ -389,9 +390,12 @@ export default function CreateIdeaPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {urlImages.map((url) => (
                 <div key={`url-${url}`} className="relative group">
-                  <img
+                  <Image
                     src={url}
                     alt="Preview"
+                    width={240}
+                    height={96}
+                    unoptimized
                     className="w-full h-24 object-cover rounded-xl border border-gray-200 dark:border-emerald-900/70"
                   />
                   <button
@@ -405,9 +409,12 @@ export default function CreateIdeaPage() {
 
               {localImages.map((image) => (
                 <div key={image.id} className="relative group">
-                  <img
+                  <Image
                     src={image.previewUrl}
                     alt={image.file.name || "Preview"}
+                    width={240}
+                    height={96}
+                    unoptimized
                     className="w-full h-24 object-cover rounded-xl border border-gray-200 dark:border-emerald-900/70"
                   />
                   <button

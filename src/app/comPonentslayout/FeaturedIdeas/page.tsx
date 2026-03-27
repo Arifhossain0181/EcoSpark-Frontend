@@ -7,7 +7,7 @@ import { getIdeas, Idea } from "@/services/ideas";
 
 const FeaturedIdeas = () => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["featured-ideas"],
+        queryKey: ["ideas"],
         queryFn: getIdeas,
     });
 

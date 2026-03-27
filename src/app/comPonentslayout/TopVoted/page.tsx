@@ -3,11 +3,11 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
-import { getIdeas, Idea } from "@/services/ideas";
+import { getIdeas } from "@/services/ideas";
 
 const TopVoted = () => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["top-voted-ideas"],
+        queryKey: ["ideas"],
         queryFn: getIdeas,
     });
 
@@ -69,7 +69,7 @@ const TopVoted = () => {
                                     </div>
 
                                     <p className="text-emerald-100 text-lg font-semibold leading-snug">
-                                        "+ {idea.title}"
+                                        + &quot;{idea.title}&quot;
                                     </p>
                                     <p className="text-xs text-emerald-100/80 line-clamp-3">
                                         {idea.description}

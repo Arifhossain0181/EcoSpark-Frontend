@@ -29,6 +29,10 @@ export async function getIdeas(): Promise<Idea[]> {
     total: number;
     page: number;
     limit: number;
-  }>("ideas");
+  }>("ideas", {
+    params: {
+      includeTotal: "false",
+    },
+  });
   return data.ideas;
 }

@@ -29,9 +29,11 @@ export default function MyIdeasPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<StatusFilter>("ALL");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { data: ideas = [], isLoading } = useQuery({
-    queryKey: ["my-ideas"],
+    queryKey: ["created-my-ideas"],
     queryFn: async () => {
       const { data } = await api.get("/ideas/my");
       return data;
@@ -39,22 +41,30 @@ export default function MyIdeasPage() {
   });
 
   const { mutate: submitIdea, isPending: submitting } = useMutation({
-    mutationFn: (id: string) => api.patch(`/ideas/${id}/submit`),
+    mutationFn: async (id: string) => {
+      setSubmittingId(id);
+      return api.patch(`/ideas/${id}/submit`);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-ideas"] });
-      toast.success("Submitted for review! 🌿");
+      queryClient.invalidateQueries({ queryKey: ["created-my-ideas"] });
+      toast.success("Submitted for review! ");
     },
     onError: () => toast.error("Failed to submit"),
+    onSettled: () => setSubmittingId(null),
   });
 
   const { mutate: deleteIdea, isPending: deleting } = useMutation({
-    mutationFn: (id: string) => api.delete(`/ideas/${id}`),
+    mutationFn: async (id: string) => {
+      setDeletingId(id);
+      return api.delete(`/ideas/${id}`);
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["my-ideas"] });
+      queryClient.invalidateQueries({ queryKey: ["created-my-ideas"] });
       setDeleteId(null);
       toast.success("Idea deleted");
     },
     onError: () => toast.error("Failed to delete"),
+    onSettled: () => setDeletingId(null),
   });
 
   const filtered =
@@ -220,7 +230,7 @@ export default function MyIdeasPage() {
                           className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                           title="Submit for review"
                         >
-                          {submitting ? (
+                          {submittingId === idea.id ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
                           ) : (
                             <Send className="w-4 h-4" />
@@ -268,7 +278,7 @@ export default function MyIdeasPage() {
                 disabled={deleting}
                 className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
               >
-                {deleting ? (
+                {deleting && deletingId === deleteId ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   "Delete"

@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu, Moon, Sun } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 
@@ -114,10 +115,13 @@ const Navbar1 = ({
           <div className="flex items-center gap-6">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
+              <Image
                 src={logo.src}
+                width={140}
+                height={36}
                 className="h-9 w-auto"
                 alt={logo.alt}
+                unoptimized
               />
             </a>
             <div className="flex items-center">
@@ -186,10 +190,13 @@ const Navbar1 = ({
           <div className="max-w-6xl mx-auto flex items-center justify-between rounded-2xl border border-emerald-100/80 dark:border-emerald-900/70 bg-white/90 dark:bg-emerald-950/80 backdrop-blur px-4 py-3 shadow-sm">
             {/* Logo */}
             <a href={logo.url} className="flex items-center gap-2">
-              <img
+              <Image
                 src={logo.src}
+                width={128}
+                height={32}
                 className="h-8 w-auto"
                 alt={logo.alt}
+                unoptimized
               />
             </a>
             <Sheet>
@@ -206,10 +213,13 @@ const Navbar1 = ({
                 <SheetHeader>
                   <SheetTitle>
                     <a href={logo.url} className="flex items-center gap-2">
-                      <img
+                      <Image
                         src={logo.src}
+                        width={128}
+                        height={32}
                         className="h-8 w-auto"
                         alt={logo.alt}
+                        unoptimized
                       />
                     </a>
                   </SheetTitle>
