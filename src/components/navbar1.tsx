@@ -105,10 +105,19 @@ const Navbar1 = ({
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const userRole = user?.role?.toLowerCase();
-  const canSeeDashboard = userRole === "member" || userRole === "admin";
-  const visibleMenu = menu.filter(
-    (item) => item.title !== "Dashboard" || canSeeDashboard,
-  );
+  const roleCtaItem: MenuItem =
+    userRole === "admin"
+      ? { title: "Dashboard", url: "/dashboard/admin" }
+      : userRole === "member"
+        ? { title: "Share Your Idea", url: "/dashboard/member/create-ideas" }
+        : {
+            title: "Share Your Idea",
+            url: "/auth/login?redirect=/dashboard/member/create-ideas",
+          };
+
+  const visibleMenu = menu
+    .filter((item) => item.title !== "Dashboard")
+    .map((item) => (item.title === "Share Your Idea" ? roleCtaItem : item));
 
   const handleLogout = () => {
     logout();
