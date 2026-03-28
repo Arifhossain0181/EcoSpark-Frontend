@@ -37,8 +37,7 @@ Community portal frontend for sharing, reviewing, and discovering sustainability
 Create `.env.local` in this folder:
 
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
-```
+
 
 ## Local Setup
 
@@ -47,7 +46,7 @@ npm install
 npm run dev
 ```
 
-Frontend runs on `http://localhost:3000`.
+Frontend runs on https://ecospark-client.vercel.app.
 
 ## Project Structure (High-Level)
 
