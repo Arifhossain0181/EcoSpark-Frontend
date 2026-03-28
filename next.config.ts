@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/auth/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/:path*`,
+       
+      },
+    ];
+  }
 };
 
 export default nextConfig;

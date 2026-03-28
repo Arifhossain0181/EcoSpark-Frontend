@@ -19,7 +19,7 @@ interface HeroProps {
   };
 }
 
-// ── Floating leaf decoration ───────────────────────────────
+// ── Floating leaf decoration 
 function FloatingLeaf({
   style,
   size = "w-8 h-8",
@@ -38,7 +38,7 @@ function FloatingLeaf({
   );
 }
 
-// ── Animated counter ───────────────────────────────────────
+// ── Animated counter 
 function AnimatedNumber({ target }: { target: number }) {
   const [count, setCount] = useState(0);
 
@@ -56,11 +56,11 @@ function AnimatedNumber({ target }: { target: number }) {
   return <>{count.toLocaleString()}</>;
 }
 
-// ── Main Hero ──────────────────────────────────────────────
+// ── Main Hero 
 export function Hero7({
-  heading     = "Spark Ideas for a",
+  heading     = "Share and Explore Ideas for a",
   highlight   = "Greener Future",
-  description = "Join thousands of changemakers sharing sustainability ideas that create real impact for our planet and future generations.",
+  description = "Here you can share your ideas and see ideas from others to help the environment.",
   button = {
     text: "Explore Ideas",
     url:  "/ideas",
@@ -192,7 +192,7 @@ export function Hero7({
                        active:scale-[0.98]
                        w-full sm:w-auto justify-center"
           >
-            ✨ {secondaryButton.text}
+             {secondaryButton.text}
           </Link>
         </div>
 

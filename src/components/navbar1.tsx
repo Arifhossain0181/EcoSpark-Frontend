@@ -1,6 +1,14 @@
 "use client";
 
 import { Menu, Moon, Sun } from "lucide-react";
+
+
+
+
+
+
+
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -82,7 +90,7 @@ const Navbar1 = ({
       url: "/blog",
     },
     {
-      title: "Dashboard",
+      title: "Share Your Idea",
       url: "/dashboard",
     },
     
