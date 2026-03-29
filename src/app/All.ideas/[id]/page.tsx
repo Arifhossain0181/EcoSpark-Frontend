@@ -156,7 +156,10 @@ export default function IdeaDetailsPage() {
     mutationFn: () => api.patch(`admin/ideas/${ideaId}/approve`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["idea", ideaId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-ideas"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
       toast.success("Idea approved!");
+      router.push("/dashboard/admin/Manage.ideas");
     },
   });
 
@@ -168,8 +171,11 @@ export default function IdeaDetailsPage() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["idea", ideaId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-ideas"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard-stats"] });
       setRejectFeedback("");
       toast.success("Idea rejected");
+      router.push("/dashboard/admin/Manage.ideas");
     },
   });
 

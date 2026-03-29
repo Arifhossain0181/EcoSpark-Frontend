@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import { getCategories } from "@/services/category";
@@ -33,6 +33,7 @@ const EMPTY_FORM: IdeaForm = {
 export default function EditIdeaPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [draft, setDraft] = useState<{ id: string; form: IdeaForm } | null>(null);
 
@@ -66,6 +67,8 @@ export default function EditIdeaPage() {
     : EMPTY_FORM;
 
   const form = draft?.id === id ? draft.form : baseForm;
+  const isLockedPaidIdea =
+    Boolean(idea?.isPaid) && Array.isArray(idea?.payments) && idea.payments.length > 0;
 
   const setForm = (updater: (prev: IdeaForm) => IdeaForm) => {
     const current = draft?.id === id ? draft.form : baseForm;
@@ -91,9 +94,23 @@ export default function EditIdeaPage() {
         price: form.isPaid ? form.price : 0,
       });
     },
-    onSuccess: () => {
-      toast.success("Idea updated successfully");
-      router.push("/dashboard/member/my-ideas");
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["idea", id] }),
+        queryClient.invalidateQueries({ queryKey: ["created-my-ideas"] }),
+        queryClient.invalidateQueries({ queryKey: ["ideas"] }),
+      ]);
+      toast.success("Idea updated successfully. Approved edits were sent for review.");
+      router.push("/dashboard/member/created-my-ideas");
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (err: any) => {
+      toast.error(
+        err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "Failed to update idea"
+      );
     },
   });
 
@@ -122,6 +139,11 @@ export default function EditIdeaPage() {
           <p className="text-gray-300 text-sm mt-1">
             Update your idea and make it impactful 🚀
           </p>
+          {isLockedPaidIdea && (
+            <p className="text-amber-200 text-sm mt-2">
+              This paid idea already has successful payments. Editing is disabled.
+            </p>
+          )}
         </div>
 
         {/* Form Card */}
@@ -132,6 +154,7 @@ export default function EditIdeaPage() {
             <label className="text-sm font-semibold mb-1 block">Title</label>
             <input
               value={form.title}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, title: e.target.value }))
               }
@@ -144,6 +167,7 @@ export default function EditIdeaPage() {
             <label className="text-sm font-semibold mb-1 block">Category</label>
             <select
               value={form.categoryId}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
@@ -167,6 +191,7 @@ export default function EditIdeaPage() {
             <textarea
               rows={3}
               value={form.problem}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, problem: e.target.value }))
               }
@@ -180,6 +205,7 @@ export default function EditIdeaPage() {
             <textarea
               rows={3}
               value={form.solution}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, solution: e.target.value }))
               }
@@ -193,6 +219,7 @@ export default function EditIdeaPage() {
             <textarea
               rows={5}
               value={form.description}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({ ...prev, description: e.target.value }))
               }
@@ -206,6 +233,7 @@ export default function EditIdeaPage() {
             <input
               type="checkbox"
               checked={form.isPaid}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
@@ -220,6 +248,7 @@ export default function EditIdeaPage() {
             <input
               type="number"
               value={form.price}
+              disabled={isLockedPaidIdea}
               onChange={(e) =>
                 setForm((prev) => ({
                   ...prev,
@@ -234,7 +263,7 @@ export default function EditIdeaPage() {
           {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <button
-              onClick={() => router.push("/dashboard/member/my-ideas")}
+              onClick={() => router.push("/dashboard/member/created-my-ideas")}
               className="px-5 py-2.5 rounded-xl border text-sm font-semibold hover:bg-gray-100 dark:hover:bg-emerald-900/40"
             >
               Cancel
@@ -242,9 +271,16 @@ export default function EditIdeaPage() {
 
             <button
               onClick={() => {
+                if (isLockedPaidIdea) {
+                  toast.error(
+                    "This paid idea already has successful payments and cannot be edited"
+                  );
+                  return;
+                }
                 if (!validate()) return;
                 updateIdea();
               }}
+              disabled={isPending || isLockedPaidIdea}
               className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2"
             >
               {isPending && <Loader2 className="w-4 h-4 animate-spin" />}

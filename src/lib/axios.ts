@@ -1,8 +1,13 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+const resolvedBaseUrl =
+    process.env.NODE_ENV === "development"
+        ? "http://localhost:5000/api"
+        : process.env.NEXT_PUBLIC_API_URL;
+
 const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL,
+    baseURL: resolvedBaseUrl,
     headers: {
         "content-type": "application/json",
     },

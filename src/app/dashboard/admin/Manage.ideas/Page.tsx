@@ -3,8 +3,9 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import api from "@/lib/axios";
 
@@ -264,6 +265,15 @@ export default function ManageDashboardPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{idea._count?.votes ?? 0}</td>
                   <td className="px-4 py-3">
+                    <div className="space-y-2">
+                      <Link
+                        href={`/ideas/${idea.id}`}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 dark:hover:bg-emerald-900/60"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        View
+                      </Link>
+
                     {idea.status === "UNDER_REVIEW" ? (
                       <div className="space-y-2">
                         <div className="flex gap-2">
@@ -313,6 +323,7 @@ export default function ManageDashboardPage() {
                     ) : (
                       <span className="text-xs text-muted-foreground">No action needed</span>
                     )}
+                    </div>
                   </td>
                 </tr>
               ))}

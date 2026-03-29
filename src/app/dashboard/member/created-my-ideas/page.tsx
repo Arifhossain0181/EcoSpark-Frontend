@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import Link from "next/link";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import {
   FileText,
   Eye,
@@ -47,9 +47,14 @@ export default function MyIdeasPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["created-my-ideas"] });
-      toast.success("Submitted for review! ");
+      toast.success("Submitted for review!", {
+        className: "!bg-sky-600 !text-white !border-sky-700",
+      });
     },
-    onError: () => toast.error("Failed to submit"),
+    onError: () =>
+      toast.error("Failed to submit", {
+        className: "!bg-red-600 !text-white !border-red-700",
+      }),
     onSettled: () => setSubmittingId(null),
   });
 
@@ -61,14 +66,37 @@ export default function MyIdeasPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["created-my-ideas"] });
       setDeleteId(null);
-      toast.success("Idea deleted");
+      toast.success("Idea deleted", {
+        className: "!bg-rose-600 !text-white !border-rose-700",
+      });
     },
-    onError: () => toast.error("Failed to delete"),
+    onError: (err: any) =>
+      toast.error(
+        err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "Failed to delete",
+        {
+          className: "!bg-red-600 !text-white !border-red-700",
+        }
+      ),
     onSettled: () => setDeletingId(null),
   });
 
   const filtered =
     filter === "ALL" ? ideas : ideas.filter((i: any) => i.status === filter);
+
+  const isEditableStatus = (status: string) =>
+    status === "DRAFT" ||
+    status === "REJECTED" ||
+    status === "UNDER_REVIEW" ||
+    status === "APPROVED";
+
+  const isSubmittableStatus = (status: string) =>
+    status === "DRAFT" || status === "REJECTED";
+
+  const isLockedPaidIdea = (idea: any) =>
+    Boolean(idea?.isPaid) && Array.isArray(idea?.payments) && idea.payments.length > 0;
 
   const counts = STATUS_TABS.reduce(
     (acc, tab) => {
@@ -153,6 +181,7 @@ export default function MyIdeasPage() {
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-emerald-900/70">
             {filtered.map((idea: any) => (
+              
               <div
                 key={idea.id}
                 className="p-4 sm:p-5 hover:bg-gray-50 dark:hover:bg-emerald-900/30 transition-colors"
@@ -178,6 +207,14 @@ export default function MyIdeasPage() {
                         {idea.status.replace("_", " ")}
                       </span>
                     </div>
+
+                    {isLockedPaidIdea(idea) && (
+                      <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2">
+                        <p className="text-xs text-amber-700">
+                          This paid idea already has purchases, so edit and delete are disabled.
+                        </p>
+                      </div>
+                    )}
                     <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400 dark:text-emerald-200/70">
                       <span>{idea.category?.name}</span>
                       <span>·</span>
@@ -213,38 +250,69 @@ export default function MyIdeasPage() {
                       View
                     </Link>
 
-                    {(idea.status === "DRAFT" ||
-                      idea.status === "REJECTED") && (
-                      <>
-                        <Link
-                          href={`/dashboard/edit-idea/${idea.id}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Pencil className="w-4 h-4" />
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => submitIdea(idea.id)}
-                          disabled={submitting}
-                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="Submit for review"
-                        >
-                          {submittingId === idea.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
+                    <Link
+                      href={`/dashboard/edit-idea/${idea.id}`}
+                      aria-disabled={!isEditableStatus(idea.status)}
+                      onClick={(event) => {
+                        if (!isEditableStatus(idea.status) || isLockedPaidIdea(idea)) {
+                          event.preventDefault();
+                        }
+                      }}
+                      className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
+                        isEditableStatus(idea.status) && !isLockedPaidIdea(idea)
+                          ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                          : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      }`}
+                      title={
+                        isLockedPaidIdea(idea)
+                          ? "This paid idea has purchases and cannot be edited"
+                          : isEditableStatus(idea.status)
+                          ? "Edit"
+                          : "This idea cannot be edited"
+                      }
+                    >
+                      <Pencil className="w-4 h-4" />
+                      Edit
+                    </Link>
+
+                    {isSubmittableStatus(idea.status) && !isLockedPaidIdea(idea) && (
+                      <button
+                        onClick={() => submitIdea(idea.id)}
+                        disabled={submitting}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors disabled:opacity-60"
+                        title="Submit for review"
+                      >
+                        {submittingId === idea.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>
                             <Send className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() => setDeleteId(idea.id)}
-                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </>
+                            Submit
+                          </>
+                        )}
+                      </button>
                     )}
+
+                    <button
+                      onClick={() => {
+                        if (isLockedPaidIdea(idea)) return;
+                        setDeleteId(idea.id);
+                      }}
+                      disabled={isLockedPaidIdea(idea)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
+                        isLockedPaidIdea(idea)
+                          ? "text-white bg-emerald-700 cursor-not-allowed opacity-60"
+                          : "text-white bg-emerald-700 hover:bg-emerald-800"
+                      }`}
+                      title={
+                        isLockedPaidIdea(idea)
+                          ? "This paid idea has purchases and cannot be deleted"
+                          : "Delete"
+                      }
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </button>
                   </div>
                 </div>
               </div>
@@ -276,7 +344,7 @@ export default function MyIdeasPage() {
               <button
                 onClick={() => deleteIdea(deleteId)}
                 disabled={deleting}
-                className="flex-1 bg-red-500 hover:bg-red-600 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
+                className="flex-1 bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
               >
                 {deleting && deletingId === deleteId ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
