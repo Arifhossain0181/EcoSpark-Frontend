@@ -87,10 +87,10 @@ export function Hero7({
   },
 }: HeroProps) {
   return (
-    <section className="relative min-h-[calc(100vh-88px)] bg-linear-to-br
+    <section className="relative min-h-[65vh] flex flex-col items-center justify-center bg-linear-to-br
                         from-[#1a3a2a] via-[#2d6a4f] to-[#40916c]
-                        flex flex-col items-center justify-center
-              overflow-hidden px-4 md:px-6 pt-20 pb-12 sm:pt-24 sm:pb-16">
+                        overflow-hidden px-4 md:px-6 pt-20 pb-12 sm:pt-24 sm:pb-16
+                        rounded-b-[40px] md:rounded-b-[80px] shadow-xl mb-10">
 
       {/* ── Background decorations ── */}
       {/* Large blurred circles */}

@@ -1,13 +1,6 @@
 "use client";
 
-import { Menu, Moon, Sun } from "lucide-react";
-
-
-
-
-
-
-
+import { Menu, Moon, Sun, User, Settings, LogOut, Bookmark, Lightbulb, LayoutDashboard } from "lucide-react";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -35,6 +28,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/authcontext";
 
@@ -55,18 +56,25 @@ interface Navbar1Props {
     title: string;
     className?: string;
   };
-  menu?: MenuItem[];
   auth?: {
-    login: {
-      title: string;
-      url: string;
-    };
-    signup: {
-      title: string;
-      url: string;
-    };
+    login: { title: string; url: string };
+    signup: { title: string; url: string };
   };
 }
+
+// ─── Routes visible to LOGGED-OUT users (min 4) ───────────────────────────────
+const GUEST_MENU: MenuItem[] = [
+  { title: "Home", url: "/" },
+  { title: "Ideas", url: "/ideas" },
+  { title: "About Us", url: "/Pages/About" },
+  { title: "Blog", url: "/blog" },
+];
+
+// ─── Extra routes shown only when LOGGED-IN (brings total to 6+) ──────────────
+const AUTH_EXTRA_MENU: MenuItem[] = [
+  { title: "Watchlist", url: "/dashboard/member/watchlist" },
+  { title: "Community", url: "/community" },
+];
 
 const Navbar1 = ({
   logo = {
@@ -75,26 +83,6 @@ const Navbar1 = ({
     alt: "EcoSpark logo",
     title: "EcoSpark Hub",
   },
-  menu = [
-    { title: "Home", url: "/" },
-    {
-      title: "Ideas",
-      url: "/ideas",
-    },
-    {
-      title: "About Us",
-      url: "/Pages/About",
-    },
-    {
-      title: "Blog",
-      url: "/blog",
-    },
-    {
-      title: "Share Your Idea",
-      url: "/dashboard",
-    },
-    
-  ],
   auth = {
     login: { title: "Login", url: "/auth/login" },
     signup: { title: "Sign up", url: "/auth/register" },
@@ -105,199 +93,293 @@ const Navbar1 = ({
   const router = useRouter();
   const { resolvedTheme, setTheme } = useTheme();
   const userRole = user?.role?.toLowerCase();
-  const roleCtaItem: MenuItem =
+
+  // Role-aware CTA item
+  const ctaItem: MenuItem =
     userRole === "admin"
       ? { title: "Dashboard", url: "/dashboard/admin" }
       : userRole === "member"
         ? { title: "Share Your Idea", url: "/dashboard/member/create-ideas" }
-        : {
-            title: "Share Your Idea",
-            url: "/auth/login?redirect=/dashboard/member/create-ideas",
-          };
+        : { title: "Share Your Idea", url: "/auth/login?redirect=/dashboard/member/create-ideas" };
 
-  const visibleMenu = menu
-    .filter((item) => item.title !== "Dashboard")
-    .map((item) => (item.title === "Share Your Idea" ? roleCtaItem : item));
+  /**
+   * Build the visible menu:
+   *  - Guests   → GUEST_MENU (4 items)  ✅ meets "min 4 logged-out"
+   *  - Auth     → GUEST_MENU + AUTH_EXTRA_MENU + ctaItem = 7 items ✅ meets "min 6 logged-in"
+   */
+  const visibleMenu: MenuItem[] = user
+    ? [...GUEST_MENU, ...AUTH_EXTRA_MENU, ctaItem]
+    : GUEST_MENU;
 
   const handleLogout = () => {
     logout();
     router.push("/auth/login");
   };
 
+  const dashboardUrl =
+    userRole === "admin" ? "/dashboard/admin" : "/dashboard/member";
+
   return (
-    <section className={cn("sticky top-0 z-50 py-3", className)}>
-      <div className="container">
-        {/* Desktop Menu */}
-        <nav className="hidden items-center justify-between lg:flex max-w-6xl mx-auto rounded-2xl border border-emerald-100/80 dark:border-emerald-900/70 bg-white/90 dark:bg-emerald-950/80 backdrop-blur px-4 py-3 shadow-sm">
-          <div className="flex items-center gap-6">
-            {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
-              <Image
-                src={logo.src}
-                width={140}
-                height={36}
-                className="h-9 w-auto"
-                alt={logo.alt}
-                unoptimized
-              />
-            </a>
-            <div className="flex items-center">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {visibleMenu.map((item) => renderMenuItem(item))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
-          </div>
-          <div className="flex gap-2 items-center">
+    // ── Full-width background + sticky ────────────────────────────────────────
+    <section
+      className={cn(
+        "sticky top-0 z-50 w-full border-b border-emerald-100/80 dark:border-emerald-900/70",
+        "bg-white/90 dark:bg-background/80 backdrop-blur shadow-sm",
+        className
+      )}
+    >
+      {/*
+        NOTE: We intentionally use w-full with internal padding rather than a
+        constrained container so the background spans the full viewport width,
+        fulfilling the "full-width background" requirement.
+      */}
+      <div className="w-full px-4 md:px-8 lg:px-12">
+
+        {/* ── Desktop nav ── */}
+        <nav className="hidden lg:flex items-center justify-between py-3">
+          {/* Logo */}
+          <a href={logo.url} className="flex items-center gap-2 shrink-0">
+            <Image
+              src={logo.src}
+              width={140}
+              height={36}
+              className="h-9 w-auto dark:invert"
+              alt={logo.alt}
+              unoptimized
+            />
+          </a>
+
+          {/* Nav links */}
+          <NavigationMenu className="mx-4">
+            <NavigationMenuList className="gap-1">
+              {visibleMenu.map((item) => renderMenuItem(item))}
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          {/* Right-side actions */}
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Theme toggle */}
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
-              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
-              onClick={() =>
-                setTheme(resolvedTheme === "dark" ? "light" : "dark")
-              }
+              className="text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             >
-              <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
               <span className="sr-only">Toggle theme</span>
             </Button>
+
             {user ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => router.push("/profile")}
-                  className="hidden md:inline-flex border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
-                >
-                  My profile
-                </Button>
-                <span className="text-sm font-medium hidden md:inline">
-                  {user.name}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
-                  onClick={handleLogout}
-                >
-                  Logout
-                </Button>
-              </>
+              /* ── Profile dropdown (advanced menu ✅) ── */
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="gap-2 border-emerald-200 dark:border-emerald-800"
+                  >
+                    <User className="h-4 w-4" />
+                    <span className="hidden md:inline font-medium">{user.name}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={() => router.push("/profile")}
+                    className="cursor-pointer"
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => router.push(dashboardUrl)}
+                    className="cursor-pointer"
+                  >
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => router.push("/dashboard/member/watchlist")}
+                    className="cursor-pointer"
+                  >
+                    <Bookmark className="mr-2 h-4 w-4" />
+                    Watchlist
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => router.push("/dashboard/member/create-ideas")}
+                    className="cursor-pointer"
+                  >
+                    <Lightbulb className="mr-2 h-4 w-4" />
+                    Share an Idea
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => router.push("/settings")}
+                    className="cursor-pointer"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
-              <>
+              <div className="flex gap-2 items-center">
                 <Button
                   asChild
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                  className="text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
                 >
                   <a href={auth.login.url}>{auth.login.title}</a>
                 </Button>
-                <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                >
                   <a href={auth.signup.url}>{auth.signup.title}</a>
                 </Button>
-              </>
+              </div>
             )}
           </div>
         </nav>
 
-        {/* Mobile Menu */}
-        <div className="block lg:hidden">
-          <div className="max-w-6xl mx-auto flex items-center justify-between rounded-2xl border border-emerald-100/80 dark:border-emerald-900/70 bg-white/90 dark:bg-emerald-950/80 backdrop-blur px-4 py-3 shadow-sm">
-            {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
-              <Image
-                src={logo.src}
-                width={128}
-                height={32}
-                className="h-8 w-auto"
-                alt={logo.alt}
-                unoptimized
-              />
-            </a>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
-                >
-                  <Menu className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <Image
-                        src={logo.src}
-                        width={128}
-                        height={32}
-                        className="h-8 w-auto"
-                        alt={logo.alt}
-                        unoptimized
-                      />
-                    </a>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
-                    {visibleMenu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
+        {/* ── Mobile nav ── */}
+        <div className="flex items-center justify-between py-3 lg:hidden">
+          <a href={logo.url} className="flex items-center gap-2">
+            <Image
+              src={logo.src}
+              width={128}
+              height={32}
+              className="h-8 w-auto dark:invert"
+              alt={logo.alt}
+              unoptimized
+            />
+          </a>
 
-                  <div className="flex flex-col gap-3">
-                    <Button
-                      variant="outline"
-                      className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
-                      onClick={() =>
-                        setTheme(resolvedTheme === "dark" ? "light" : "dark")
-                      }
-                    >
-                      Toggle theme
-                    </Button>
-                    {user ? (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+              >
+                <Menu className="size-4" />
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent className="overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>
+                  <a href={logo.url} className="flex items-center gap-2">
+                    <Image
+                      src={logo.src}
+                      width={128}
+                      height={32}
+                      className="h-8 w-auto dark:invert"
+                      alt={logo.alt}
+                      unoptimized
+                    />
+                  </a>
+                </SheetTitle>
+              </SheetHeader>
+
+              <div className="flex flex-col gap-6 p-4 mt-2">
+                {/* Nav links */}
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="flex w-full flex-col gap-2"
+                >
+                  {visibleMenu.map((item) => renderMobileMenuItem(item))}
+                </Accordion>
+
+                <div className="flex flex-col gap-3 pt-2 border-t border-emerald-100 dark:border-emerald-900">
+                  {/* Theme toggle */}
+                  <Button
+                    variant="outline"
+                    className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
+                    onClick={() =>
+                      setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                    }
+                  >
+                    {resolvedTheme === "dark" ? (
+                      <><Sun className="mr-2 h-4 w-4" /> Light Mode</>
+                    ) : (
+                      <><Moon className="mr-2 h-4 w-4" /> Dark Mode</>
+                    )}
+                  </Button>
+
+                  {user ? (
+                    <>
                       <Button
                         variant="outline"
-                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300"
+                        onClick={() => router.push("/profile")}
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        {user.name}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400"
                         onClick={handleLogout}
                       >
-                        Logout
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Log out
                       </Button>
-                    ) : (
-                      <>
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
-                        >
-                          <a href={auth.login.url}>{auth.login.title}</a>
-                        </Button>
-                        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
-                          <a href={auth.signup.url}>{auth.signup.title}</a>
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300"
+                      >
+                        <a href={auth.login.url}>{auth.login.title}</a>
+                      </Button>
+                      <Button
+                        asChild
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <a href={auth.signup.url}>{auth.signup.title}</a>
+                      </Button>
+                    </>
+                  )}
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </section>
   );
 };
 
+// ─── Render helpers ────────────────────────────────────────────────────────────
+
 const renderMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
       <NavigationMenuItem key={item.title}>
-        <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+        <NavigationMenuTrigger className="bg-transparent text-emerald-700 dark:text-emerald-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/60">
+          {item.title}
+        </NavigationMenuTrigger>
         <NavigationMenuContent className="bg-popover text-popover-foreground">
           {item.items.map((subItem) => (
             <NavigationMenuLink asChild key={subItem.title} className="w-80">
@@ -313,7 +395,7 @@ const renderMenuItem = (item: MenuItem) => {
     <NavigationMenuItem key={item.title}>
       <NavigationMenuLink
         href={item.url}
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-white/70 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-100"
+        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent text-emerald-700 dark:text-emerald-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-100"
       >
         {item.title}
       </NavigationMenuLink>
@@ -325,7 +407,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
       <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline">
+        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline text-emerald-700 dark:text-emerald-200">
           {item.title}
         </AccordionTrigger>
         <AccordionContent className="mt-2">
@@ -348,23 +430,21 @@ const renderMobileMenuItem = (item: MenuItem) => {
   );
 };
 
-const SubMenuLink = ({ item }: { item: MenuItem }) => {
-  return (
-    <a
-      className="flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
-      href={item.url}
-    >
-      <div className="text-foreground">{item.icon}</div>
-      <div>
-        <div className="text-sm font-semibold">{item.title}</div>
-        {item.description && (
-          <p className="text-sm leading-snug text-muted-foreground">
-            {item.description}
-          </p>
-        )}
-      </div>
-    </a>
-  );
-};
+const SubMenuLink = ({ item }: { item: MenuItem }) => (
+  <a
+    className="flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
+    href={item.url}
+  >
+    <div className="text-foreground">{item.icon}</div>
+    <div>
+      <div className="text-sm font-semibold">{item.title}</div>
+      {item.description && (
+        <p className="text-sm leading-snug text-muted-foreground">
+          {item.description}
+        </p>
+      )}
+    </div>
+  </a>
+);
 
 export { Navbar1 };
