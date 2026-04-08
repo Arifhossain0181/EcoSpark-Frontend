@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/authcontext";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Facebook, Globe } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,12 +10,22 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import axios from "axios";
 
+const getApiBase = () =>
+  (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/+$/, "");
+
+const DEMO_CREDENTIALS = {
+  email: "tanvir@ecospark.com",
+  password: "Admin@1234",
+};
+
+type LoginCredentials = {
+  email: string;
+  password: string;
+};
+
 // Fallback to fetch stats using axios directly if `api` from lib isn't needed or available
 const fetchStats = async () => {
-  const resolvedBaseUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:5000/api"
-      : process.env.NEXT_PUBLIC_API_URL;
+  const resolvedBaseUrl = getApiBase();
   const res = await axios.get(`${resolvedBaseUrl}/stats`);
   return res.data;
 };
@@ -27,11 +37,23 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    setTilt({ x: (py - 0.5) * -10, y: (px - 0.5) * 10 });
+  };
+
+  const handleCardMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+  };
 
   const validate = () => {
     const e: Record<string, string> = {};
     if (!form.email.trim()) e.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Invalid email format";
+    else if (!/\S+@\S+\.\S+/.test(form.email.trim())) e.email = "Invalid email format";
     if (!form.password) e.password = "Password is required";
     else if (form.password.length < 6) e.password = "Minimum 6 characters";
     setErrors(e);
@@ -39,14 +61,19 @@ export default function LoginPage() {
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => login(form.email, form.password),
+    mutationFn: (credentials: LoginCredentials) =>
+      login(credentials.email.trim(), credentials.password),
     onSuccess: () => {
       toast.success("Login successful");
       router.push("/");
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (err: any) => {
-      const message = err?.response?.data?.message ?? "Login failed";
+      const message =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Unable to login right now. Please try again.";
       toast.error(message);
     },
   });
@@ -59,132 +86,130 @@ export default function LoginPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    mutate();
+    mutate({ email: form.email, password: form.password });
+  };
+
+  const handleSocialLogin = (provider: "google" | "facebook") => {
+    const apiBase = getApiBase();
+    if (!apiBase || typeof window === "undefined") {
+      toast.error("Social login is not configured yet.");
+      return;
+    }
+
+    window.location.href = `${apiBase}/auth/${provider}`;
+  };
+
+  const handleDemoLogin = () => {
+    setForm(DEMO_CREDENTIALS);
+    setErrors({});
+    mutate(DEMO_CREDENTIALS);
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
-      {/* ── Left Panel ── */}
-      <div className="hidden lg:flex lg:w-1/2 bg-emerald-900 flex-col justify-between p-12 relative overflow-hidden text-emerald-50">
-        <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/5" />
-        <div className="absolute -bottom-16 -left-16 w-96 h-96 rounded-full bg-white/5" />
+    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden px-4 py-8">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')",
+        }}
+      />
+      <div className="absolute inset-0 bg-linear-to-br from-white/45 via-white/30 to-emerald-100/25 dark:from-black/65 dark:via-black/50 dark:to-emerald-950/35" />
+      <div className="pointer-events-none absolute -top-20 -left-16 h-72 w-72 rounded-full bg-emerald-300/20 blur-3xl animate-pulse" />
+      <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-emerald-500/20 blur-3xl animate-pulse [animation-delay:900ms]" />
 
-        {/* Logo */}
-        <div className="flex items-center gap-3 z-10">
-          <Image src="/ecospark-logo.svg" alt="EcoSpark Hub" width={140} height={40} className="h-10 w-auto brightness-0 invert" priority />
+      <div
+        className="relative z-10 w-full max-w-md bg-white/55 dark:bg-black/30 backdrop-blur-2xl border border-white/65 dark:border-white/15 ring-1 ring-white/45 dark:ring-white/10 rounded-3xl p-7 sm:p-8 shadow-[0_24px_70px_-28px_rgba(16,185,129,0.55)] text-slate-900 dark:text-white transition-transform duration-300"
+        style={{
+          transform: `perspective(1200px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg)`,
+        }}
+        onMouseMove={handleCardMouseMove}
+        onMouseLeave={handleCardMouseLeave}
+      >
+        <div className="flex items-center gap-2 mb-6">
+          <Image src="/ecospark-logo.svg" alt="EcoSpark Hub" width={126} height={36} className="h-9 w-auto dark:brightness-0 dark:invert" priority />
         </div>
 
-        {/* Quote */}
-        <div className="z-10">
-          <h2 className="text-4xl font-bold leading-tight mb-4">
-            The Earth does not
-            <br />
-            <span className="text-emerald-400 italic">belong to us.</span>
-            <br />
-            We belong to the Earth.
-          </h2>
-          <p className="text-emerald-200 text-base leading-relaxed max-w-sm">
-            Join thousands of changemakers sharing sustainability ideas that make a real difference for our planet.
-          </p>
+        <div className="mb-7">
+          <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
+          <p className="text-slate-700 dark:text-white/80 text-sm">Sign in to your account to continue</p>
         </div>
 
-        {/* Stats */}
-        <div className="flex gap-8 z-10 transition-all duration-300">
-          {[
-            { value: stats?.ideasShared ? `${stats.ideasShared}+` : "...", label: "Ideas Shared" },
-            { value: stats?.members ? `${stats.members}+` : "...", label: "Members" },
-            { value: stats?.approved ? `${stats.approved}+` : "...", label: "Approved" },
-          ].map((s) => (
-            <div key={s.label}>
-              <p className="text-emerald-400 text-3xl font-bold tracking-tight">{s.value}</p>
-              <p className="text-emerald-200 text-sm opacity-80 mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Right Panel ── */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 text-foreground">
-        <div className="w-full max-w-md">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <Image src="/ecospark-logo.svg" alt="EcoSpark Hub" width={126} height={36} className="h-9 w-auto dark:invert" priority />
-          </div>
-
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2 text-foreground">
-              Welcome back
-            </h1>
-            <p className="text-muted-foreground text-sm">
-              Sign in to your account to continue
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium mb-1.5 text-foreground">
+              <label className="block text-sm font-medium mb-1.5 text-slate-800 dark:text-white/90">
                 Email Address
               </label>
               <div
-                className={`flex items-center gap-3 border rounded-lg px-4 py-3 bg-background transition-colors ${
+                className={`flex items-center gap-3 border rounded-xl px-4 py-3 bg-white/30 dark:bg-black/20 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/40 dark:hover:bg-black/30 hover:shadow-[0_8px_30px_-18px_rgba(16,185,129,0.8)] ${
                   errors.email
-                    ? "border-destructive/60 focus-within:border-destructive"
-                    : "border-input focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
+                    ? "border-red-400 focus-within:border-red-400"
+                    : "border-slate-300/70 dark:border-white/20 focus-within:border-emerald-600 dark:focus-within:border-emerald-300"
                 }`}
               >
-                <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                <Mail className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, email: e.target.value });
+                    if (errors.email) {
+                      setErrors((prev) => ({ ...prev, email: "" }));
+                    }
+                  }}
                   placeholder="you@example.com"
-                  className="flex-1 outline-none text-foreground text-sm bg-transparent placeholder:text-muted-foreground"
+                  className="flex-1 outline-none text-slate-900 dark:text-white text-sm bg-transparent placeholder:text-slate-500 dark:placeholder:text-white/50"
                 />
               </div>
               {errors.email && (
-                <p className="text-destructive text-xs mt-1 font-medium">{errors.email}</p>
+                <p className="text-red-600 dark:text-red-200 text-xs mt-1 font-medium">{errors.email}</p>
               )}
             </div>
 
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-foreground">
+                <label className="block text-sm font-medium text-slate-800 dark:text-white/90">
                   Password
                 </label>
                 <Link
                   href="/auth/forgot-password"
-                  className="text-xs text-primary hover:text-primary/80 font-medium"
+                  className="text-xs text-slate-700 dark:text-white/90 hover:text-slate-900 dark:hover:text-white font-medium"
                 >
                   Forgot password?
                 </Link>
               </div>
               <div
-                className={`flex items-center gap-3 border rounded-lg px-4 py-3 bg-background transition-colors ${
+                className={`flex items-center gap-3 border rounded-xl px-4 py-3 bg-white/30 dark:bg-black/20 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/40 dark:hover:bg-black/30 hover:shadow-[0_8px_30px_-18px_rgba(16,185,129,0.8)] ${
                   errors.password
-                    ? "border-destructive/60 focus-within:border-destructive"
-                    : "border-input focus-within:border-primary focus-within:ring-1 focus-within:ring-primary"
+                    ? "border-red-400 focus-within:border-red-400"
+                    : "border-slate-300/70 dark:border-white/20 focus-within:border-emerald-600 dark:focus-within:border-emerald-300"
                 }`}
               >
-                <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
+                <Lock className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type={showPass ? "text" : "password"}
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, password: e.target.value });
+                    if (errors.password) {
+                      setErrors((prev) => ({ ...prev, password: "" }));
+                    }
+                  }}
                   placeholder="Enter your password"
-                  className="flex-1 outline-none text-foreground text-sm bg-transparent placeholder:text-muted-foreground"
+                  className="flex-1 outline-none text-slate-900 dark:text-white text-sm bg-transparent placeholder:text-slate-500 dark:placeholder:text-white/50"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white"
                 >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-destructive text-xs mt-1 font-medium">{errors.password}</p>
+                <p className="text-red-600 dark:text-red-200 text-xs mt-1 font-medium">{errors.password}</p>
               )}
             </div>
 
@@ -192,30 +217,80 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isPending}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-60 disabled:cursor-not-allowed font-medium py-3.5 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+              className="w-full py-3.5 rounded-xl font-semibold text-white text-sm bg-linear-to-r from-emerald-500 to-green-400 hover:from-emerald-600 hover:to-green-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 hover:-translate-y-0.5"
             >
               {isPending ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Signing in...
                 </>
               ) : (
                 "Sign In"
               )}
             </button>
+
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              className="w-full py-3 rounded-xl font-semibold text-sm border border-emerald-200 bg-emerald-50/80 text-emerald-800 hover:bg-emerald-100 transition-colors"
+            >
+              Demo Admin Login
+            </button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-6">
+          <div className="mt-6">
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-300/70 dark:border-white/20" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                <span className="bg-white/55 dark:bg-black/30 px-3 text-slate-600 dark:text-white/70">or continue with</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleSocialLogin("google")}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300/70 dark:border-white/20 bg-white/35 dark:bg-black/20 py-2.5 text-sm font-semibold text-slate-800 dark:text-white hover:bg-white/55 dark:hover:bg-black/30 transition-colors"
+              >
+                <Globe className="h-4 w-4" />
+                Google
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSocialLogin("facebook")}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300/70 dark:border-white/20 bg-white/35 dark:bg-black/20 py-2.5 text-sm font-semibold text-slate-800 dark:text-white hover:bg-white/55 dark:hover:bg-black/30 transition-colors"
+              >
+                <Facebook className="h-4 w-4" />
+                Facebook
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 mt-6">
+            {[
+              { value: stats?.ideasShared ? `${stats.ideasShared}+` : "...", label: "Ideas" },
+              { value: stats?.members ? `${stats.members}+` : "...", label: "Members" },
+              { value: stats?.approved ? `${stats.approved}+` : "...", label: "Approved" },
+            ].map((s) => (
+              <div key={s.label} className="rounded-xl border border-slate-300/70 dark:border-white/20 bg-white/35 dark:bg-black/20 backdrop-blur-md p-2.5 text-center">
+                <p className="text-base font-bold text-slate-900 dark:text-white">{s.value}</p>
+                <p className="text-[11px] text-slate-600 dark:text-white/70">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-sm text-slate-700 dark:text-white/75 mt-6">
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"
-              className="text-primary font-semibold hover:underline transition"
+              className="text-slate-900 dark:text-white font-semibold hover:underline transition"
             >
               Create one &rarr;
             </Link>
           </p>
-        </div>
       </div>
-    </div>
+      </div>
   );
 }

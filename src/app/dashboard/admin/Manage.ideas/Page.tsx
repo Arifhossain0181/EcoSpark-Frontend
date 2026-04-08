@@ -30,6 +30,8 @@ export default function ManageDashboardPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const pageSize = 10;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | IdeaItem["status"]>("ALL");
   const [rejectFeedback, setRejectFeedback] = useState<Record<string, string>>({});
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
@@ -176,6 +178,21 @@ export default function ManageDashboardPage() {
     [dashboardStats, ideas],
   );
 
+  const filteredIdeas = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+
+    return ideas.filter((item) => {
+      const matchesStatus = statusFilter === "ALL" ? true : item.status === statusFilter;
+      const matchesSearch =
+        !term ||
+        item.title.toLowerCase().includes(term) ||
+        (item.author?.name ?? "").toLowerCase().includes(term) ||
+        (item.category?.name ?? "").toLowerCase().includes(term);
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [ideas, searchTerm, statusFilter]);
+
   const statusBadgeClass = (status: IdeaItem["status"]) => {
     if (status === "APPROVED") return "bg-green-100 text-green-700";
     if (status === "UNDER_REVIEW") return "bg-yellow-100 text-yellow-700";
@@ -186,13 +203,13 @@ export default function ManageDashboardPage() {
   if (isLoading) {
     return (
       <main className="space-y-4 p-4 md:p-6">
-        <div className="h-8 w-52 animate-pulse rounded bg-muted" />
+        <div className="h-8 w-52 animate-pulse rounded bg-[#162e27]" />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-24 animate-pulse rounded-2xl border bg-card" />
+            <div key={item} className="h-24 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
           ))}
         </div>
-        <div className="h-72 animate-pulse rounded-2xl border bg-card" />
+        <div className="h-72 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
       </main>
     );
   }
@@ -210,38 +227,57 @@ export default function ManageDashboardPage() {
   return (
     <main className="space-y-6 p-4 md:p-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Manage Ideas</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <h1 className="text-2xl font-bold text-[#e8f5f0] md:text-3xl">Manage Ideas</h1>
+        <p className="mt-1 text-sm text-emerald-100/65">
           Review submitted ideas and take moderation actions.
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Ideas</p>
-          <h2 className="mt-1 text-2xl font-bold text-foreground">{stats.total}</h2>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+          <p className="text-sm text-emerald-100/65">Total Ideas</p>
+          <h2 className="mt-1 text-2xl font-bold text-[#e8f5f0]">{stats.total}</h2>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Approved</p>
-          <h2 className="mt-1 text-2xl font-bold text-green-600">{stats.approved}</h2>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+          <p className="text-sm text-emerald-100/65">Approved</p>
+          <h2 className="mt-1 text-2xl font-bold text-emerald-300">{stats.approved}</h2>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Pending Review</p>
-          <h2 className="mt-1 text-2xl font-bold text-yellow-600">{stats.pending}</h2>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+          <p className="text-sm text-emerald-100/65">Pending Review</p>
+          <h2 className="mt-1 text-2xl font-bold text-amber-300">{stats.pending}</h2>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Rejected</p>
-          <h2 className="mt-1 text-2xl font-bold text-red-600">{stats.rejected}</h2>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+          <p className="text-sm text-emerald-100/65">Rejected</p>
+          <h2 className="mt-1 text-2xl font-bold text-rose-300">{stats.rejected}</h2>
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#0f211c] shadow-lg shadow-black/20">
+        <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
+          <input
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Filter by title, author, category..."
+            className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400 sm:max-w-sm"
+          />
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value as "ALL" | IdeaItem["status"])}
+            className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400"
+          >
+            <option value="ALL">All statuses</option>
+            <option value="UNDER_REVIEW">Under Review</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REJECTED">Rejected</option>
+            <option value="DRAFT">Draft</option>
+          </select>
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-215 text-left text-sm">
-            <thead className="bg-muted/50 text-muted-foreground">
+          <table className="w-full min-w-215 text-left text-sm text-emerald-50">
+            <thead className="bg-[#162e27] text-emerald-100/70">
               <tr>
                 <th className="px-4 py-3 font-medium">Title</th>
                 <th className="px-4 py-3 font-medium">Author</th>
@@ -253,17 +289,17 @@ export default function ManageDashboardPage() {
             </thead>
 
             <tbody>
-              {ideas.map((idea) => (
-                <tr key={idea.id} className="border-t align-top transition-colors hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium text-foreground">{idea.title}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{idea.author?.name ?? "N/A"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{idea.category?.name ?? "N/A"}</td>
+              {filteredIdeas.map((idea) => (
+                <tr key={idea.id} className="border-t border-emerald-500/15 align-top transition-colors hover:bg-[#162e27]/70">
+                  <td className="px-4 py-3 font-medium text-[#e8f5f0]">{idea.title}</td>
+                  <td className="px-4 py-3 text-emerald-100/70">{idea.author?.name ?? "N/A"}</td>
+                  <td className="px-4 py-3 text-emerald-100/70">{idea.category?.name ?? "N/A"}</td>
                   <td className="px-4 py-3">
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadgeClass(idea.status)}`}>
                       {idea.status.replace("_", " ")}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{idea._count?.votes ?? 0}</td>
+                  <td className="px-4 py-3 text-emerald-100/70">{idea._count?.votes ?? 0}</td>
                   <td className="px-4 py-3">
                     <div className="space-y-2">
                       <Link
@@ -321,16 +357,16 @@ export default function ManageDashboardPage() {
                         />
                       </div>
                     ) : (
-                      <span className="text-xs text-muted-foreground">No action needed</span>
+                      <span className="text-xs text-emerald-100/60">No action needed</span>
                     )}
                     </div>
                   </td>
                 </tr>
               ))}
 
-              {ideas.length === 0 && (
+              {filteredIdeas.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                  <td colSpan={6} className="p-6 text-center text-sm text-emerald-100/60">
                     No ideas found.
                   </td>
                 </tr>
@@ -340,7 +376,7 @@ export default function ManageDashboardPage() {
         </div>
 
         <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
-          <span className="text-muted-foreground">
+          <span className="text-emerald-100/70">
             Page {page} of {totalPages}
           </span>
           <div className="flex gap-2">

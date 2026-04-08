@@ -133,3 +133,27 @@
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
 }
+
+@layer utilities {
+  .dashboard-theme {
+    --background: #040d0a;
+    --foreground: #e8f5f0;
+    --card: #0f211c;
+    --card-foreground: #e8f5f0;
+    --popover: #0f211c;
+    --popover-foreground: #e8f5f0;
+    --muted: #162e27;
+    --muted-foreground: rgba(184, 230, 210, 0.72);
+    --accent: #162e27;
+    --accent-foreground: #e8f5f0;
+    --border: rgba(52, 211, 153, 0.2);
+    --input: rgba(52, 211, 153, 0.2);
+
+    color: var(--foreground);
+  }
+
+  .dashboard-theme input::placeholder,
+  .dashboard-theme textarea::placeholder {
+    color: rgba(184, 230, 210, 0.48);
+  }
+}

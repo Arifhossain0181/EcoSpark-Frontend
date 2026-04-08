@@ -13,6 +13,8 @@ import {
   Bookmark, Star, ArrowRight,
   TrendingUp,
 } from "lucide-react";
+import { BarMiniChart, LineMiniChart, PieMiniChart } from "@/components/dashboard/simple-charts";
+import { Reveal } from "@/components/dashboard/reveal";
 
 function asArray<T>(value: unknown): T[] {
   if (Array.isArray(value)) return value;
@@ -41,12 +43,12 @@ function StatCard({
   iconColor: string;
 }) {
   return (
-    <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 p-4 sm:p-5">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
+    <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20 sm:p-5">
+      <div className={`mb-3 flex h-10 w-10 items-center justify-center rounded-xl ${bg}`}>
         <span className={iconColor}>{icon}</span>
       </div>
-      <p className="text-2xl font-bold text-[#1a3a2a]">{value}</p>
-      <p className="text-xs text-gray-500 dark:text-emerald-200/70 mt-0.5 font-medium">{label}</p>
+      <p className="text-2xl font-bold text-[#e8f5f0]">{value}</p>
+      <p className="mt-0.5 text-xs font-medium text-emerald-100/65">{label}</p>
     </div>
   );
 }
@@ -68,18 +70,18 @@ function ActionCard({
   return (
     <Link
       href={href}
-      className="group bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70
-                 p-5 hover:border-[#74c69d] dark:hover:border-emerald-700 hover:shadow-md
+      className="group rounded-2xl border border-emerald-500/20 bg-[#0f211c]
+                 p-5 shadow-lg shadow-black/20 hover:-translate-y-0.5 hover:border-emerald-400/35
                  transition-all duration-200 flex flex-col gap-3"
     >
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${accent}`}>
+      <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${accent}`}>
         {icon}
       </div>
       <div className="flex-1">
-        <h3 className="text-sm font-bold text-[#1a3a2a] dark:text-emerald-100 mb-1">{title}</h3>
-        <p className="text-xs text-gray-500 dark:text-emerald-200/70 leading-relaxed">{desc}</p>
+        <h3 className="mb-1 text-sm font-bold text-[#e8f5f0]">{title}</h3>
+        <p className="text-xs leading-relaxed text-emerald-100/65">{desc}</p>
       </div>
-      <div className="flex items-center gap-1 text-xs font-semibold text-[#40916c] group-hover:gap-2 transition-all">
+      <div className="flex items-center gap-1 text-xs font-semibold text-emerald-300 group-hover:gap-2 transition-all">
         Go <ArrowRight className="w-3.5 h-3.5" />
       </div>
     </Link>
@@ -89,10 +91,10 @@ function ActionCard({
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
-    APPROVED:     "bg-green-100 text-green-700",
-    REJECTED:     "bg-red-100 text-red-700",
-    UNDER_REVIEW: "bg-yellow-100 text-yellow-700",
-    DRAFT:        "bg-gray-100 text-gray-600",
+    APPROVED:     "bg-emerald-500/15 text-emerald-300",
+    REJECTED:     "bg-rose-500/15 text-rose-300",
+    UNDER_REVIEW: "bg-amber-500/15 text-amber-300",
+    DRAFT:        "bg-slate-500/15 text-slate-300",
   };
   const labels: Record<string, string> = {
     APPROVED:     " Approved",
@@ -101,7 +103,7 @@ function StatusBadge({ status }: { status: string }) {
     DRAFT:        " Draft",
   };
   return (
-    <span className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${map[status] ?? "bg-gray-100 text-gray-500"}`}>
+    <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${map[status] ?? "bg-slate-500/15 text-slate-300"}`}>
       {labels[status] ?? status}
     </span>
   );
@@ -267,27 +269,36 @@ export default function MemberDashboardPage() {
     },
   ];
 
+  const chartSeries = [
+    { label: "Approved", value: approved },
+    { label: "Review", value: pending },
+    { label: "Rejected", value: rejected },
+    { label: "Draft", value: draftCount },
+    { label: "Votes", value: totalVotes },
+    { label: "Watchlist", value: safeWatchlist.length },
+  ];
+
   return (
     <div className="space-y-6 sm:space-y-8">
 
       {/* ── Welcome Banner ── */}
-      <div className="relative bg-linear-to-br from-[#1a3a2a] via-[#2d6a4f] to-[#40916c]
-                      rounded-2xl p-6 sm:p-8 overflow-hidden">
+      <Reveal delay={0.02}>
+      <div className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-linear-to-br from-[#0f211c] via-[#162e27] to-[#1d3d34] p-6 shadow-xl shadow-black/30 sm:p-8">
         {/* Decoration circles */}
-        <div className="absolute -top-8 -right-8 w-40 h-40 bg-white/5 rounded-full" />
-        <div className="absolute -bottom-6 -left-6 w-28 h-28 bg-white/5 rounded-full" />
+        <div className="absolute -top-8 -right-8 h-40 w-40 rounded-full bg-emerald-300/10 blur-xl" />
+        <div className="absolute -bottom-6 -left-6 h-28 w-28 rounded-full bg-teal-300/10 blur-xl" />
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center
                         justify-between gap-4">
           <div>
-            <p className="text-[#b7e4c7] text-xs font-semibold uppercase
+            <p className="text-emerald-200/75 text-xs font-semibold uppercase
                           tracking-widest mb-1">
               Member Dashboard
             </p>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#e8f5f0] mb-2">
               Welcome back, {user?.name?.split(" ")[0]} 
             </h1>
-            <p className="text-[#b7e4c7] text-sm leading-relaxed max-w-md">
+            <p className="text-emerald-100/70 text-sm leading-relaxed max-w-md">
               {pending > 0
                 ? `You have ${pending} idea${pending > 1 ? "s" : ""} currently under review.`
                 : "Share your sustainability ideas and inspire the community."}
@@ -296,8 +307,8 @@ export default function MemberDashboardPage() {
 
           <Link
             href="/dashboard/member/create-ideas"
-            className="flex items-center gap-2 bg-[#74c69d] hover:bg-[#52b788]
-                       text-[#1a3a2a] font-bold px-5 py-3 rounded-xl
+            className="flex items-center gap-2 bg-emerald-400 hover:bg-emerald-300
+                       text-[#04120d] font-bold px-5 py-3 rounded-xl
                        text-sm transition-colors whitespace-nowrap w-fit
                        active:scale-95"
           >
@@ -308,9 +319,8 @@ export default function MemberDashboardPage() {
 
         {/* Mini progress strip */}
         {safeMyIdeas.length > 0 && (
-          <div className="relative z-10 mt-5 pt-5
-                          border-t border-white/10">
-            <p className="text-xs text-[#b7e4c7] mb-2 font-medium">
+          <div className="relative z-10 mt-5 border-t border-emerald-200/15 pt-5">
+            <p className="mb-2 text-xs font-medium text-emerald-100/70">
               Ideas status overview
             </p>
             <div className="flex gap-4 flex-wrap">
@@ -324,17 +334,19 @@ export default function MemberDashboardPage() {
                   <span className={`text-lg font-bold ${s.color}`}>
                     {s.count}
                   </span>
-                  <span className="text-xs text-white/50">{s.label}</span>
+                  <span className="text-xs text-emerald-100/50">{s.label}</span>
                 </div>
               ))}
             </div>
           </div>
         )}
       </div>
+      </Reveal>
 
       {/* ── Stats Grid ── */}
+      <Reveal delay={0.08}>
       <div>
-        <h2 className="text-sm font-bold text-gray-500 dark:text-emerald-200/70 uppercase
+        <h2 className="text-sm font-bold text-emerald-200/70 uppercase
                        tracking-wider mb-4">
           Your Activity
         </h2>
@@ -344,10 +356,12 @@ export default function MemberDashboardPage() {
           ))}
         </div>
       </div>
+      </Reveal>
 
       {/* ── Quick Actions ── */}
+      <Reveal delay={0.12}>
       <div>
-        <h2 className="text-sm font-bold text-gray-500 dark:text-emerald-200/70 uppercase
+        <h2 className="text-sm font-bold text-emerald-200/70 uppercase
                        tracking-wider mb-4">
           Quick Actions
         </h2>
@@ -357,48 +371,58 @@ export default function MemberDashboardPage() {
           ))}
         </div>
       </div>
+      </Reveal>
+
+      <Reveal delay={0.16}>
+      <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <BarMiniChart data={chartSeries} />
+        <LineMiniChart data={chartSeries} />
+        <PieMiniChart data={chartSeries.slice(0, 4)} />
+      </section>
+      </Reveal>
 
       {/* ── Recent Ideas ── */}
+      <Reveal delay={0.2}>
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-bold text-gray-500 dark:text-emerald-200/70 uppercase tracking-wider">
+          <h2 className="text-sm font-bold text-emerald-200/70 uppercase tracking-wider">
             Recent Ideas
           </h2>
           <Link
             href="/dashboard/member/my-ideas"
-            className="text-xs text-[#40916c] font-semibold hover:underline
+            className="text-xs text-emerald-300 font-semibold hover:text-emerald-200
                        flex items-center gap-1"
           >
             View all <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
 
-        <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 overflow-hidden">
+        <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#0f211c] shadow-lg shadow-black/20">
           {dashboardLoading ? (
             <div className="p-5 space-y-3">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="h-14 bg-gray-50 dark:bg-emerald-900/40 rounded-xl animate-pulse"
+                  className="h-14 animate-pulse rounded-xl bg-[#162e27]"
                 />
               ))}
             </div>
           ) : safeMyIdeas.length === 0 ? (
             <div className="py-14 text-center">
-              <div className="w-14 h-14 bg-green-50 rounded-2xl flex items-center
+              <div className="w-14 h-14 bg-emerald-500/15 rounded-2xl flex items-center
                               justify-center mx-auto mb-4">
-                <Lightbulb className="w-7 h-7 text-[#40916c]" />
+                <Lightbulb className="w-7 h-7 text-emerald-300" />
               </div>
-              <p className="text-gray-600 dark:text-emerald-100 font-semibold text-sm mb-1">
+              <p className="font-semibold text-sm mb-1 text-[#e8f5f0]">
                 No ideas yet
               </p>
-              <p className="text-gray-400 dark:text-emerald-200/70 text-xs mb-4">
+              <p className="text-emerald-100/60 text-xs mb-4">
                 Share your first sustainability idea!
               </p>
               <Link
                 href="/dashboard/member/create-ideas"
-                className="inline-flex items-center gap-2 bg-[#2d6a4f]
-                           hover:bg-[#1a3a2a] text-white font-semibold
+                className="inline-flex items-center gap-2 bg-emerald-500/80
+                           hover:bg-emerald-400 text-[#04120d] font-semibold
                            px-5 py-2.5 rounded-xl text-sm transition-colors"
               >
                 <PlusCircle className="w-4 h-4" />
@@ -406,22 +430,22 @@ export default function MemberDashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100 dark:divide-emerald-900/70">
+            <div className="divide-y divide-emerald-500/15">
               {safeMyIdeas.slice(0, 5).map((idea: any) => (
                 <div
                   key={idea.id}
                   className="flex items-center gap-3 px-4 sm:px-5 py-3.5
-                             hover:bg-gray-50 dark:hover:bg-emerald-900/30 transition-colors"
+                             hover:bg-[#162e27]/70 transition-colors"
                 >
                   {/* Category dot */}
-                  <div className="w-2 h-2 rounded-full bg-[#40916c] shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-emerald-300 shrink-0" />
 
                   {/* Info */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[#1a3a2a] dark:text-emerald-100 truncate">
+                    <p className="text-sm font-semibold text-[#e8f5f0] truncate">
                       {idea.title}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-emerald-200/70 mt-0.5">
+                    <div className="mt-0.5 flex items-center gap-2 text-xs text-emerald-100/60">
                       <span>{idea.category?.name}</span>
                       <span>·</span>
                       <span>
@@ -441,43 +465,45 @@ export default function MemberDashboardPage() {
           )}
         </div>
       </div>
+      </Reveal>
 
       {/* ── Watchlist + Reviews row ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+      <Reveal delay={0.24}>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
 
         {/* Watchlist preview */}
-        <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-emerald-900/70">
-            <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 text-sm flex items-center gap-2">
+        <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#0f211c] shadow-lg shadow-black/20">
+          <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-[#e8f5f0]">
               <Bookmark className="w-4 h-4 text-purple-500" />
               Watchlist
             </h3>
             <Link
               href="/dashboard/member/watchlist"
-              className="text-xs text-[#40916c] font-semibold hover:underline"
+              className="text-xs font-semibold text-emerald-300 hover:text-emerald-200"
             >
               View all →
             </Link>
           </div>
           {safeWatchlist.length === 0 ? (
-            <div className="py-10 text-center text-gray-400">
+            <div className="py-10 text-center text-emerald-100/55">
               <Bookmark className="w-8 h-8 mx-auto mb-2 opacity-20" />
               <p className="text-xs">Nothing saved yet</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100 dark:divide-emerald-900/70">
+            <div className="divide-y divide-emerald-500/15">
               {safeWatchlist.slice(0, 3).map((item: any) => (
                 <Link
                   key={item.id}
                   href={`/ideas/${item.idea?.id}`}
                   className="flex items-center gap-3 px-5 py-3
-                             hover:bg-gray-50 dark:hover:bg-emerald-900/30 transition-colors"
+                             hover:bg-[#162e27]/70 transition-colors"
                 >
                   <div className="w-2 h-2 rounded-full bg-purple-400 shrink-0" />
-                  <p className="text-sm text-[#1a3a2a] dark:text-emerald-100 truncate flex-1 font-medium">
+                  <p className="flex-1 truncate text-sm font-medium text-[#e8f5f0]">
                     {item.idea?.title}
                   </p>
-                  <ArrowRight className="w-3.5 h-3.5 text-gray-300 shrink-0" />
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0 text-emerald-200/45" />
                 </Link>
               ))}
             </div>
@@ -485,33 +511,33 @@ export default function MemberDashboardPage() {
         </div>
 
         {/* Reviews preview */}
-        <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900/70 overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-emerald-900/70">
-            <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 text-sm flex items-center gap-2">
+        <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#0f211c] shadow-lg shadow-black/20">
+          <div className="flex items-center justify-between border-b border-emerald-500/15 px-5 py-4">
+            <h3 className="flex items-center gap-2 text-sm font-bold text-[#e8f5f0]">
               <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
               My Reviews
             </h3>
             <Link
               href="/dashboard/member/reviews"
-              className="text-xs text-[#40916c] font-semibold hover:underline"
+              className="text-xs font-semibold text-emerald-300 hover:text-emerald-200"
             >
               View all →
             </Link>
           </div>
           {safeReviews.length === 0 ? (
-            <div className="py-10 text-center text-gray-400">
+            <div className="py-10 text-center text-emerald-100/55">
               <Star className="w-8 h-8 mx-auto mb-2 opacity-20" />
               <p className="text-xs">No reviews submitted yet</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100 dark:divide-emerald-900/70">
+            <div className="divide-y divide-emerald-500/15">
               {safeReviews.slice(0, 3).map((r: any) => (
                 <div
                   key={r.id}
-                  className="flex items-center gap-3 px-5 py-3"
+                  className="flex items-center gap-3 px-5 py-3 hover:bg-[#162e27]/70"
                 >
                   <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-                  <p className="text-sm text-[#1a3a2a] dark:text-emerald-100 truncate flex-1 font-medium">
+                  <p className="flex-1 truncate text-sm font-medium text-[#e8f5f0]">
                     {r.idea?.title ?? "Idea"}
                   </p>
                   <span className="text-xs font-bold text-amber-500 shrink-0">
@@ -523,6 +549,7 @@ export default function MemberDashboardPage() {
           )}
         </div>
       </div>
+      </Reveal>
     </div>
   );
 }

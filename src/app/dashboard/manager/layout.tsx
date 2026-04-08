@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { usePathname, useRouter } from "next/navigation"
-import { ChevronDown } from "lucide-react"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronDown } from "lucide-react";
+
+import { AppSidebar } from "@/components/app-sidebar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +13,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/context/authcontext"
+} from "@/components/ui/dropdown-menu";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { useAuth } from "@/context/authcontext";
 
-
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function ManagerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading, logout } = useAuth();
@@ -35,22 +35,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       .map((part) => part[0])
       .join("")
       .slice(0, 2)
-      .toUpperCase() ?? "AD";
+      .toUpperCase() ?? "MG";
 
   useEffect(() => {
     if (loading) return;
 
     if (!user) {
-      router.replace("/auth/login?redirect=/dashboard/admin");
+      router.replace("/auth/login?redirect=/dashboard/manager");
       return;
     }
 
-    if (user.role !== "ADMIN") {
-      router.replace(user.role === "MANAGER" ? "/dashboard/manager" : "/dashboard/member");
+    if (user.role === "ADMIN") {
+      router.replace("/dashboard/admin");
+      return;
+    }
+
+    if (user.role !== "MANAGER") {
+      router.replace("/dashboard/member");
     }
   }, [user, loading, router]);
 
-  if (loading || !user || user.role !== "ADMIN") {
+  if (loading || !user || user.role !== "MANAGER") {
     return (
       <main className="flex min-h-[60vh] items-center justify-center">
         <p className="text-muted-foreground">Loading dashboard...</p>
@@ -79,7 +84,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Avatar>
                 <div className="hidden leading-tight sm:block">
                   <p className="text-xs font-semibold text-[#e8f5f0]">{user.name}</p>
-                  <p className="text-[11px] text-emerald-200/60">Admin</p>
+                  <p className="text-[11px] text-emerald-200/60">Manager</p>
                 </div>
                 <ChevronDown className="h-3.5 w-3.5 text-emerald-200/70" />
               </DropdownMenuTrigger>
@@ -89,27 +94,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <p className="text-[11px] font-normal text-emerald-200/70">{user.email}</p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-emerald-500/20" />
-                <DropdownMenuItem onClick={() => router.push("/profile")}>Profile</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/dashboard/admin/Users")}>Users</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                  Go to Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/dashboard/manager/reports")}>
+                  View Reports
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-emerald-500/20" />
-                <DropdownMenuItem className="text-red-300 focus:bg-red-500/20 focus:text-red-200" onClick={logout}>
+                <DropdownMenuItem
+                  className="text-red-300 focus:bg-red-500/20 focus:text-red-200"
+                  onClick={logout}
+                >
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </header>
-        <main className="relative flex flex-1 flex-col gap-4 p-4">
+
+        <main className="relative flex flex-1 flex-col p-4 md:p-6">
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
             <div className="absolute -left-16 bottom-12 h-56 w-56 rounded-full bg-teal-400/10 blur-3xl" />
           </div>
-          <div className="relative z-10">
-       
-          {children}
-          </div>
+          <div className="relative z-10">{children}</div>
         </main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

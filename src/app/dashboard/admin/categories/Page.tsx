@@ -37,6 +37,9 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 
 export default function CategoryDashboardPage() {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [searchTerm, setSearchTerm] = useState("");
   const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -63,6 +66,16 @@ export default function CategoryDashboardPage() {
       }, 0),
     [categories],
   );
+
+  const filteredCategories = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return categories;
+    return categories.filter((category) => category.name.toLowerCase().includes(term));
+  }, [categories, searchTerm]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredCategories.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pagedCategories = filteredCategories.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const { mutate: addCategory, isPending: adding } = useMutation({
     mutationFn: (payload: { name: string }) => api.post("/categories", payload),
@@ -138,14 +151,14 @@ export default function CategoryDashboardPage() {
   if (isLoading) {
     return (
       <main className="space-y-4 p-4 md:p-6">
-        <div className="h-8 w-56 animate-pulse rounded bg-muted" />
+        <div className="h-8 w-56 animate-pulse rounded bg-[#162e27]" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {[1, 2].map((item) => (
-            <div key={item} className="h-24 animate-pulse rounded-2xl border bg-card" />
+            <div key={item} className="h-24 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
           ))}
         </div>
-        <div className="h-28 animate-pulse rounded-2xl border bg-card" />
-        <div className="h-72 animate-pulse rounded-2xl border bg-card" />
+        <div className="h-28 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
+        <div className="h-72 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
       </main>
     );
   }
@@ -163,24 +176,24 @@ export default function CategoryDashboardPage() {
   return (
     <main className="space-y-6 p-4 md:p-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground md:text-3xl">Category Dashboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Manage all idea categories</p>
+        <h1 className="text-2xl font-bold text-[#e8f5f0] md:text-3xl">Category Dashboard</h1>
+        <p className="mt-1 text-sm text-emerald-100/65">Manage all idea categories</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Categories</p>
-          <h2 className="mt-1 text-2xl font-bold text-foreground">{categories.length}</h2>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+          <p className="text-sm text-emerald-100/65">Total Categories</p>
+          <h2 className="mt-1 text-2xl font-bold text-[#e8f5f0]">{categories.length}</h2>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Ideas</p>
-          <h2 className="mt-1 text-2xl font-bold text-foreground">{totalIdeas}</h2>
+        <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+          <p className="text-sm text-emerald-100/65">Total Ideas</p>
+          <h2 className="mt-1 text-2xl font-bold text-[#e8f5f0]">{totalIdeas}</h2>
         </div>
       </div>
 
-      <div className="space-y-3 rounded-2xl border bg-card p-4 shadow-sm">
-        <h2 className="font-semibold text-foreground">Add New Category</h2>
+      <div className="space-y-3 rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+        <h2 className="font-semibold text-[#e8f5f0]">Add New Category</h2>
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
@@ -201,10 +214,21 @@ export default function CategoryDashboardPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border bg-card">
+      <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#0f211c] shadow-lg shadow-black/20">
+        <div className="border-b p-4">
+          <input
+            value={searchTerm}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              setPage(1);
+            }}
+            placeholder="Filter categories..."
+            className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400 sm:max-w-sm"
+          />
+        </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-180 text-sm">
-            <thead className="bg-muted/50 text-muted-foreground">
+          <table className="w-full min-w-180 text-sm text-emerald-50">
+            <thead className="bg-[#162e27] text-emerald-100/70">
               <tr>
                 <th className="px-4 py-3 text-left font-medium">Category Name</th>
                 <th className="px-4 py-3 text-left font-medium">Ideas</th>
@@ -213,14 +237,14 @@ export default function CategoryDashboardPage() {
             </thead>
 
             <tbody>
-              {categories.map((cat) => (
+              {pagedCategories.map((cat) => (
                 <tr
                   key={cat.id}
-                  className="border-t transition-colors hover:bg-muted/30"
+                  className="border-t border-emerald-500/15 transition-colors hover:bg-[#162e27]/70"
                 >
-                  <td className="px-4 py-3 font-medium text-foreground">{cat.name}</td>
+                  <td className="px-4 py-3 font-medium text-[#e8f5f0]">{cat.name}</td>
 
-                  <td className="px-4 py-3 text-muted-foreground">{cat._count?.ideas ?? 0}</td>
+                  <td className="px-4 py-3 text-emerald-100/70">{cat._count?.ideas ?? 0}</td>
 
                   <td className="px-4 py-3 text-right">
                     <div className="inline-flex items-center gap-2">
@@ -246,11 +270,11 @@ export default function CategoryDashboardPage() {
                 </tr>
               ))}
 
-              {categories.length === 0 && (
+              {pagedCategories.length === 0 && (
                 <tr>
                   <td
                     colSpan={3}
-                    className="p-6 text-center text-sm text-muted-foreground"
+                    className="p-6 text-center text-sm text-emerald-100/60"
                   >
                     No categories found.
                   </td>
@@ -258,6 +282,27 @@ export default function CategoryDashboardPage() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
+          <span className="text-emerald-100/70">
+            Page {currentPage} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage <= 1}
+              className="rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage >= totalPages}
+              className="rounded-lg border px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
 

@@ -8,6 +8,8 @@ import HeroSection from "./comPonentslayout/HeroSection/page";
 import FeaturedIdeas from "./comPonentslayout/FeaturedIdeas/page";
 import TopVoted from "./comPonentslayout/TopVoted/page";
 import NewsletterSection from "./comPonentslayout/NewsletterSection/page";
+import DataDrivenSections from "./comPonentslayout/DataDrivenSections/page";
+import SectionReveal from "@/components/animations/section-reveal";
 
 function HomeContent() {
   const router = useRouter();
@@ -31,10 +33,13 @@ function HomeContent() {
 
   return (
     <div className="space-y-12 md:space-y-16">
-      <HeroSection />
+      <SectionReveal>
+        <HeroSection />
+      </SectionReveal>
 
       {/* Search and overview section */}
-      <section className="container pt-2 md:pt-4">
+      <SectionReveal delay={0.05}>
+        <section className="container pt-2 md:pt-4">
         <div className="rounded-3xl border border-emerald-100 dark:border-emerald-900/70 bg-linear-to-b from-white to-emerald-50/50 dark:from-emerald-950 dark:to-emerald-900/70 shadow-sm px-5 py-6 md:px-10 md:py-8 flex flex-col items-center gap-5 text-center">
           <div className="flex flex-col items-center">
             <h2 className="text-xl md:text-2xl font-bold text-emerald-900 dark:text-emerald-100">
@@ -64,19 +69,33 @@ function HomeContent() {
             </button>
           </form>
         </div>
-      </section>
+        </section>
+      </SectionReveal>
 
       {/* Categories */}
-      <CategoriesPage />
+      <SectionReveal delay={0.08}>
+        <CategoriesPage />
+      </SectionReveal>
 
       {/* Featured ideas */}
-      <FeaturedIdeas />
+      <SectionReveal delay={0.12}>
+        <FeaturedIdeas />
+      </SectionReveal>
 
       {/* Top voted / testimonials */}
-      <TopVoted />
+      <SectionReveal delay={0.16}>
+        <TopVoted />
+      </SectionReveal>
+
+      {/* Backend-driven extended sections */}
+      <SectionReveal delay={0.18}>
+        <DataDrivenSections />
+      </SectionReveal>
 
       {/* Newsletter */}
-      <NewsletterSection />
+      <SectionReveal delay={0.2}>
+        <NewsletterSection />
+      </SectionReveal>
     </div>
   );
 }

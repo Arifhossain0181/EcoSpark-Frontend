@@ -1,18 +1,22 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 import { getIdeas, Idea } from "@/services/ideas";
 import {
   Search,
   SlidersHorizontal,
   ThumbsUp,
   MessageSquare,
-  Lock,
+  Heart,
+  CalendarDays,
+  Star,
+  MapPin,
   Eye,
-  Leaf,
+  ArrowDown,
   ChevronLeft,
   ChevronRight,
   RotateCcw,
@@ -20,6 +24,16 @@ import {
 
 // ─── Constants ────────────────────────────────────────────
 const PAGE_SIZE = 10;
+
+const HERO_SLIDES = [
+  "Clean Energy",
+  "Recycling",
+  "Climate Action",
+  "Green Mobility",
+  "Smart Farming",
+];
+
+const IDEAS_HERO_BG = "/Gemini_Generated_Image_vq841qvq841qvq84.png";
 
 const ECO = {
   forest: "#1a3a2a",
@@ -34,9 +48,9 @@ const ECO = {
 // ─── Skeleton Card ─────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-green-100 animate-pulse">
-      <div className="h-44 bg-green-50" />
-      <div className="p-4 space-y-3">
+    <div className="h-full min-h-125 bg-white rounded-[28px] overflow-hidden border border-green-100 shadow-lg animate-pulse flex flex-col">
+      <div className="h-52 bg-green-50" />
+      <div className="p-4 space-y-3 flex flex-col flex-1">
         <div className="flex gap-2">
           <div className="h-5 bg-green-50 rounded-full w-20" />
           <div className="h-5 bg-green-50 rounded-full w-16" />
@@ -44,139 +58,155 @@ function SkeletonCard() {
         <div className="h-5 bg-green-50 rounded-full w-3/4" />
         <div className="h-4 bg-green-50 rounded-full w-full" />
         <div className="h-4 bg-green-50 rounded-full w-2/3" />
-        <div className="flex justify-between pt-2 border-t border-green-50">
-          <div className="flex gap-3">
-            <div className="h-4 bg-green-50 rounded w-10" />
-            <div className="h-4 bg-green-50 rounded w-10" />
-          </div>
-          <div className="h-7 bg-green-50 rounded-lg w-16" />
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-green-50">
+          <div className="h-4 bg-green-50 rounded w-full" />
+          <div className="h-4 bg-green-50 rounded w-full" />
+          <div className="h-4 bg-green-50 rounded w-full" />
+          <div className="h-4 bg-green-50 rounded w-full" />
+        </div>
+        <div className="mt-auto">
+          <div className="h-10 bg-green-50 rounded-xl w-full" />
         </div>
       </div>
     </div>
   );
 }
 
+function formatIdeaDate(value?: string) {
+  if (!value) return "N/A";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "N/A";
+  return date.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function getIdeaRating(votes: number, comments: number) {
+  // Derive a simple UI rating from engagement when backend rating is unavailable.
+  const score = 3.8 + Math.min(1.2, votes * 0.05 + comments * 0.03);
+  return score.toFixed(1);
+}
+
+function getIdeaLocation(idea: Idea) {
+  return idea.category?.name ? `${idea.category.name} Zone` : "Global";
+}
+
 // ─── Idea Card ─────────────────────────────────────────────
 function IdeaCard({ idea }: { idea: Idea }) {
+  const [liked, setLiked] = useState(false);
   const votes = idea._count?.votes ?? idea.votes?.length ?? 0;
   const comments = idea._count?.comments ?? 0;
+  const priceLabel =
+    idea.isPaid && typeof idea.price === "number"
+      ? idea.price.toFixed(2)
+      : "0.00";
+  const classType = idea.isPaid ? "Premium Access" : "Free Access";
+  const summary = idea.description || idea.problem || "No description provided.";
+  const location = getIdeaLocation(idea);
+  const postedOn = formatIdeaDate(idea.createdAt);
+  const rating = getIdeaRating(votes, comments);
 
   return (
     <Link href={`/ideas/${idea.id}`} className="group block h-full">
-      <div
-        className="bg-white rounded-2xl overflow-hidden border border-gray-100
-                      hover:border-green-200 hover:shadow-xl
-                      transition-all duration-300 h-full flex flex-col"
+      <article
+        className="relative w-full h-full min-h-125 rounded-[28px] overflow-hidden shadow-lg bg-white
+                   border border-emerald-100 group cursor-pointer hover:shadow-2xl transition-shadow duration-300
+                   flex flex-col"
       >
-        {/* ── Image / Gradient ── */}
-        <div
-          className="relative h-44 shrink-0 overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${ECO.leaf}, ${ECO.moss})` }}
-        >
+        <div className="relative h-52 overflow-hidden">
           {idea.images?.[0] && (
             <Image
               src={idea.images[0]}
               alt={idea.title}
               fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="w-full h-full object-cover opacity-80
-                         group-hover:scale-105 transition-transform duration-500"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-700"
             />
           )}
           {!idea.images?.[0] && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Leaf className="w-12 h-12 text-white/20" />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(135deg, ${ECO.leaf}, ${ECO.moss})`,
+              }}
+            >
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
             </div>
           )}
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-            {idea.category?.name && (
-              <span
-                className="bg-[#1a3a2a]/80 backdrop-blur-sm
-                               text-[#b7e4c7] text-xs px-2.5 py-1
-                               rounded-full font-medium"
-              >
-                {idea.category.name}
-              </span>
-            )}
-            {idea.isPaid && (
-              <span
-                className="bg-amber-500/90 backdrop-blur-sm
-                               text-white text-xs px-2.5 py-1
-                               rounded-full font-medium flex items-center gap-1"
-              >
-                <Lock className="w-3 h-3" />
-                ${typeof idea.price === "number" ? idea.price.toFixed(2) : idea.price}
-              </span>
-            )}
-          </div>
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
 
-          {/* Vote count pill — top right */}
-          <div className="absolute top-3 right-3">
-            <span
-              className="bg-white/90 backdrop-blur-sm
-                             text-[#2d6a4f] text-xs px-2.5 py-1
-                             rounded-full font-semibold flex items-center gap-1"
-            >
-              <ThumbsUp className="w-3 h-3" />
-              {votes}
-            </span>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setLiked((prev) => !prev);
+            }}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center hover:bg-white/30 transition-colors"
+            aria-label="Toggle favorite"
+          >
+            <Heart
+              className={`w-5 h-5 transition-colors ${
+                liked ? "fill-red-500 text-red-500" : "text-white"
+              }`}
+            />
+          </button>
+
+          <div className="absolute bottom-0 left-0 right-0 p-5 pb-4">
+            <h3 className="text-2xl font-bold text-white leading-tight line-clamp-1">
+              {idea.title}
+            </h3>
+            <p className="text-white/75 text-sm mt-0.5 line-clamp-1">{classType}</p>
           </div>
         </div>
 
-        {/* ── Content ── */}
-        <div className="p-4 sm:p-5 flex flex-col flex-1">
-          <h3
-            className="font-semibold text-[#1a3a2a] text-base leading-snug
-                         mb-2 line-clamp-2
-                         group-hover:text-[#2d6a4f] transition-colors"
-          >
-            {idea.title}
-          </h3>
+        <div className="p-4 pt-3 flex flex-col flex-1">
+          <p className="mt-1 text-sm text-gray-600 line-clamp-2 min-h-11">{summary}</p>
 
-          <p
-            className="text-gray-500 text-sm leading-relaxed
-                        line-clamp-2 flex-1 mb-4"
-          >
-            {idea.description || idea.problem}
-          </p>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
+            <span className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5">
+              <span className="font-semibold text-emerald-700">${priceLabel}</span>
+            </span>
+            <span className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1.5">
+              <CalendarDays className="w-3.5 h-3.5 text-amber-700" />
+              {postedOn}
+            </span>
+            <span className="flex items-center gap-1.5 rounded-lg bg-sky-50 px-2.5 py-1.5">
+              <Star className="w-3.5 h-3.5 text-sky-700" />
+              {rating}
+            </span>
+            <span className="flex items-center gap-1.5 rounded-lg bg-violet-50 px-2.5 py-1.5">
+              <MapPin className="w-3.5 h-3.5 text-violet-700" />
+              <span className="truncate">{location}</span>
+            </span>
+          </div>
 
-          {/* ── Footer row ── */}
-          <div
-            className="flex items-center justify-between
-                          pt-3 border-t border-gray-100 mt-auto"
-          >
-            <div className="flex items-center gap-3 text-xs text-gray-400">
-              <span className="flex items-center gap-1">
-                <ThumbsUp className="w-3.5 h-3.5 text-green-500" />
+          <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+            <span className="truncate">
+              by <span className="font-medium text-gray-700">{idea.author?.name ?? "Community"}</span>
+            </span>
+            <span className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1">
+                <ThumbsUp className="w-3.5 h-3.5" />
                 {votes}
               </span>
-              <span className="flex items-center gap-1">
-                <MessageSquare className="w-3.5 h-3.5 text-blue-400" />
+              <span className="inline-flex items-center gap-1">
+                <MessageSquare className="w-3.5 h-3.5" />
                 {comments}
               </span>
-            </div>
-
-            <span
-              className="flex items-center gap-1 text-xs
-                             bg-green-50 text-green-700 px-3 py-1.5
-                             rounded-lg font-medium
-                             group-hover:bg-green-100 transition-colors"
-            >
-              <Eye className="w-3.5 h-3.5" />
-              View
             </span>
           </div>
 
-          <p className="text-xs text-gray-400 mt-2.5 truncate">
-            by{" "}
-            <span className="font-medium text-gray-500">
-              {idea.author?.name ?? "Community"}
-            </span>
-          </p>
+          <span
+            className="mt-auto w-full py-3 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-semibold hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2"
+          >
+            <Eye className="w-4 h-4" />
+            View Details
+          </span>
         </div>
-      </div>
+      </article>
     </Link>
   );
 }
@@ -280,6 +310,14 @@ export default function IdeasClientPage({
   const [minVotes, setMinVotes] = useState(0);
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 2800);
+    return () => clearInterval(timer);
+  }, []);
 
   // ── Fetch ────────────────────────────────
   const { data, isLoading, isError } = useQuery({
@@ -390,12 +428,30 @@ export default function IdeasClientPage({
     setPage(1);
   };
 
+  const scrollToContent = () => {
+    const target = document.getElementById("ideas-content");
+    if (!target) return;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   // ── Render ───────────────────────────────
   return (
     <div className="min-h-screen bg-[#f8f4e9]">
       {/* ── Hero Header ── */}
-      <div className="bg-linear-to-br from-[#1a3a2a] to-[#2d6a4f] py-12 px-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="relative px-4 min-h-[60vh] max-h-[70vh] h-[65vh] overflow-hidden bg-[#1a3a2a]">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${IDEAS_HERO_BG})` }}
+          aria-hidden="true"
+        />
+        <div className="absolute inset-0 bg-linear-to-br from-[#1a3a2a]/75 via-[#2d6a4f]/60 to-[#1a3a2a]/80" />
+
+        <div className="pointer-events-none absolute inset-0 opacity-30">
+          <div className="absolute -top-20 -left-20 h-64 w-64 rounded-full bg-[#74c69d]/40 blur-3xl" />
+          <div className="absolute -bottom-16 right-0 h-56 w-56 rounded-full bg-[#b7e4c7]/30 blur-3xl" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto h-full flex flex-col justify-center">
           <p
             className="text-[#74c69d] text-xs font-semibold uppercase
                         tracking-widest mb-2 text-center"
@@ -410,10 +466,38 @@ export default function IdeasClientPage({
             <span className="text-[#74c69d] italic">Sustainability</span>{" "}
             Ideas
           </h1>
-          <p className="text-[#b7e4c7] text-sm text-center max-w-xl mx-auto mb-8">
+          <p className="text-[#b7e4c7] text-sm text-center max-w-xl mx-auto mb-5">
             Discover and vote on ideas that make a real difference
             for our planet
           </p>
+
+          <div className="mb-6 flex items-center justify-center gap-2">
+            {HERO_SLIDES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveSlide(idx)}
+                className={`h-1.5 rounded-full transition-all ${
+                  activeSlide === idx ? "w-8 bg-[#74c69d]" : "w-3 bg-white/40"
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <div className="h-8 mb-6 flex items-center justify-center overflow-hidden">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={HERO_SLIDES[activeSlide]}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                className="text-[#b7e4c7] text-sm sm:text-base font-medium"
+              >
+                Trending now: {HERO_SLIDES[activeSlide]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
 
           {/* Search bar in hero */}
           <form
@@ -456,10 +540,20 @@ export default function IdeasClientPage({
               Search
             </button>
           </form>
+
+          <div className="mt-5 flex justify-center">
+            <button
+              onClick={scrollToContent}
+              className="inline-flex items-center gap-2 rounded-full border border-[#74c69d]/60 px-4 py-2 text-xs font-semibold text-[#b7e4c7] hover:bg-white/10 transition-colors"
+            >
+              Browse Ideas
+              <ArrowDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+      <div id="ideas-content" className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* ── Filter Bar ── */}
         <div className="bg-white rounded-2xl border border-gray-100
                         shadow-sm overflow-hidden">
@@ -731,7 +825,7 @@ export default function IdeasClientPage({
             </p>
           </div>
         ) : isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {Array(PAGE_SIZE)
               .fill(0)
               .map((_, i) => (
@@ -758,7 +852,7 @@ export default function IdeasClientPage({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {paginated.map((idea) => (
               <IdeaCard key={idea.id} idea={idea} />
             ))}

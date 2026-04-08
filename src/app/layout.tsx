@@ -4,9 +4,11 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import RouteLayoutShell from "@/components/route-layout-shell";
 import { Toaster } from "@/components/ui/sonner";
+import SmoothScrollProvider from "@/components/animations/smooth-scroll-provider";
 
 import QueryProvider from "@/context/queryProvider";
 import { AuthProvider } from "@/context/authcontext";
+import ChatWidget from "@/components/chatbot/ChatWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,9 +38,12 @@ export default function RootLayout({
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SmoothScrollProvider />
           <QueryProvider>
             <AuthProvider>
-              <RouteLayoutShell>{children}</RouteLayoutShell>
+              <RouteLayoutShell>{children}
+                <ChatWidget />
+              </RouteLayoutShell>
               <Toaster />
             </AuthProvider>
           </QueryProvider>

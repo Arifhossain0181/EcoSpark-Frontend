@@ -1,10 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const resolvedBaseUrl =
-    process.env.NODE_ENV === "development"
-        ? "http://localhost:5000/api"
-        : process.env.NEXT_PUBLIC_API_URL;
+const rawBaseUrl =
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+
+const resolvedBaseUrl = rawBaseUrl.replace(/\/+$/, "");
 
 const api = axios.create({
     baseURL: resolvedBaseUrl,
@@ -15,7 +15,8 @@ const api = axios.create({
 
 // Always attach the latest access token from cookies
 api.interceptors.request.use((config) => {
-    const token = Cookies.get("accessToken");
+    const token = Cookies.get("accessToken") ||
+        (typeof window !== "undefined" ? window.localStorage.getItem("accessToken") || undefined : undefined);
     if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
     } else {
@@ -35,9 +36,15 @@ api.interceptors.response.use(
             status === 401 &&
             (message === "Invalid token" || message === "Unauthorized")
         ) {
-            Cookies.remove("accessToken");
-            Cookies.remove("refreshToken");
-            Cookies.remove("ecospark_user");
+            Cookies.remove("accessToken", { path: "/" });
+            Cookies.remove("refreshToken", { path: "/" });
+            Cookies.remove("ecospark_user", { path: "/" });
+
+            if (typeof window !== "undefined") {
+                window.localStorage.removeItem("accessToken");
+                window.localStorage.removeItem("refreshToken");
+                window.localStorage.removeItem("ecospark_user");
+            }
 
             if (typeof window !== "undefined") {
                 // Avoid redirect loops on auth pages

@@ -22,6 +22,11 @@ export default function DashboardPage() {
       return;
     }
 
+    if (user.role === "MANAGER") {
+      router.replace("/dashboard/manager");
+      return;
+    }
+
     router.replace("/dashboard/member");
   }, [user, loading, router]);
 

@@ -155,7 +155,7 @@ export default function IdeaDetailsPage() {
       )}
 
       {/* Hero Image */}
-      <div className="relative h-72 md:h-96 bg-gradient-to-br from-[#1a3a2a] to-[#40916c] overflow-hidden">
+      <div className="relative h-72 md:h-96 bg-linear-to-br from-[#1a3a2a] to-[#40916c] overflow-hidden">
         {idea.images?.[0] && (
           <Image
             src={idea.images[0]}
@@ -232,7 +232,7 @@ export default function IdeaDetailsPage() {
             )}
 
             {/* Admin Actions */}
-            {user?.role === "ADMIN" && idea.status === "UNDER_REVIEW" && (
+            {(user?.role === "ADMIN" || user?.role === "MANAGER") && idea.status === "UNDER_REVIEW" && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-bold text-[#1a3a2a] mb-4 flex items-center gap-2">
                   ⚙️ Admin Actions

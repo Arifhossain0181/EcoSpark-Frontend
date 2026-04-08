@@ -24,7 +24,7 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/context/authcontext";
 import api from "@/lib/axios";
-import { Idea } from "@/services/ideas";
+import { getIdeas, Idea } from "@/services/ideas";
 
 const PaymentModal = dynamic(() => import("../Payment.model/Page"), {
   ssr: false,
@@ -127,6 +127,14 @@ export default function IdeaDetailsPage() {
     refetchOnWindowFocus: false,
   });
 
+  const { data: relatedIdeasPool = [] } = useQuery<Idea[]>({
+    queryKey: ["ideas-related", idea?.category?.name],
+    queryFn: getIdeas,
+    enabled: !!idea,
+    staleTime: 3 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
   const hasAccess = !idea?.isPaid || accessData?.hasAccess;
   const imageUrls = (idea?.images ?? []).filter(
     (url) => !isPdfUrl(url) && !isVideoUrl(url),
@@ -134,6 +142,12 @@ export default function IdeaDetailsPage() {
   const mediaUrls = (idea?.images ?? []).filter(
     (url) => isPdfUrl(url) || isVideoUrl(url),
   );
+  const relatedItems = relatedIdeasPool
+    .filter((item) => item.id !== idea?.id)
+    .filter((item) =>
+      idea?.category?.name ? item.category?.name === idea.category.name : true,
+    )
+    .slice(0, 4);
 
   const { mutate: toggleWatchlist } = useMutation<WatchlistResponse, ApiError>({
     mutationFn: async () => {
@@ -296,7 +310,7 @@ export default function IdeaDetailsPage() {
               )}
 
             {/* Admin Actions */}
-            {user?.role === "ADMIN" && idea.status === "UNDER_REVIEW" && (
+            {(user?.role === "ADMIN" || user?.role === "MANAGER") && idea.status === "UNDER_REVIEW" && (
               <div className="bg-white rounded-2xl border border-gray-100 p-6">
                 <h3 className="font-bold text-[#1a3a2a] mb-4 flex items-center gap-2">
                   ⚙️ Admin Actions
@@ -500,6 +514,53 @@ export default function IdeaDetailsPage() {
                 <ReviewSection ideaId={ideaId} />
               </div>
             )}
+
+            {/* Related Items */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
+                Related Items
+              </h2>
+
+              {relatedItems.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  No related items available right now.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {relatedItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/ideas/${item.id}`}
+                      className="group rounded-xl border border-gray-200 overflow-hidden hover:border-[#40916c] transition-colors"
+                    >
+                      <div className="relative h-32 bg-linear-to-br from-[#1a3a2a] to-[#2d6a4f]">
+                        {item.images?.[0] ? (
+                          <Image
+                            src={item.images[0]}
+                            alt={item.title}
+                            fill
+                            unoptimized
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : null}
+                      </div>
+                      <div className="p-3">
+                        <p className="font-semibold text-sm text-[#1a3a2a] line-clamp-1">
+                          {item.title}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                          {item.description || item.problem || "No summary available"}
+                        </p>
+                        <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                          <span>{item.category?.name ?? "General"}</span>
+                          <span className="font-semibold text-[#2d6a4f]">View Details</span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}

@@ -53,6 +53,16 @@ const adminMenuItems = [
   { title: "Home", url: "/", icon: Home },
 ];
 
+const managerMenuItems = [
+  { title: "Dashboard", url: "/dashboard/manager", icon: LayoutDashboard },
+  { title: "Moderate Ideas", url: "/dashboard/manager/moderate-ideas", icon: Lightbulb },
+  { title: "Categories", url: "/dashboard/manager/categories", icon: ListTree },
+  { title: "Comments", url: "/dashboard/manager/comments", icon: MessageSquare },
+  { title: "Reports", url: "/dashboard/manager/reports", icon: CreditCard },
+  { title: "My Profile", url: "/profile", icon: User },
+  { title: "Home", url: "/", icon: Home },
+];
+
 export function AppSidebar() {
   const { user } = useAuth();
   const pathname = usePathname();
@@ -64,6 +74,9 @@ export function AppSidebar() {
   if (user?.role === "ADMIN") {
     menuItems = adminMenuItems;
     dashboardTitle = "Admin Dashboard";
+  } else if (user?.role === "MANAGER") {
+    menuItems = managerMenuItems;
+    dashboardTitle = "Manager Dashboard";
   }
 
   return (

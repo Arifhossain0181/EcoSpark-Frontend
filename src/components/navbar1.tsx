@@ -98,6 +98,8 @@ const Navbar1 = ({
   const ctaItem: MenuItem =
     userRole === "admin"
       ? { title: "Dashboard", url: "/dashboard/admin" }
+      : userRole === "manager"
+        ? { title: "Dashboard", url: "/dashboard/manager" }
       : userRole === "member"
         ? { title: "Share Your Idea", url: "/dashboard/member/create-ideas" }
         : { title: "Share Your Idea", url: "/auth/login?redirect=/dashboard/member/create-ideas" };
@@ -117,14 +119,18 @@ const Navbar1 = ({
   };
 
   const dashboardUrl =
-    userRole === "admin" ? "/dashboard/admin" : "/dashboard/member";
+    userRole === "admin"
+      ? "/dashboard/admin"
+      : userRole === "manager"
+        ? "/dashboard/manager"
+        : "/dashboard/member";
 
   return (
     // ── Full-width background + sticky ────────────────────────────────────────
     <section
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-emerald-100/80 dark:border-emerald-900/70",
-        "bg-white/90 dark:bg-background/80 backdrop-blur shadow-sm",
+        "sticky top-0 z-50 w-full border-b border-white/40 dark:border-white/10",
+        "bg-transparent backdrop-blur-2xl shadow-[0_18px_50px_-26px_rgba(16,185,129,0.6)]",
         className
       )}
     >
@@ -136,7 +142,7 @@ const Navbar1 = ({
       <div className="w-full px-4 md:px-8 lg:px-12">
 
         {/* ── Desktop nav ── */}
-        <nav className="hidden lg:flex items-center justify-between py-3">
+        <nav className="hidden lg:flex items-center justify-between py-3 px-4 my-2 rounded-2xl border border-white/45 dark:border-white/15 ring-1 ring-white/35 dark:ring-white/10 bg-white/10 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-28px_rgba(16,185,129,0.55)] relative overflow-hidden before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/3 before:w-1/3 before:bg-linear-to-r before:from-transparent before:via-white/35 before:to-transparent dark:before:via-white/15 before:opacity-70 before:blur-xl before:transition-transform before:duration-1000 hover:before:translate-x-[260%]">
           {/* Logo */}
           <a href={logo.url} className="flex items-center gap-2 shrink-0">
             <Image
@@ -162,7 +168,7 @@ const Navbar1 = ({
             <Button
               variant="ghost"
               size="icon"
-              className="text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
+              className="text-emerald-700 hover:bg-white/20 dark:text-emerald-300 dark:hover:bg-white/10"
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             >
               <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -176,13 +182,13 @@ const Navbar1 = ({
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="gap-2 border-emerald-200 dark:border-emerald-800"
+                    className="gap-2 border-white/60 dark:border-white/15 bg-white/10 dark:bg-white/5 hover:bg-white/25 dark:hover:bg-white/10"
                   >
                     <User className="h-4 w-4" />
                     <span className="hidden md:inline font-medium">{user.name}</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-56 border-white/50 dark:border-white/15 bg-transparent backdrop-blur-xl">
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
@@ -243,14 +249,14 @@ const Navbar1 = ({
                   asChild
                   variant="ghost"
                   size="sm"
-                  className="text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                  className="text-emerald-700 hover:bg-white/20 hover:text-emerald-800 dark:text-emerald-300 dark:hover:bg-white/10 dark:hover:text-emerald-200"
                 >
                   <a href={auth.login.url}>{auth.login.title}</a>
                 </Button>
                 <Button
                   asChild
                   size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-md"
+                  className="bg-emerald-600/95 hover:bg-emerald-700 text-white shadow-[0_10px_26px_-12px_rgba(16,185,129,0.8)]"
                 >
                   <a href={auth.signup.url}>{auth.signup.title}</a>
                 </Button>
@@ -260,7 +266,7 @@ const Navbar1 = ({
         </nav>
 
         {/* ── Mobile nav ── */}
-        <div className="flex items-center justify-between py-3 lg:hidden">
+        <div className="flex items-center justify-between py-3 px-3 my-2 rounded-2xl border border-white/50 dark:border-white/10 ring-1 ring-white/40 dark:ring-white/10 bg-transparent backdrop-blur-xl lg:hidden">
           <a href={logo.url} className="flex items-center gap-2">
             <Image
               src={logo.src}
@@ -277,13 +283,13 @@ const Navbar1 = ({
               <Button
                 variant="outline"
                 size="icon"
-                className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-200"
+                className="border-white/60 text-emerald-700 bg-transparent hover:bg-transparent hover:text-emerald-800 dark:border-white/15 dark:text-emerald-300 dark:hover:bg-transparent dark:hover:text-emerald-200"
               >
                 <Menu className="size-4" />
               </Button>
             </SheetTrigger>
 
-            <SheetContent className="overflow-y-auto">
+            <SheetContent className="overflow-y-auto border-white/50 dark:border-white/15 bg-transparent backdrop-blur-2xl">
               <SheetHeader>
                 <SheetTitle>
                   <a href={logo.url} className="flex items-center gap-2">
@@ -309,11 +315,11 @@ const Navbar1 = ({
                   {visibleMenu.map((item) => renderMobileMenuItem(item))}
                 </Accordion>
 
-                <div className="flex flex-col gap-3 pt-2 border-t border-emerald-100 dark:border-emerald-900">
+                <div className="flex flex-col gap-3 pt-2 border-t border-white/50 dark:border-white/15">
                   {/* Theme toggle */}
                   <Button
                     variant="outline"
-                    className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300 dark:hover:bg-emerald-900/40"
+                    className="border-white/60 text-emerald-700 bg-transparent hover:bg-transparent dark:border-white/15 dark:text-emerald-300 dark:hover:bg-transparent"
                     onClick={() =>
                       setTheme(resolvedTheme === "dark" ? "light" : "dark")
                     }
@@ -329,7 +335,7 @@ const Navbar1 = ({
                     <>
                       <Button
                         variant="outline"
-                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300"
+                        className="border-white/60 text-emerald-700 bg-transparent hover:bg-transparent dark:border-white/15 dark:text-emerald-300 dark:hover:bg-transparent"
                         onClick={() => router.push("/profile")}
                       >
                         <User className="mr-2 h-4 w-4" />
@@ -337,7 +343,7 @@ const Navbar1 = ({
                       </Button>
                       <Button
                         variant="outline"
-                        className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400"
+                        className="border-red-300/60 text-red-600 bg-transparent hover:bg-transparent dark:border-red-800/70 dark:text-red-300 dark:hover:bg-transparent"
                         onClick={handleLogout}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
@@ -349,13 +355,13 @@ const Navbar1 = ({
                       <Button
                         asChild
                         variant="outline"
-                        className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300"
+                        className="border-white/60 text-emerald-700 bg-transparent hover:bg-transparent dark:border-white/15 dark:text-emerald-300 dark:hover:bg-transparent"
                       >
                         <a href={auth.login.url}>{auth.login.title}</a>
                       </Button>
                       <Button
                         asChild
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        className="bg-emerald-600/95 hover:bg-emerald-700 text-white shadow-[0_10px_26px_-12px_rgba(16,185,129,0.8)]"
                       >
                         <a href={auth.signup.url}>{auth.signup.title}</a>
                       </Button>
@@ -377,10 +383,10 @@ const renderMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
       <NavigationMenuItem key={item.title}>
-        <NavigationMenuTrigger className="bg-transparent text-emerald-700 dark:text-emerald-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/60">
+        <NavigationMenuTrigger className="bg-white/10 dark:bg-white/5 text-emerald-700 dark:text-emerald-200 border border-transparent transition-all duration-200 hover:-translate-y-px hover:bg-white/30 dark:hover:bg-white/15 hover:border-white/50 dark:hover:border-white/25 hover:text-emerald-800 dark:hover:text-emerald-100">
           {item.title}
         </NavigationMenuTrigger>
-        <NavigationMenuContent className="bg-popover text-popover-foreground">
+        <NavigationMenuContent className="bg-transparent backdrop-blur-xl border border-white/50 dark:border-white/15 text-popover-foreground">
           {item.items.map((subItem) => (
             <NavigationMenuLink asChild key={subItem.title} className="w-80">
               <SubMenuLink item={subItem} />
@@ -395,7 +401,7 @@ const renderMenuItem = (item: MenuItem) => {
     <NavigationMenuItem key={item.title}>
       <NavigationMenuLink
         href={item.url}
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent text-emerald-700 dark:text-emerald-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-emerald-50 hover:text-emerald-800 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-100"
+        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-white/10 dark:bg-white/5 text-emerald-700 dark:text-emerald-200 px-4 py-2 text-sm font-medium transition-all duration-200 border border-transparent hover:-translate-y-px hover:border-white/50 dark:hover:border-white/25 hover:bg-white/30 hover:text-emerald-800 dark:hover:bg-white/15 dark:hover:text-emerald-100"
       >
         {item.title}
       </NavigationMenuLink>
@@ -407,7 +413,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
   if (item.items) {
     return (
       <AccordionItem key={item.title} value={item.title} className="border-b-0">
-        <AccordionTrigger className="text-md py-0 font-semibold hover:no-underline text-emerald-700 dark:text-emerald-200">
+        <AccordionTrigger className="text-md py-2 px-2 rounded-md font-semibold hover:no-underline text-emerald-700 dark:text-emerald-200 transition-all duration-200 hover:bg-white/20 dark:hover:bg-white/10 hover:text-emerald-800 dark:hover:text-emerald-100">
           {item.title}
         </AccordionTrigger>
         <AccordionContent className="mt-2">
@@ -423,7 +429,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
     <a
       key={item.title}
       href={item.url}
-      className="text-md rounded-md px-2 py-1 font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 hover:text-emerald-800 dark:text-emerald-200 dark:hover:bg-emerald-900/40 dark:hover:text-emerald-100"
+      className="text-md rounded-md px-2 py-2 font-semibold text-emerald-700 transition-all duration-200 border border-transparent hover:translate-x-0.5 hover:border-white/45 dark:hover:border-white/20 hover:bg-white/20 dark:hover:bg-white/10 hover:text-emerald-800 dark:text-emerald-200 dark:hover:text-emerald-100"
     >
       {item.title}
     </a>
@@ -432,7 +438,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 
 const SubMenuLink = ({ item }: { item: MenuItem }) => (
   <a
-    className="flex min-w-80 flex-row gap-4 rounded-md p-3 leading-none no-underline transition-colors outline-none select-none hover:bg-muted hover:text-accent-foreground"
+    className="flex min-w-80 flex-row gap-4 rounded-md border border-transparent p-3 leading-none no-underline transition-colors outline-none select-none hover:border-white/45 dark:hover:border-white/15 hover:bg-transparent dark:hover:bg-transparent hover:text-accent-foreground"
     href={item.url}
   >
     <div className="text-foreground">{item.icon}</div>

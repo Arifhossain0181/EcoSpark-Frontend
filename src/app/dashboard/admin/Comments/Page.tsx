@@ -27,6 +27,8 @@ export default function CommentsDashboardPage() {
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const pageSize = 10;
+    const [searchTerm, setSearchTerm] = useState("");
+    const [typeFilter, setTypeFilter] = useState<"ALL" | "MAIN" | "REPLY">("ALL");
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const {
@@ -80,16 +82,30 @@ export default function CommentsDashboardPage() {
         };
     }, [comments]);
 
+    const filteredComments = useMemo(() => {
+        const term = searchTerm.trim().toLowerCase();
+        return comments.filter((comment) => {
+            const type = comment.parentId ? "REPLY" : "MAIN";
+            const matchesType = typeFilter === "ALL" ? true : type === typeFilter;
+            const matchesSearch =
+                !term ||
+                comment.text.toLowerCase().includes(term) ||
+                (comment.user?.name ?? "").toLowerCase().includes(term) ||
+                (comment.idea?.title ?? "").toLowerCase().includes(term);
+            return matchesType && matchesSearch;
+        });
+    }, [comments, searchTerm, typeFilter]);
+
     if (isLoading) {
         return (
             <main className="space-y-4 p-4 md:p-6">
-                <div className="h-8 w-52 animate-pulse rounded bg-muted" />
+                <div className="h-8 w-52 animate-pulse rounded bg-[#162e27]" />
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                     {[1, 2, 3].map((item) => (
-                        <div key={item} className="h-24 animate-pulse rounded-2xl border bg-card" />
+                        <div key={item} className="h-24 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
                     ))}
                 </div>
-                <div className="h-72 animate-pulse rounded-2xl border bg-card" />
+                <div className="h-72 animate-pulse rounded-2xl border border-emerald-500/20 bg-[#0f211c]" />
             </main>
         );
     }
@@ -107,31 +123,48 @@ export default function CommentsDashboardPage() {
     return (
         <main className="space-y-6 p-4 md:p-6">
             <div>
-                <h1 className="text-2xl font-bold text-foreground md:text-3xl">Comments Dashboard</h1>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <h1 className="text-2xl font-bold text-[#e8f5f0] md:text-3xl">Comments Dashboard</h1>
+                <p className="mt-1 text-sm text-emerald-100/65">
                     Moderate community discussions and remove inappropriate comments.
                 </p>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl border bg-card p-4 shadow-sm">
-                    <p className="text-sm text-muted-foreground">Total Comments</p>
-                    <h2 className="mt-1 text-2xl font-bold text-foreground">{stats.total}</h2>
+                <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+                    <p className="text-sm text-emerald-100/65">Total Comments</p>
+                    <h2 className="mt-1 text-2xl font-bold text-[#e8f5f0]">{stats.total}</h2>
                 </div>
-                <div className="rounded-2xl border bg-card p-4 shadow-sm">
-                    <p className="text-sm text-muted-foreground">Main Comments</p>
-                    <h2 className="mt-1 text-2xl font-bold text-foreground">{stats.rootCount}</h2>
+                <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+                    <p className="text-sm text-emerald-100/65">Main Comments</p>
+                    <h2 className="mt-1 text-2xl font-bold text-[#e8f5f0]">{stats.rootCount}</h2>
                 </div>
-                <div className="rounded-2xl border bg-card p-4 shadow-sm">
-                    <p className="text-sm text-muted-foreground">Replies</p>
-                    <h2 className="mt-1 text-2xl font-bold text-foreground">{stats.replyCount}</h2>
+                <div className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-4 shadow-lg shadow-black/20">
+                    <p className="text-sm text-emerald-100/65">Replies</p>
+                    <h2 className="mt-1 text-2xl font-bold text-[#e8f5f0]">{stats.replyCount}</h2>
                 </div>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border bg-card">
+            <div className="overflow-hidden rounded-2xl border border-emerald-500/20 bg-[#0f211c] shadow-lg shadow-black/20">
+                <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <input
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder="Filter by comment, user, idea..."
+                        className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400 sm:max-w-sm"
+                    />
+                    <select
+                        value={typeFilter}
+                        onChange={(event) => setTypeFilter(event.target.value as "ALL" | "MAIN" | "REPLY")}
+                        className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400"
+                    >
+                        <option value="ALL">All types</option>
+                        <option value="MAIN">Main comments</option>
+                        <option value="REPLY">Replies</option>
+                    </select>
+                </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full min-w-220 text-left text-sm">
-                        <thead className="bg-muted/50 text-muted-foreground">
+                    <table className="w-full min-w-220 text-left text-sm text-emerald-50">
+                        <thead className="bg-[#162e27] text-emerald-100/70">
                             <tr>
                                 <th className="px-4 py-3 font-medium">Comment</th>
                                 <th className="px-4 py-3 font-medium">User</th>
@@ -142,12 +175,12 @@ export default function CommentsDashboardPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {comments.map((comment) => (
-                                <tr key={comment.id} className="border-t transition-colors hover:bg-muted/30">
+                            {filteredComments.map((comment) => (
+                                <tr key={comment.id} className="border-t border-emerald-500/15 transition-colors hover:bg-[#162e27]/70">
                                     <td className="px-4 py-3">
-                                        <p className="max-w-md line-clamp-2 text-foreground">{comment.text}</p>
+                                        <p className="max-w-md line-clamp-2 text-[#e8f5f0]">{comment.text}</p>
                                     </td>
-                                    <td className="px-4 py-3 text-muted-foreground">{comment.user?.name ?? "Unknown"}</td>
+                                    <td className="px-4 py-3 text-emerald-100/70">{comment.user?.name ?? "Unknown"}</td>
                                     <td className="px-4 py-3">
                                         {comment.idea?.id ? (
                                             <Link
@@ -158,7 +191,7 @@ export default function CommentsDashboardPage() {
                                                 <span className="max-w-45 truncate">{comment.idea.title ?? "Idea"}</span>
                                             </Link>
                                         ) : (
-                                            <span className="text-muted-foreground">N/A</span>
+                                            <span className="text-emerald-100/60">N/A</span>
                                         )}
                                     </td>
                                     <td className="px-4 py-3">
@@ -170,7 +203,7 @@ export default function CommentsDashboardPage() {
                                             {comment.parentId ? "Reply" : "Main"}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3 text-muted-foreground">
+                                    <td className="px-4 py-3 text-emerald-100/70">
                                         {new Date(comment.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="px-4 py-3 text-right">
@@ -186,9 +219,9 @@ export default function CommentsDashboardPage() {
                                 </tr>
                             ))}
 
-                            {comments.length === 0 && (
+                            {filteredComments.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                                    <td colSpan={6} className="p-6 text-center text-sm text-emerald-100/60">
                                         No comments found.
                                     </td>
                                 </tr>
@@ -198,7 +231,7 @@ export default function CommentsDashboardPage() {
                 </div>
 
                 <div className="flex items-center justify-between border-t px-4 py-3 text-sm">
-                    <span className="text-muted-foreground">
+                    <span className="text-emerald-100/70">
                         Page {page} of {totalPages}
                     </span>
                     <div className="flex gap-2">

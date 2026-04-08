@@ -1,9 +1,37 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { toast } from "sonner";
 import { useAuth } from "@/context/authcontext";
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (!user) return;
+    setName(user.name ?? "");
+    setEmail(user.email ?? "");
+  }, [user]);
+
+  const handleSave = () => {
+    if (!user) return;
+
+    const nextUser = {
+      ...user,
+      name: name.trim() || user.name,
+      email: email.trim() || user.email,
+    };
+
+    Cookies.set("ecospark_user", JSON.stringify(nextUser), { sameSite: "lax", path: "/" });
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("ecospark_user", JSON.stringify(nextUser));
+    }
+
+    toast.success("Profile updated locally. Re-login to sync with server profile settings.");
+  };
 
   if (!user) {
     return (
@@ -29,21 +57,42 @@ export default function ProfilePage() {
         </p>
       </header>
 
-      <section className="rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-900/30">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Name</p>
-            <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100">{user.name}</p>
+      <section className="space-y-4 rounded-2xl border border-emerald-100 bg-white p-6 shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Name</label>
+            <input
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              className="w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-900 outline-none focus:border-emerald-500 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-100"
+            />
           </div>
 
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-900/30">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Email</p>
-            <p className="mt-1 text-sm font-semibold text-emerald-900 dark:text-emerald-100 break-all">{user.email}</p>
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Email</label>
+            <input
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="w-full rounded-xl border border-emerald-200 bg-white px-3 py-2 text-sm text-emerald-900 outline-none focus:border-emerald-500 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-100"
+            />
           </div>
 
-          <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4 dark:border-emerald-900/70 dark:bg-emerald-900/30">
-            <p className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Role</p>
-            <p className="mt-1 text-sm font-semibold capitalize text-emerald-900 dark:text-emerald-100">{user.role ?? "member"}</p>
+          <div className="space-y-2">
+            <label className="text-xs font-medium uppercase tracking-wide text-emerald-700/80 dark:text-emerald-200/80">Role</label>
+            <input
+              disabled
+              value={user.role ?? "member"}
+              className="w-full cursor-not-allowed rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm capitalize text-emerald-800 dark:border-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200"
+            />
+          </div>
+
+          <div className="flex items-end">
+            <button
+              onClick={handleSave}
+              className="inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+            >
+              Save Changes
+            </button>
           </div>
         </div>
       </section>

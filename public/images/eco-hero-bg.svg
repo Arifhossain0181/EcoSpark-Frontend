@@ -1,0 +1,42 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f3d2f"/>
+      <stop offset="0.55" stop-color="#1f6a4d"/>
+      <stop offset="1" stop-color="#84d3a2"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1440 200) rotate(90) scale(320)">
+      <stop stop-color="#f6fcb5" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#f6fcb5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hill1" x1="0" y1="0" x2="0" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2e8f63"/>
+      <stop offset="1" stop-color="#196848"/>
+    </linearGradient>
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5caf7d"/>
+      <stop offset="1" stop-color="#2d7f58"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <circle cx="1440" cy="200" r="320" fill="url(#sun)"/>
+
+  <path d="M0 640C180 560 410 540 620 585C810 625 970 710 1160 720C1380 732 1600 620 1920 540V1080H0V640Z" fill="url(#hill2)" opacity="0.9"/>
+  <path d="M0 760C250 700 430 690 630 730C810 765 990 860 1220 860C1460 860 1680 790 1920 700V1080H0V760Z" fill="url(#hill1)"/>
+
+  <g fill="#0f5135" opacity="0.9">
+    <path d="M240 700L220 820H260L240 700Z"/>
+    <path d="M240 620L190 750H290L240 620Z"/>
+    <path d="M430 690L410 810H450L430 690Z"/>
+    <path d="M430 600L370 740H490L430 600Z"/>
+    <path d="M1640 680L1620 810H1660L1640 680Z"/>
+    <path d="M1640 580L1570 740H1710L1640 580Z"/>
+  </g>
+
+  <g fill="#d8ffe6" opacity="0.2">
+    <circle cx="280" cy="180" r="180"/>
+    <circle cx="1720" cy="340" r="220"/>
+    <circle cx="980" cy="140" r="140"/>
+  </g>
+</svg>
