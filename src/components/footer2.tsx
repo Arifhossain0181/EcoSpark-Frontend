@@ -60,15 +60,15 @@ const Footer2 = ({
       links: [
         { text: "Email: support@ecosparkhub.org", url: "mailto:support@ecosparkhub.org" },
         { text: "Phone: +880 1700-000000", url: "tel:+8801700000000" },
-        { text: "Dhaka, Bangladesh", url: "#" },
+        { text: "Dhaka, Bangladesh", url: "https://maps.google.com/?q=Dhaka,Bangladesh" },
       ],
     },
     {
       title: "Social",
       links: [
-        { text: "Facebook", url: "#" },
-        { text: "LinkedIn", url: "#" },
-        { text: "YouTube", url: "#" },
+        { text: "Facebook", url: "https://facebook.com" },
+        { text: "LinkedIn", url: "https://linkedin.com" },
+        { text: "YouTube", url: "https://youtube.com" },
       ],
     },
   ],

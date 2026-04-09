@@ -13,10 +13,7 @@ import axios from "axios";
 const getApiBase = () =>
   (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace(/\/+$/, "");
 
-const DEMO_CREDENTIALS = {
-  email: "tanvir@ecospark.com",
-  password: "Admin@1234",
-};
+const LAST_LOGIN_EMAIL_KEY = "ecospark_last_login_email";
 
 type LoginCredentials = {
   email: string;
@@ -64,6 +61,12 @@ export default function LoginPage() {
     mutationFn: (credentials: LoginCredentials) =>
       login(credentials.email.trim(), credentials.password),
     onSuccess: () => {
+      if (typeof window !== "undefined") {
+        const trimmedEmail = form.email.trim();
+        if (trimmedEmail) {
+          window.localStorage.setItem(LAST_LOGIN_EMAIL_KEY, trimmedEmail);
+        }
+      }
       toast.success("Login successful");
       router.push("/");
     },
@@ -99,10 +102,21 @@ export default function LoginPage() {
     window.location.href = `${apiBase}/auth/${provider}`;
   };
 
-  const handleDemoLogin = () => {
-    setForm(DEMO_CREDENTIALS);
-    setErrors({});
-    mutate(DEMO_CREDENTIALS);
+  const handleQuickFill = () => {
+    if (typeof window === "undefined") {
+      toast.error("Quick fill is only available in browser.");
+      return;
+    }
+
+    const savedEmail = window.localStorage.getItem(LAST_LOGIN_EMAIL_KEY) || "";
+    if (!savedEmail) {
+      toast.error("No saved account found on this browser yet.");
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, email: savedEmail }));
+    setErrors((prev) => ({ ...prev, email: "" }));
+    toast.success("Saved email filled. Enter password or use browser autofill to sign in.");
   };
 
   return (
@@ -151,6 +165,8 @@ export default function LoginPage() {
                 <Mail className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type="email"
+                  name="email"
+                  autoComplete="username"
                   value={form.email}
                   onChange={(e) => {
                     setForm({ ...form, email: e.target.value });
@@ -190,6 +206,8 @@ export default function LoginPage() {
                 <Lock className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type={showPass ? "text" : "password"}
+                  name="password"
+                  autoComplete="current-password"
                   value={form.password}
                   onChange={(e) => {
                     setForm({ ...form, password: e.target.value });
@@ -231,11 +249,15 @@ export default function LoginPage() {
 
             <button
               type="button"
-              onClick={handleDemoLogin}
+              onClick={handleQuickFill}
               className="w-full py-3 rounded-xl font-semibold text-sm border border-emerald-200 bg-emerald-50/80 text-emerald-800 hover:bg-emerald-100 transition-colors"
             >
-              Demo Admin Login
+              Quick Fill Saved Account
             </button>
+
+            <p className="text-[11px] text-slate-600 dark:text-white/65 text-center">
+              Password autofill is provided by your browser password manager.
+            </p>
           </form>
 
           <div className="mt-6">

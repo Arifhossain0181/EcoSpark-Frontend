@@ -14,6 +14,8 @@ const getApiBase = () =>
     ? "http://localhost:5000/api"
     : process.env.NEXT_PUBLIC_API_URL;
 
+const LAST_LOGIN_EMAIL_KEY = "ecospark_last_login_email";
+
 export default function RegisterPage() {
   const { register } = useAuth();
     const router = useRouter();
@@ -68,6 +70,12 @@ export default function RegisterPage() {
    const { mutate, isPending } = useMutation({
     mutationFn: () => register(form.name.trim(), form.email.trim(), form.password),
     onSuccess: () => {
+      if (typeof window !== "undefined") {
+        const trimmedEmail = form.email.trim();
+        if (trimmedEmail) {
+          window.localStorage.setItem(LAST_LOGIN_EMAIL_KEY, trimmedEmail);
+        }
+      }
       toast.success("Welcome to Ecospark! Your account has been created.");
       router.push("/auth/login");
     },
@@ -184,6 +192,8 @@ return (
                 <Mail className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type="email"
+                  name="email"
+                  autoComplete="email"
                   value={form.email}
                   onChange={(e) =>
                     setForm({ ...form, email: e.target.value })
@@ -210,6 +220,8 @@ return (
                 <Lock className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type={showPass ? "text" : "password"}
+                  name="password"
+                  autoComplete="new-password"
                   value={form.password}
                   onChange={(e) =>
                     setForm({ ...form, password: e.target.value })
@@ -276,6 +288,8 @@ return (
                 <Lock className="w-4 h-4 text-slate-500 dark:text-white/60 shrink-0" />
                 <input
                   type={showConfirm ? "text" : "password"}
+                  name="confirmPassword"
+                  autoComplete="new-password"
                   value={form.confirmPassword}
                   onChange={(e) =>
                     setForm({ ...form, confirmPassword: e.target.value })

@@ -42,10 +42,15 @@ export default function CommentsDashboardPage() {
         limit: number;
         totalPages: number;
     }>({
-        queryKey: ["admin-comments", page],
+        queryKey: ["admin-comments", page, searchTerm.trim(), typeFilter],
         queryFn: async () => {
             const { data } = await api.get("/comments/admin/all", {
-                params: { page, limit: pageSize },
+                params: {
+                    page,
+                    limit: pageSize,
+                    search: searchTerm.trim() || undefined,
+                    type: typeFilter === "ALL" ? undefined : typeFilter,
+                },
             });
             return data?.data;
         },
@@ -81,20 +86,6 @@ export default function CommentsDashboardPage() {
             replyCount,
         };
     }, [comments]);
-
-    const filteredComments = useMemo(() => {
-        const term = searchTerm.trim().toLowerCase();
-        return comments.filter((comment) => {
-            const type = comment.parentId ? "REPLY" : "MAIN";
-            const matchesType = typeFilter === "ALL" ? true : type === typeFilter;
-            const matchesSearch =
-                !term ||
-                comment.text.toLowerCase().includes(term) ||
-                (comment.user?.name ?? "").toLowerCase().includes(term) ||
-                (comment.idea?.title ?? "").toLowerCase().includes(term);
-            return matchesType && matchesSearch;
-        });
-    }, [comments, searchTerm, typeFilter]);
 
     if (isLoading) {
         return (
@@ -148,13 +139,19 @@ export default function CommentsDashboardPage() {
                 <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
                     <input
                         value={searchTerm}
-                        onChange={(event) => setSearchTerm(event.target.value)}
+                        onChange={(event) => {
+                            setSearchTerm(event.target.value);
+                            setPage(1);
+                        }}
                         placeholder="Filter by comment, user, idea..."
                         className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400 sm:max-w-sm"
                     />
                     <select
                         value={typeFilter}
-                        onChange={(event) => setTypeFilter(event.target.value as "ALL" | "MAIN" | "REPLY")}
+                        onChange={(event) => {
+                            setTypeFilter(event.target.value as "ALL" | "MAIN" | "REPLY");
+                            setPage(1);
+                        }}
                         className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400"
                     >
                         <option value="ALL">All types</option>
@@ -175,7 +172,7 @@ export default function CommentsDashboardPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredComments.map((comment) => (
+                            {comments.map((comment) => (
                                 <tr key={comment.id} className="border-t border-emerald-500/15 transition-colors hover:bg-[#162e27]/70">
                                     <td className="px-4 py-3">
                                         <p className="max-w-md line-clamp-2 text-[#e8f5f0]">{comment.text}</p>
@@ -219,7 +216,7 @@ export default function CommentsDashboardPage() {
                                 </tr>
                             ))}
 
-                            {filteredComments.length === 0 && (
+                            {comments.length === 0 && (
                                 <tr>
                                     <td colSpan={6} className="p-6 text-center text-sm text-emerald-100/60">
                                         No comments found.

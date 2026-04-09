@@ -24,6 +24,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<User>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  updateProfileLocal: (next: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -182,12 +183,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
   };
 
+  const updateProfileLocal = (next: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = {
+        ...prev,
+        ...(next.name ? { name: next.name } : {}),
+        ...(next.email ? { email: next.email } : {}),
+      };
+      Cookies.set("ecospark_user", JSON.stringify(updated), { sameSite: "lax", path: "/" });
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("ecospark_user", JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
   const value: AuthContextType = {
     user,
     loading,
     login,
     register,
     logout,
+    updateProfileLocal,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

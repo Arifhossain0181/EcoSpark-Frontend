@@ -12,6 +12,7 @@ import {
   MessageSquare,
   CreditCard,
   Users,
+  Mail,
 } from "lucide-react";
 
 import {
@@ -34,6 +35,7 @@ import Image from "next/image";
 // Menu items based on user role
 const memberMenuItems = [
   { title: "Dashboard", url: "/dashboard/member", icon: LayoutDashboard },
+  { title: "Newsletter", url: "/dashboard/member#newsletter-controls", icon: Mail },
   { title: "Create Idea", url: "/dashboard/member/create-ideas", icon: PlusCircle },
   { title: "Created My Ideas", url: "/dashboard/member/created-my-ideas", icon: FileText },
   { title: "My Ideas", url: "/dashboard/member/my-ideas", icon: FileText },
@@ -45,6 +47,7 @@ const memberMenuItems = [
 
 const adminMenuItems = [
   { title: "Dashboard", url: "/dashboard/admin", icon: LayoutDashboard },
+  { title: "Newsletter", url: "/dashboard/admin#newsletter-controls", icon: Mail },
   { title: "Manage Ideas", url: "/dashboard/admin/Manage.ideas", icon: Lightbulb },
   { title: "Categories", url: "/dashboard/admin/categories", icon: ListTree },
   { title: "Comments", url: "/dashboard/admin/Comments", icon: MessageSquare },

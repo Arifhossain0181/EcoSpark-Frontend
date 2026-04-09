@@ -4,8 +4,17 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { getIdeas, Idea } from "@/services/ideas";
+import {
+  getIdeaSearchSuggestions,
+  getIdeas,
+  getPersonalIdeaRecommendations,
+  getTrendingIdeaRecommendations,
+  Idea,
+  IdeaRecommendation,
+  trackIdeaInteraction,
+} from "@/services/ideas";
 import {
   Search,
   SlidersHorizontal,
@@ -301,6 +310,7 @@ export default function IdeasClientPage({
 }: {
   initialSearch?: string;
 }) {
+  const router = useRouter();
   const [search, setSearch] = useState(initialSearch);
   const [searchInput, setSearchInput] = useState(initialSearch);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -311,6 +321,8 @@ export default function IdeasClientPage({
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [debouncedSearchInput, setDebouncedSearchInput] = useState(initialSearch);
+  const [selectedSuggestionIdeaId, setSelectedSuggestionIdeaId] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -318,6 +330,13 @@ export default function IdeasClientPage({
     }, 2800);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchInput(searchInput.trim());
+    }, 260);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // ── Fetch ────────────────────────────────
   const { data, isLoading, isError } = useQuery({
@@ -328,6 +347,52 @@ export default function IdeasClientPage({
   });
 
   const ideas: Idea[] = useMemo(() => data ?? [], [data]);
+
+  const { data: suggestions = [] } = useQuery({
+    queryKey: ["idea-search-suggestions", debouncedSearchInput],
+    queryFn: () => getIdeaSearchSuggestions(debouncedSearchInput),
+    enabled: debouncedSearchInput.length >= 2,
+    staleTime: 30 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: personalRecommendations = [] } = useQuery<IdeaRecommendation[]>({
+    queryKey: ["idea-personal-recommendations"],
+    queryFn: getPersonalIdeaRecommendations,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  const orderedPersonalRecommendations = useMemo(() => {
+    if (personalRecommendations.length === 0) {
+      return [] as IdeaRecommendation[];
+    }
+
+    const searchKey = search.trim().toLowerCase();
+    const searchedMatch =
+      !selectedSuggestionIdeaId && searchKey.length >= 2
+        ? personalRecommendations.find((item) => item.title.toLowerCase().includes(searchKey))
+        : undefined;
+
+    const pinnedId = selectedSuggestionIdeaId || searchedMatch?.id;
+    if (!pinnedId) {
+      return personalRecommendations;
+    }
+
+    const pinned = personalRecommendations.find((item) => item.id === pinnedId);
+    if (!pinned) {
+      return personalRecommendations;
+    }
+
+    return [pinned, ...personalRecommendations.filter((item) => item.id !== pinnedId)];
+  }, [personalRecommendations, search, selectedSuggestionIdeaId]);
+
+  const { data: trendingRecommendations = [] } = useQuery<IdeaRecommendation[]>({
+    queryKey: ["idea-trending-recommendations"],
+    queryFn: getTrendingIdeaRecommendations,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   // ── Categories ───────────────────────────
   const categories = useMemo(
@@ -414,12 +479,14 @@ export default function IdeasClientPage({
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     setSearch(searchInput.trim());
+    setSelectedSuggestionIdeaId(null);
     setPage(1);
   };
 
   const handleReset = () => {
     setSearch("");
     setSearchInput("");
+    setSelectedSuggestionIdeaId(null);
     setCategoryFilter("all");
     setPaymentFilter("all");
     setAuthorFilter("all");
@@ -505,7 +572,7 @@ export default function IdeasClientPage({
             className="flex max-w-2xl mx-auto gap-0 shadow-xl"
           >
             <div
-              className="flex-1 flex items-center gap-2
+              className="relative flex-1 flex items-center gap-2
                             bg-white rounded-l-2xl px-4 py-3"
             >
               <Search className="w-4 h-4 text-gray-400 shrink-0" />
@@ -523,12 +590,48 @@ export default function IdeasClientPage({
                   onClick={() => {
                     setSearchInput("");
                     setSearch("");
+                    setSelectedSuggestionIdeaId(null);
                     setPage(1);
                   }}
                   className="text-gray-400 hover:text-gray-600 text-xs"
                 >
                   ✕
                 </button>
+              )}
+
+              {suggestions.length > 0 && searchInput.trim().length >= 2 && (
+                <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 rounded-xl border border-emerald-100 bg-white p-1 shadow-xl">
+                  {suggestions.slice(0, 7).map((item) => (
+                    <button
+                      key={`${item.type}-${item.id}`}
+                      type="button"
+                      onClick={() => {
+                        if (item.type === "IDEA") {
+                          void trackIdeaInteraction(item.id, "SEARCH_SUGGESTION_CLICK");
+                          setSelectedSuggestionIdeaId(item.id);
+                          setSearchInput(item.title);
+                          setSearch(item.title);
+                          setPage(1);
+                          router.push(`/ideas/${item.id}`);
+                          return;
+                        }
+                        setSelectedSuggestionIdeaId(null);
+                        setSearchInput(item.title);
+                        setSearch(item.title);
+                        setPage(1);
+                      }}
+                      className="flex w-full items-start justify-between gap-2 rounded-lg px-3 py-2 text-left hover:bg-emerald-50"
+                    >
+                      <span>
+                        <span className="block text-sm font-semibold text-[#1a3a2a]">{item.title}</span>
+                        <span className="block text-xs text-gray-500">{item.subtitle}</span>
+                      </span>
+                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                        {item.type}
+                      </span>
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
             <button
@@ -554,6 +657,65 @@ export default function IdeasClientPage({
       </div>
 
       <div id="ideas-content" className="max-w-7xl mx-auto px-4 py-8 space-y-6">
+        {(personalRecommendations.length > 0 || trendingRecommendations.length > 0) && (
+          <div className="grid gap-4 lg:grid-cols-2">
+            <section className="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#2d6a4f]">For You (AI + Behavior)</h2>
+              {personalRecommendations.length === 0 ? (
+                <p className="mt-2 text-xs text-gray-500">Login and interact more to get personalized recommendations.</p>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  {orderedPersonalRecommendations.slice(0, 5).map((item, index) => (
+                    <Link
+                      key={item.id}
+                      href={`/ideas/${item.id}`}
+                      onClick={() => {
+                        void trackIdeaInteraction(item.id, "RECOMMENDATION_CLICK");
+                      }}
+                      className="block rounded-xl border border-emerald-100 px-3 py-2 hover:bg-emerald-50"
+                    >
+                      {index === 0 && (
+                        <span className="mb-1 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                          PINNED
+                        </span>
+                      )}
+                      <p className="text-sm font-semibold text-[#1a3a2a]">{item.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {item.category} • {item.isPaid ? `Paid $${item.price.toFixed(2)}` : "Free"}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#7c5e1a]">Trending Now (AI Score)</h2>
+              {trendingRecommendations.length === 0 ? (
+                <p className="mt-2 text-xs text-gray-500">No trending items yet.</p>
+              ) : (
+                <div className="mt-3 space-y-2">
+                  {trendingRecommendations.slice(0, 5).map((item) => (
+                    <Link
+                      key={item.id}
+                      href={`/ideas/${item.id}`}
+                      onClick={() => {
+                        void trackIdeaInteraction(item.id, "TRENDING_CLICK");
+                      }}
+                      className="block rounded-xl border border-amber-100 px-3 py-2 hover:bg-amber-50"
+                    >
+                      <p className="text-sm font-semibold text-[#1a3a2a]">{item.title}</p>
+                      <p className="text-xs text-gray-500">
+                        {item.category} • score {item.score}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
+          </div>
+        )}
+
         {/* ── Filter Bar ── */}
         <div className="bg-white rounded-2xl border border-gray-100
                         shadow-sm overflow-hidden">

@@ -47,10 +47,15 @@ export default function ManageDashboardPage() {
     limit: number;
     totalPages: number;
   }>({
-    queryKey: ["admin-ideas", page],
+    queryKey: ["admin-ideas", page, searchTerm.trim(), statusFilter],
     queryFn: async () => {
       const { data } = await api.get("/admin/ideas", {
-        params: { page, limit: pageSize },
+        params: {
+          page,
+          limit: pageSize,
+          search: searchTerm.trim() || undefined,
+          status: statusFilter === "ALL" ? undefined : statusFilter,
+        },
       });
       return data?.data;
     },
@@ -178,21 +183,6 @@ export default function ManageDashboardPage() {
     [dashboardStats, ideas],
   );
 
-  const filteredIdeas = useMemo(() => {
-    const term = searchTerm.trim().toLowerCase();
-
-    return ideas.filter((item) => {
-      const matchesStatus = statusFilter === "ALL" ? true : item.status === statusFilter;
-      const matchesSearch =
-        !term ||
-        item.title.toLowerCase().includes(term) ||
-        (item.author?.name ?? "").toLowerCase().includes(term) ||
-        (item.category?.name ?? "").toLowerCase().includes(term);
-
-      return matchesStatus && matchesSearch;
-    });
-  }, [ideas, searchTerm, statusFilter]);
-
   const statusBadgeClass = (status: IdeaItem["status"]) => {
     if (status === "APPROVED") return "bg-green-100 text-green-700";
     if (status === "UNDER_REVIEW") return "bg-yellow-100 text-yellow-700";
@@ -259,13 +249,19 @@ export default function ManageDashboardPage() {
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
           <input
             value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              setPage(1);
+            }}
             placeholder="Filter by title, author, category..."
             className="w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400 sm:max-w-sm"
           />
           <select
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as "ALL" | IdeaItem["status"])}
+            onChange={(event) => {
+              setStatusFilter(event.target.value as "ALL" | IdeaItem["status"]);
+              setPage(1);
+            }}
             className="rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:border-emerald-400"
           >
             <option value="ALL">All statuses</option>
@@ -289,7 +285,7 @@ export default function ManageDashboardPage() {
             </thead>
 
             <tbody>
-              {filteredIdeas.map((idea) => (
+              {ideas.map((idea) => (
                 <tr key={idea.id} className="border-t border-emerald-500/15 align-top transition-colors hover:bg-[#162e27]/70">
                   <td className="px-4 py-3 font-medium text-[#e8f5f0]">{idea.title}</td>
                   <td className="px-4 py-3 text-emerald-100/70">{idea.author?.name ?? "N/A"}</td>
@@ -364,7 +360,7 @@ export default function ManageDashboardPage() {
                 </tr>
               ))}
 
-              {filteredIdeas.length === 0 && (
+              {ideas.length === 0 && (
                 <tr>
                   <td colSpan={6} className="p-6 text-center text-sm text-emerald-100/60">
                     No ideas found.

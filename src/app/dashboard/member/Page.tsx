@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/authcontext";
 import api from "@/lib/axios";
 import {
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import { BarMiniChart, LineMiniChart, PieMiniChart } from "@/components/dashboard/simple-charts";
 import { Reveal } from "@/components/dashboard/reveal";
+import { toast } from "sonner";
 
 function asArray<T>(value: unknown): T[] {
   if (Array.isArray(value)) return value;
@@ -109,11 +111,57 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+type NewsletterPreview = {
+  subject: string;
+  previewText: string;
+  recommendations: Array<{
+    id: string;
+    title: string;
+    category: string;
+    isPaid: boolean;
+    price: number;
+    score: number;
+    reasons: string[];
+  }>;
+  updates: {
+    approvedLast7Days: number;
+    paidApprovedLast7Days: number;
+    trendingCategory: string;
+  };
+};
+
+const getApiErrorMessage = (error: unknown, fallback: string): string => {
+  if (
+    typeof error === "object" &&
+    error &&
+    "response" in error &&
+    typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === "string"
+  ) {
+    return (error as { response?: { data?: { message?: string } } }).response?.data?.message || fallback;
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 //  Main Page
 export default function MemberDashboardPage() {
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, loading } = useAuth();
+  const [newsletterPreview, setNewsletterPreview] = useState<NewsletterPreview | null>(null);
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterSending, setNewsletterSending] = useState(false);
+  const [newsletterMessage, setNewsletterMessage] = useState<string>("");
 
-  const { data: dashboardData, isLoading: dashboardLoading } = useQuery({
+  const {
+    data: dashboardData,
+    isLoading: dashboardLoading,
+    isError: dashboardError,
+    error: dashboardErrorObject,
+  } = useQuery({
     queryKey: ["member-dashboard", user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
@@ -141,6 +189,20 @@ export default function MemberDashboardPage() {
     staleTime: 2 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      router.replace("/auth/login?redirect=/dashboard/member");
+    }
+  }, [loading, user, router]);
+
+  const shouldShowLoading = loading || !user;
+
+  const dashboardErrorMessage =
+    dashboardErrorObject instanceof Error
+      ? dashboardErrorObject.message
+      : "Dashboard data could not be loaded.";
 
   const safeMyIdeas = useMemo(
     () => dashboardData?.myIdeas ?? [],
@@ -278,8 +340,56 @@ export default function MemberDashboardPage() {
     { label: "Watchlist", value: safeWatchlist.length },
   ];
 
+  const loadNewsletterPreview = async () => {
+    setNewsletterLoading(true);
+    setNewsletterMessage("");
+    try {
+      const { data } = await api.get<NewsletterPreview>("/newsletter/recommendations", { timeout: 20000 });
+      setNewsletterPreview(data);
+      setNewsletterMessage("Smart recommendations loaded.");
+      toast.success("Smart recommendations loaded.");
+    } catch (error: unknown) {
+      const message = getApiErrorMessage(error, "Failed to load newsletter recommendations.");
+      setNewsletterMessage(message || "Failed to load newsletter recommendations.");
+      toast.error(message || "Failed to load newsletter recommendations.");
+    } finally {
+      setNewsletterLoading(false);
+    }
+  };
+
+  const sendNewsletterNow = async () => {
+    setNewsletterSending(true);
+    setNewsletterMessage("");
+    try {
+      await api.post("/newsletter/send-me", {}, { timeout: 45000 });
+      setNewsletterMessage("Newsletter sent to your email.");
+      toast.success("Newsletter sent to your email.");
+    } catch (error: unknown) {
+      const message = getApiErrorMessage(error, "Failed to send newsletter.");
+      setNewsletterMessage(message || "Failed to send newsletter.");
+      toast.error(message || "Failed to send newsletter.");
+    } finally {
+      setNewsletterSending(false);
+    }
+  };
+
+  if (shouldShowLoading) {
+    return (
+      <main className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-muted-foreground">Loading dashboard...</p>
+      </main>
+    );
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8">
+
+      {dashboardError ? (
+        <section className="rounded-2xl border border-rose-400/30 bg-rose-500/10 p-4">
+          <p className="text-sm font-semibold text-rose-200">Dashboard API error</p>
+          <p className="mt-1 text-xs text-rose-100/90">{dashboardErrorMessage}</p>
+        </section>
+      ) : null}
 
       {/* ── Welcome Banner ── */}
       <Reveal delay={0.02}>
@@ -371,6 +481,75 @@ export default function MemberDashboardPage() {
           ))}
         </div>
       </div>
+      </Reveal>
+
+      <Reveal delay={0.14}>
+      <section id="newsletter-controls" className="rounded-2xl border border-emerald-500/20 bg-[#0f211c] p-5 shadow-lg shadow-black/20">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-emerald-200/70">
+              Smart Email Recommendations
+            </h2>
+            <p className="mt-1 text-xs text-emerald-100/65">
+              Auto send: every Monday at 09:00 (Asia/Dhaka). You can also preview and send now.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={loadNewsletterPreview}
+              disabled={newsletterLoading}
+              className="rounded-xl border border-emerald-400/30 px-3 py-2 text-xs font-semibold text-emerald-100 hover:bg-[#162e27] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {newsletterLoading ? "Loading..." : "Preview Picks"}
+            </button>
+            <button
+              type="button"
+              onClick={sendNewsletterNow}
+              disabled={newsletterSending}
+              className="rounded-xl bg-emerald-400 px-3 py-2 text-xs font-bold text-[#04120d] hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {newsletterSending ? "Sending..." : "Send Me Now"}
+            </button>
+          </div>
+        </div>
+
+        {newsletterMessage ? (
+          <p className="mt-3 text-xs text-emerald-200/90">{newsletterMessage}</p>
+        ) : null}
+
+        {newsletterPreview ? (
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border border-emerald-500/20 bg-[#132a23] p-4">
+              <p className="text-xs uppercase tracking-wider text-emerald-200/70">Email Preview</p>
+              <p className="mt-2 text-sm font-semibold text-[#e8f5f0]">{newsletterPreview.subject}</p>
+              <p className="mt-1 text-xs text-emerald-100/70">{newsletterPreview.previewText}</p>
+              <ul className="mt-3 space-y-1 text-xs text-emerald-100/70">
+                <li>Approved this week: {newsletterPreview.updates.approvedLast7Days}</li>
+                <li>New paid this week: {newsletterPreview.updates.paidApprovedLast7Days}</li>
+                <li>Trending category: {newsletterPreview.updates.trendingCategory}</li>
+              </ul>
+            </div>
+            <div className="rounded-xl border border-emerald-500/20 bg-[#132a23] p-4">
+              <p className="text-xs uppercase tracking-wider text-emerald-200/70">Top Picks</p>
+              {newsletterPreview.recommendations.length === 0 ? (
+                <p className="mt-2 text-xs text-emerald-100/70">No recommendations right now.</p>
+              ) : (
+                <ul className="mt-2 space-y-2">
+                  {newsletterPreview.recommendations.slice(0, 5).map((item) => (
+                    <li key={item.id} className="rounded-lg border border-emerald-500/20 px-3 py-2 text-xs">
+                      <p className="font-semibold text-[#e8f5f0]">{item.title}</p>
+                      <p className="text-emerald-100/70">
+                        {item.category} • {item.isPaid ? `Paid ${item.price}` : "Free"}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        ) : null}
+      </section>
       </Reveal>
 
       <Reveal delay={0.16}>

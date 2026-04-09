@@ -6,10 +6,15 @@ import Lenis from "lenis";
 
 export default function SmoothScrollProvider() {
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
     const lenis = new Lenis({
       duration: 1.1,
       lerp: 0.08,
       smoothWheel: true,
+      syncTouch: true,
     });
 
     let rafId = 0;

@@ -145,14 +145,16 @@ const Navbar1 = ({
         <nav className="hidden lg:flex items-center justify-between py-3 px-4 my-2 rounded-2xl border border-white/45 dark:border-white/15 ring-1 ring-white/35 dark:ring-white/10 bg-white/10 dark:bg-black/20 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_18px_60px_-28px_rgba(16,185,129,0.55)] relative overflow-hidden before:pointer-events-none before:absolute before:inset-y-0 before:-left-1/3 before:w-1/3 before:bg-linear-to-r before:from-transparent before:via-white/35 before:to-transparent dark:before:via-white/15 before:opacity-70 before:blur-xl before:transition-transform before:duration-1000 hover:before:translate-x-[260%]">
           {/* Logo */}
           <a href={logo.url} className="flex items-center gap-2 shrink-0">
+            <span className="inline-flex items-center rounded-lg bg-white/90 px-2 py-1 shadow-sm ring-1 ring-emerald-900/10 dark:bg-white/95 dark:ring-white/20">
             <Image
               src={logo.src}
               width={140}
               height={36}
-              className="h-9 w-auto dark:invert"
+              className="h-9 w-auto"
               alt={logo.alt}
               unoptimized
             />
+            </span>
           </a>
 
           {/* Nav links */}
@@ -268,14 +270,16 @@ const Navbar1 = ({
         {/* ── Mobile nav ── */}
         <div className="flex items-center justify-between py-3 px-3 my-2 rounded-2xl border border-white/50 dark:border-white/10 ring-1 ring-white/40 dark:ring-white/10 bg-transparent backdrop-blur-xl lg:hidden">
           <a href={logo.url} className="flex items-center gap-2">
+            <span className="inline-flex items-center rounded-lg bg-white/90 px-2 py-1 shadow-sm ring-1 ring-emerald-900/10 dark:bg-white/95 dark:ring-white/20">
             <Image
               src={logo.src}
               width={128}
               height={32}
-              className="h-8 w-auto dark:invert"
+              className="h-8 w-auto"
               alt={logo.alt}
               unoptimized
             />
+            </span>
           </a>
 
           <Sheet>
@@ -293,14 +297,16 @@ const Navbar1 = ({
               <SheetHeader>
                 <SheetTitle>
                   <a href={logo.url} className="flex items-center gap-2">
+                    <span className="inline-flex items-center rounded-lg bg-white/90 px-2 py-1 shadow-sm ring-1 ring-emerald-900/10 dark:bg-white/95 dark:ring-white/20">
                     <Image
                       src={logo.src}
                       width={128}
                       height={32}
-                      className="h-8 w-auto dark:invert"
+                      className="h-8 w-auto"
                       alt={logo.alt}
                       unoptimized
                     />
+                    </span>
                   </a>
                 </SheetTitle>
               </SheetHeader>
