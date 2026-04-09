@@ -58,20 +58,20 @@ export function CommentSection(
   });
   return (
     <div>
-      <h3 className="text-xl font-bold text-[#1a3a2a] mb-5 flex items-center gap-2">
-        <MessageSquare className="w-5 h-5 text-[#40916c]" />
+      <h3 className="text-xl font-bold text-[#1a3a2a] dark:text-emerald-100 mb-5 flex items-center gap-2">
+        <MessageSquare className="w-5 h-5 text-[#40916c] dark:text-emerald-300" />
         Comments ({comments?.length ?? 0})
       </h3>
 
       {/* Add comment */}
       {user ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-4 mb-6">
+        <div className="bg-white dark:bg-emerald-950/40 rounded-xl border border-gray-100 dark:border-emerald-900 p-4 mb-6">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Share your thoughts on this idea..."
             rows={3}
-            className="w-full border-2 border-gray-200 focus:border-[#40916c] rounded-xl px-4 py-3 text-sm outline-none resize-none transition-colors mb-3"
+            className="w-full border-2 border-gray-200 dark:border-emerald-800 bg-white dark:bg-emerald-950/70 text-gray-800 dark:text-emerald-100 placeholder:text-gray-400 dark:placeholder:text-emerald-100/50 focus:border-[#40916c] dark:focus:border-emerald-500 rounded-xl px-4 py-3 text-sm outline-none resize-none transition-colors mb-3"
           />
           <div className="flex justify-end">
             <button
@@ -88,8 +88,8 @@ export function CommentSection(
           </div>
         </div>
       ) : (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 text-center">
-          <p className="text-sm text-green-700">
+        <div className="bg-green-50 dark:bg-emerald-900/30 border border-green-200 dark:border-emerald-700/50 rounded-xl p-4 mb-6 text-center">
+          <p className="text-sm text-green-700 dark:text-emerald-200">
             <Link href="/auth/login" className="font-semibold underline">
               Sign in
             </Link>{" "}
@@ -102,20 +102,20 @@ export function CommentSection(
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-white rounded-xl p-4 border border-gray-100 animate-pulse">
+            <div key={i} className="bg-white dark:bg-emerald-950/40 rounded-xl p-4 border border-gray-100 dark:border-emerald-900 animate-pulse">
               <div className="flex gap-3 mb-3">
-                <div className="w-8 h-8 rounded-full bg-gray-100" />
+                <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-emerald-900/40" />
                 <div className="space-y-1.5">
-                  <div className="h-3 bg-gray-100 rounded w-24" />
-                  <div className="h-2.5 bg-gray-100 rounded w-16" />
+                  <div className="h-3 bg-gray-100 dark:bg-emerald-900/40 rounded w-24" />
+                  <div className="h-2.5 bg-gray-100 dark:bg-emerald-900/40 rounded w-16" />
                 </div>
               </div>
-              <div className="h-3 bg-gray-100 rounded w-3/4" />
+              <div className="h-3 bg-gray-100 dark:bg-emerald-900/40 rounded w-3/4" />
             </div>
           ))}
         </div>
       ) : (comments?.length ?? 0) === 0 ? (
-        <div className="text-center py-10 text-gray-400">
+        <div className="text-center py-10 text-gray-400 dark:text-emerald-100/60">
           <MessageSquare className="w-10 h-10 mx-auto mb-3 opacity-30" />
           <p className="text-sm">No comments yet. Be the first to share your thoughts!</p>
         </div>

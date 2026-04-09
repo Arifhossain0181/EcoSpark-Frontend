@@ -57,24 +57,24 @@ const ECO = {
 // ─── Skeleton Card ─────────────────────────────────────────
 function SkeletonCard() {
   return (
-    <div className="h-full min-h-125 bg-white rounded-[28px] overflow-hidden border border-green-100 shadow-lg animate-pulse flex flex-col">
-      <div className="h-52 bg-green-50" />
+    <div className="h-full min-h-125 bg-white dark:bg-emerald-950/40 rounded-[28px] overflow-hidden border border-green-100 dark:border-emerald-900 shadow-lg animate-pulse flex flex-col">
+      <div className="h-52 bg-green-50 dark:bg-emerald-900/40" />
       <div className="p-4 space-y-3 flex flex-col flex-1">
         <div className="flex gap-2">
-          <div className="h-5 bg-green-50 rounded-full w-20" />
-          <div className="h-5 bg-green-50 rounded-full w-16" />
+          <div className="h-5 bg-green-50 dark:bg-emerald-900/40 rounded-full w-20" />
+          <div className="h-5 bg-green-50 dark:bg-emerald-900/40 rounded-full w-16" />
         </div>
-        <div className="h-5 bg-green-50 rounded-full w-3/4" />
-        <div className="h-4 bg-green-50 rounded-full w-full" />
-        <div className="h-4 bg-green-50 rounded-full w-2/3" />
-        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-green-50">
-          <div className="h-4 bg-green-50 rounded w-full" />
-          <div className="h-4 bg-green-50 rounded w-full" />
-          <div className="h-4 bg-green-50 rounded w-full" />
-          <div className="h-4 bg-green-50 rounded w-full" />
+        <div className="h-5 bg-green-50 dark:bg-emerald-900/40 rounded-full w-3/4" />
+        <div className="h-4 bg-green-50 dark:bg-emerald-900/40 rounded-full w-full" />
+        <div className="h-4 bg-green-50 dark:bg-emerald-900/40 rounded-full w-2/3" />
+        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-green-50 dark:border-emerald-900">
+          <div className="h-4 bg-green-50 dark:bg-emerald-900/40 rounded w-full" />
+          <div className="h-4 bg-green-50 dark:bg-emerald-900/40 rounded w-full" />
+          <div className="h-4 bg-green-50 dark:bg-emerald-900/40 rounded w-full" />
+          <div className="h-4 bg-green-50 dark:bg-emerald-900/40 rounded w-full" />
         </div>
         <div className="mt-auto">
-          <div className="h-10 bg-green-50 rounded-xl w-full" />
+          <div className="h-10 bg-green-50 dark:bg-emerald-900/40 rounded-xl w-full" />
         </div>
       </div>
     </div>
@@ -120,8 +120,8 @@ function IdeaCard({ idea }: { idea: Idea }) {
   return (
     <Link href={`/ideas/${idea.id}`} className="group block h-full">
       <article
-        className="relative w-full h-full min-h-125 rounded-[28px] overflow-hidden shadow-lg bg-white
-                   border border-emerald-100 group cursor-pointer hover:shadow-2xl transition-shadow duration-300
+        className="relative w-full h-full min-h-125 rounded-[28px] overflow-hidden shadow-lg bg-white dark:bg-emerald-950/40
+                   border border-emerald-100 dark:border-emerald-900 group cursor-pointer hover:shadow-2xl transition-shadow duration-300
                    flex flex-col"
       >
         <div className="relative h-52 overflow-hidden">
@@ -172,29 +172,29 @@ function IdeaCard({ idea }: { idea: Idea }) {
         </div>
 
         <div className="p-4 pt-3 flex flex-col flex-1">
-          <p className="mt-1 text-sm text-gray-600 line-clamp-2 min-h-11">{summary}</p>
+          <p className="mt-1 text-sm text-gray-600 dark:text-emerald-100/70 line-clamp-2 min-h-11">{summary}</p>
 
-          <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
-            <span className="flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5">
-              <span className="font-semibold text-emerald-700">${priceLabel}</span>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600 dark:text-emerald-100/70">
+            <span className="flex items-center gap-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 px-2.5 py-1.5">
+              <span className="font-semibold text-emerald-700 dark:text-emerald-200">${priceLabel}</span>
             </span>
-            <span className="flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1.5">
-              <CalendarDays className="w-3.5 h-3.5 text-amber-700" />
+            <span className="flex items-center gap-1.5 rounded-lg bg-amber-50 dark:bg-amber-900/30 px-2.5 py-1.5">
+              <CalendarDays className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300" />
               {postedOn}
             </span>
-            <span className="flex items-center gap-1.5 rounded-lg bg-sky-50 px-2.5 py-1.5">
-              <Star className="w-3.5 h-3.5 text-sky-700" />
+            <span className="flex items-center gap-1.5 rounded-lg bg-sky-50 dark:bg-sky-900/30 px-2.5 py-1.5">
+              <Star className="w-3.5 h-3.5 text-sky-700 dark:text-sky-300" />
               {rating}
             </span>
-            <span className="flex items-center gap-1.5 rounded-lg bg-violet-50 px-2.5 py-1.5">
-              <MapPin className="w-3.5 h-3.5 text-violet-700" />
+            <span className="flex items-center gap-1.5 rounded-lg bg-violet-50 dark:bg-violet-900/30 px-2.5 py-1.5">
+              <MapPin className="w-3.5 h-3.5 text-violet-700 dark:text-violet-300" />
               <span className="truncate">{location}</span>
             </span>
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
+          <div className="mt-3 flex items-center justify-between text-xs text-gray-500 dark:text-emerald-100/60">
             <span className="truncate">
-              by <span className="font-medium text-gray-700">{idea.author?.name ?? "Community"}</span>
+              by <span className="font-medium text-gray-700 dark:text-emerald-200">{idea.author?.name ?? "Community"}</span>
             </span>
             <span className="flex items-center gap-3">
               <span className="inline-flex items-center gap-1">
@@ -209,7 +209,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
           </div>
 
           <span
-            className="mt-auto w-full py-3 rounded-xl bg-emerald-50 text-emerald-700 text-sm font-semibold hover:bg-emerald-100 transition-colors flex items-center justify-center gap-2"
+            className="mt-auto w-full py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200 text-sm font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors flex items-center justify-center gap-2"
           >
             <Eye className="w-4 h-4" />
             View Details
@@ -252,8 +252,8 @@ function Pagination({
         onClick={() => onPage(Math.max(1, page - 1))}
         disabled={page === 1}
         className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl
-                   border-2 border-gray-200 text-sm font-medium text-gray-600
-                   hover:border-[#40916c] hover:text-[#2d6a4f]
+                   border-2 border-gray-200 dark:border-emerald-800 text-sm font-medium text-gray-600 dark:text-emerald-100/80
+                   hover:border-[#40916c] dark:hover:border-emerald-500 hover:text-[#2d6a4f] dark:hover:text-emerald-300
                    disabled:opacity-40 disabled:cursor-not-allowed
                    transition-colors w-full sm:w-auto justify-center"
       >
@@ -267,7 +267,7 @@ function Pagination({
             <span
               key={`dot-${i}`}
               className="w-10 h-10 flex items-center justify-center
-                         text-gray-400 text-sm"
+                         text-gray-400 dark:text-emerald-100/50 text-sm"
             >
               ...
             </span>
@@ -279,7 +279,7 @@ function Pagination({
                           transition-colors ${
                 page === p
                   ? "bg-[#2d6a4f] text-white shadow-sm"
-                  : "border-2 border-gray-200 text-gray-600 hover:border-[#40916c] hover:text-[#2d6a4f]"
+                  : "border-2 border-gray-200 dark:border-emerald-800 text-gray-600 dark:text-emerald-100/80 hover:border-[#40916c] dark:hover:border-emerald-500 hover:text-[#2d6a4f] dark:hover:text-emerald-300"
               }`}
             >
               {p}
@@ -293,8 +293,8 @@ function Pagination({
         onClick={() => onPage(Math.min(totalPages, page + 1))}
         disabled={page === totalPages}
         className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl
-                   border-2 border-gray-200 text-sm font-medium text-gray-600
-                   hover:border-[#40916c] hover:text-[#2d6a4f]
+                   border-2 border-gray-200 dark:border-emerald-800 text-sm font-medium text-gray-600 dark:text-emerald-100/80
+                   hover:border-[#40916c] dark:hover:border-emerald-500 hover:text-[#2d6a4f] dark:hover:text-emerald-300
                    disabled:opacity-40 disabled:cursor-not-allowed
                    transition-colors w-full sm:w-auto justify-center"
       >
@@ -503,7 +503,7 @@ export default function IdeasClientPage({
 
   // ── Render ───────────────────────────────
   return (
-    <div className="min-h-screen bg-[#f8f4e9]">
+    <div className="min-h-screen bg-[#f8f4e9] dark:bg-emerald-950">
       {/* ── Hero Header ── */}
       <div className="relative px-4 min-h-[60vh] max-h-[70vh] h-[65vh] overflow-hidden bg-[#1a3a2a]">
         <div
@@ -573,16 +573,16 @@ export default function IdeasClientPage({
           >
             <div
               className="relative flex-1 flex items-center gap-2
-                            bg-white rounded-l-2xl px-4 py-3"
+                            bg-white dark:bg-emerald-950/95 rounded-l-2xl px-4 py-3"
             >
-              <Search className="w-4 h-4 text-gray-400 shrink-0" />
+              <Search className="w-4 h-4 text-gray-400 dark:text-emerald-100/60 shrink-0" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 placeholder="Search ideas..."
-                className="flex-1 outline-none text-sm text-gray-700
-                           placeholder:text-gray-400 bg-transparent"
+                className="flex-1 outline-none text-sm text-gray-700 dark:text-emerald-100
+                           placeholder:text-gray-400 dark:placeholder:text-emerald-100/50 bg-transparent"
               />
               {searchInput && (
                 <button
@@ -593,14 +593,14 @@ export default function IdeasClientPage({
                     setSelectedSuggestionIdeaId(null);
                     setPage(1);
                   }}
-                  className="text-gray-400 hover:text-gray-600 text-xs"
+                  className="text-gray-400 dark:text-emerald-100/50 hover:text-gray-600 dark:hover:text-emerald-200 text-xs"
                 >
                   ✕
                 </button>
               )}
 
               {suggestions.length > 0 && searchInput.trim().length >= 2 && (
-                <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 rounded-xl border border-emerald-100 bg-white p-1 shadow-xl">
+                <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 rounded-xl border border-emerald-100 dark:border-emerald-900 bg-white dark:bg-emerald-950 p-1 shadow-xl">
                   {suggestions.slice(0, 7).map((item) => (
                     <button
                       key={`${item.type}-${item.id}`}
@@ -620,13 +620,13 @@ export default function IdeasClientPage({
                         setSearch(item.title);
                         setPage(1);
                       }}
-                      className="flex w-full items-start justify-between gap-2 rounded-lg px-3 py-2 text-left hover:bg-emerald-50"
+                      className="flex w-full items-start justify-between gap-2 rounded-lg px-3 py-2 text-left hover:bg-emerald-50 dark:hover:bg-emerald-900/40"
                     >
                       <span>
-                        <span className="block text-sm font-semibold text-[#1a3a2a]">{item.title}</span>
-                        <span className="block text-xs text-gray-500">{item.subtitle}</span>
+                        <span className="block text-sm font-semibold text-[#1a3a2a] dark:text-emerald-100">{item.title}</span>
+                        <span className="block text-xs text-gray-500 dark:text-emerald-100/60">{item.subtitle}</span>
                       </span>
-                      <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-200">
                         {item.type}
                       </span>
                     </button>
@@ -659,10 +659,10 @@ export default function IdeasClientPage({
       <div id="ideas-content" className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {(personalRecommendations.length > 0 || trendingRecommendations.length > 0) && (
           <div className="grid gap-4 lg:grid-cols-2">
-            <section className="rounded-2xl border border-emerald-100 bg-white p-4 shadow-sm">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-[#2d6a4f]">For You (AI + Behavior)</h2>
+            <section className="rounded-2xl border border-emerald-100 dark:border-emerald-900 bg-white dark:bg-emerald-950/40 p-4 shadow-sm">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#2d6a4f] dark:text-emerald-200">For You (AI + Behavior)</h2>
               {personalRecommendations.length === 0 ? (
-                <p className="mt-2 text-xs text-gray-500">Login and interact more to get personalized recommendations.</p>
+                <p className="mt-2 text-xs text-gray-500 dark:text-emerald-100/60">Login and interact more to get personalized recommendations.</p>
               ) : (
                 <div className="mt-3 space-y-2">
                   {orderedPersonalRecommendations.slice(0, 5).map((item, index) => (
@@ -672,15 +672,15 @@ export default function IdeasClientPage({
                       onClick={() => {
                         void trackIdeaInteraction(item.id, "RECOMMENDATION_CLICK");
                       }}
-                      className="block rounded-xl border border-emerald-100 px-3 py-2 hover:bg-emerald-50"
+                      className="block rounded-xl border border-emerald-100 dark:border-emerald-900 px-3 py-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/40"
                     >
                       {index === 0 && (
-                        <span className="mb-1 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
+                        <span className="mb-1 inline-flex rounded-full bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-200">
                           PINNED
                         </span>
                       )}
-                      <p className="text-sm font-semibold text-[#1a3a2a]">{item.title}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-semibold text-[#1a3a2a] dark:text-emerald-100">{item.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-emerald-100/60">
                         {item.category} • {item.isPaid ? `Paid $${item.price.toFixed(2)}` : "Free"}
                       </p>
                     </Link>
@@ -689,10 +689,10 @@ export default function IdeasClientPage({
               )}
             </section>
 
-            <section className="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-[#7c5e1a]">Trending Now (AI Score)</h2>
+            <section className="rounded-2xl border border-amber-100 dark:border-amber-900/50 bg-white dark:bg-emerald-950/40 p-4 shadow-sm">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#7c5e1a] dark:text-amber-200">Trending Now (AI Score)</h2>
               {trendingRecommendations.length === 0 ? (
-                <p className="mt-2 text-xs text-gray-500">No trending items yet.</p>
+                <p className="mt-2 text-xs text-gray-500 dark:text-emerald-100/60">No trending items yet.</p>
               ) : (
                 <div className="mt-3 space-y-2">
                   {trendingRecommendations.slice(0, 5).map((item) => (
@@ -702,10 +702,10 @@ export default function IdeasClientPage({
                       onClick={() => {
                         void trackIdeaInteraction(item.id, "TRENDING_CLICK");
                       }}
-                      className="block rounded-xl border border-amber-100 px-3 py-2 hover:bg-amber-50"
+                      className="block rounded-xl border border-amber-100 dark:border-amber-900/50 px-3 py-2 hover:bg-amber-50 dark:hover:bg-amber-900/20"
                     >
-                      <p className="text-sm font-semibold text-[#1a3a2a]">{item.title}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-semibold text-[#1a3a2a] dark:text-emerald-100">{item.title}</p>
+                      <p className="text-xs text-gray-500 dark:text-emerald-100/60">
                         {item.category} • score {item.score}
                       </p>
                     </Link>
@@ -717,15 +717,15 @@ export default function IdeasClientPage({
         )}
 
         {/* ── Filter Bar ── */}
-        <div className="bg-white rounded-2xl border border-gray-100
+        <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900
                         shadow-sm overflow-hidden">
           {/* Filter header (mobile toggle) */}
           <div className="flex items-center justify-between p-4 sm:p-5">
-            <div className="flex items-center gap-2 text-sm font-semibold text-[#1a3a2a]">
-              <SlidersHorizontal className="w-4 h-4 text-[#40916c]" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-[#1a3a2a] dark:text-emerald-100">
+              <SlidersHorizontal className="w-4 h-4 text-[#40916c] dark:text-emerald-300" />
               Filters & Sort
               {hasFilter && (
-                <span className="bg-green-100 text-green-700 text-xs
+                <span className="bg-green-100 dark:bg-emerald-900/50 text-green-700 dark:text-emerald-200 text-xs
                                  px-2 py-0.5 rounded-full font-medium">
                   Active
                 </span>
@@ -743,7 +743,7 @@ export default function IdeasClientPage({
               )}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="sm:hidden text-xs text-[#40916c] font-semibold"
+                  className="sm:hidden text-xs text-[#40916c] dark:text-emerald-300 font-semibold"
               >
                 {showFilters ? "Hide ▲" : "Show ▼"}
               </button>
@@ -761,16 +761,16 @@ export default function IdeasClientPage({
           >
             {/* Category */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Category</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-emerald-100/60">Category</label>
               <select
                 value={categoryFilter}
                 onChange={(e) => {
                   setCategoryFilter(e.target.value);
                   setPage(1);
                 }}
-                className="border-2 border-gray-200 focus:border-[#40916c]
-                           rounded-xl px-3 py-2.5 text-sm text-gray-700
-                           outline-none transition-colors bg-white w-full"
+                className="border-2 border-gray-200 dark:border-emerald-800 focus:border-[#40916c] dark:focus:border-emerald-500
+                           rounded-xl px-3 py-2.5 text-sm text-gray-700 dark:text-emerald-100
+                           outline-none transition-colors bg-white dark:bg-emerald-950/70 w-full"
               >
                 <option value="all">All Categories</option>
                 {categories.map((c) => (
@@ -783,16 +783,16 @@ export default function IdeasClientPage({
 
             {/* Payment */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Type</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-emerald-100/60">Type</label>
               <select
                 value={paymentFilter}
                 onChange={(e) => {
                   setPaymentFilter(e.target.value);
                   setPage(1);
                 }}
-                className="border-2 border-gray-200 focus:border-[#40916c]
-                           rounded-xl px-3 py-2.5 text-sm text-gray-700
-                           outline-none transition-colors bg-white w-full"
+                className="border-2 border-gray-200 dark:border-emerald-800 focus:border-[#40916c] dark:focus:border-emerald-500
+                           rounded-xl px-3 py-2.5 text-sm text-gray-700 dark:text-emerald-100
+                           outline-none transition-colors bg-white dark:bg-emerald-950/70 w-full"
               >
                 <option value="all">All Types</option>
                 <option value="free">🆓 Free</option>
@@ -802,16 +802,16 @@ export default function IdeasClientPage({
 
             {/* Sort */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Sort By</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-emerald-100/60">Sort By</label>
               <select
                 value={sortBy}
                 onChange={(e) => {
                   setSortBy(e.target.value);
                   setPage(1);
                 }}
-                className="border-2 border-gray-200 focus:border-[#40916c]
-                           rounded-xl px-3 py-2.5 text-sm text-gray-700
-                           outline-none transition-colors bg-white w-full"
+                className="border-2 border-gray-200 dark:border-emerald-800 focus:border-[#40916c] dark:focus:border-emerald-500
+                           rounded-xl px-3 py-2.5 text-sm text-gray-700 dark:text-emerald-100
+                           outline-none transition-colors bg-white dark:bg-emerald-950/70 w-full"
               >
                 <option value="recent"> Most Recent</option>
                 <option value="topVoted"> Top Voted</option>
@@ -820,16 +820,16 @@ export default function IdeasClientPage({
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Author</label>
+              <label className="text-xs font-medium text-gray-500 dark:text-emerald-100/60">Author</label>
               <select
                 value={authorFilter}
                 onChange={(e) => {
                   setAuthorFilter(e.target.value);
                   setPage(1);
                 }}
-                className="border-2 border-gray-200 focus:border-[#40916c]
-                           rounded-xl px-3 py-2.5 text-sm text-gray-700
-                           outline-none transition-colors bg-white w-full"
+                className="border-2 border-gray-200 dark:border-emerald-800 focus:border-[#40916c] dark:focus:border-emerald-500
+                           rounded-xl px-3 py-2.5 text-sm text-gray-700 dark:text-emerald-100
+                           outline-none transition-colors bg-white dark:bg-emerald-950/70 w-full"
               >
                 <option value="all">All Contributors</option>
                 {authors.map((a) => (
@@ -842,7 +842,7 @@ export default function IdeasClientPage({
 
             {/* Min votes */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">
+              <label className="text-xs font-medium text-gray-500 dark:text-emerald-100/60">
                 Min Votes
               </label>
               <input
@@ -853,9 +853,9 @@ export default function IdeasClientPage({
                   setMinVotes(Number(e.target.value) || 0);
                   setPage(1);
                 }}
-                className="border-2 border-gray-200 focus:border-[#40916c]
-                           rounded-xl px-3 py-2.5 text-sm text-gray-700
-                           outline-none transition-colors bg-white w-full"
+                className="border-2 border-gray-200 dark:border-emerald-800 focus:border-[#40916c] dark:focus:border-emerald-500
+                           rounded-xl px-3 py-2.5 text-sm text-gray-700 dark:text-emerald-100
+                           outline-none transition-colors bg-white dark:bg-emerald-950/70 w-full"
               />
             </div>
           </div>
@@ -867,6 +867,7 @@ export default function IdeasClientPage({
             {search && (
               <span
                 className="bg-green-100 text-green-700 text-xs
+                               dark:bg-emerald-900/50 dark:text-emerald-200
                                px-3 py-1.5 rounded-full font-medium
                                flex items-center gap-1.5"
               >
@@ -877,7 +878,7 @@ export default function IdeasClientPage({
                     setSearchInput("");
                     setPage(1);
                   }}
-                  className="hover:text-green-900"
+                  className="hover:text-green-900 dark:hover:text-emerald-100"
                 >
                   ✕
                 </button>
@@ -886,6 +887,7 @@ export default function IdeasClientPage({
             {categoryFilter !== "all" && (
               <span
                 className="bg-blue-100 text-blue-700 text-xs
+                               dark:bg-blue-900/40 dark:text-blue-200
                                px-3 py-1.5 rounded-full font-medium
                                flex items-center gap-1.5"
               >
@@ -895,7 +897,7 @@ export default function IdeasClientPage({
                     setCategoryFilter("all");
                     setPage(1);
                   }}
-                  className="hover:text-blue-900"
+                  className="hover:text-blue-900 dark:hover:text-blue-100"
                 >
                   ✕
                 </button>
@@ -904,6 +906,7 @@ export default function IdeasClientPage({
             {paymentFilter !== "all" && (
               <span
                 className="bg-amber-100 text-amber-700 text-xs
+                               dark:bg-amber-900/40 dark:text-amber-200
                                px-3 py-1.5 rounded-full font-medium
                                flex items-center gap-1.5"
               >
@@ -913,7 +916,7 @@ export default function IdeasClientPage({
                     setPaymentFilter("all");
                     setPage(1);
                   }}
-                  className="hover:text-amber-900"
+                  className="hover:text-amber-900 dark:hover:text-amber-100"
                 >
                   ✕
                 </button>
@@ -922,6 +925,7 @@ export default function IdeasClientPage({
             {authorFilter !== "all" && (
               <span
                 className="bg-teal-100 text-teal-700 text-xs
+                               dark:bg-teal-900/40 dark:text-teal-200
                                px-3 py-1.5 rounded-full font-medium
                                flex items-center gap-1.5"
               >
@@ -931,7 +935,7 @@ export default function IdeasClientPage({
                     setAuthorFilter("all");
                     setPage(1);
                   }}
-                  className="hover:text-teal-900"
+                  className="hover:text-teal-900 dark:hover:text-teal-100"
                 >
                   ✕
                 </button>
@@ -940,6 +944,7 @@ export default function IdeasClientPage({
             {minVotes > 0 && (
               <span
                 className="bg-purple-100 text-purple-700 text-xs
+                               dark:bg-purple-900/40 dark:text-purple-200
                                px-3 py-1.5 rounded-full font-medium
                                flex items-center gap-1.5"
               >
@@ -949,7 +954,7 @@ export default function IdeasClientPage({
                     setMinVotes(0);
                     setPage(1);
                   }}
-                  className="hover:text-purple-900"
+                  className="hover:text-purple-900 dark:hover:text-purple-100"
                 >
                   ✕
                 </button>
@@ -961,14 +966,14 @@ export default function IdeasClientPage({
         {/* ── Result count ── */}
         {!isLoading && (
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              <span className="font-semibold text-[#1a3a2a]">
+            <p className="text-sm text-gray-500 dark:text-emerald-100/60">
+              <span className="font-semibold text-[#1a3a2a] dark:text-emerald-200">
                 {processed.length}
               </span>{" "}
               idea{processed.length !== 1 ? "s" : ""} found
             </p>
             {totalPages > 1 && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-emerald-100/50">
                 Page {currentPage} of {totalPages}
               </p>
             )}
@@ -979,10 +984,10 @@ export default function IdeasClientPage({
         {isError ? (
           <div className="text-center py-24">
             <p className="text-5xl mb-4">⚠️</p>
-            <p className="text-gray-600 font-semibold text-lg">
+            <p className="text-gray-600 dark:text-emerald-100 font-semibold text-lg">
               Failed to load ideas
             </p>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-gray-400 dark:text-emerald-100/60 text-sm mt-1">
               Please try again later
             </p>
           </div>
@@ -997,10 +1002,10 @@ export default function IdeasClientPage({
         ) : paginated.length === 0 ? (
           <div className="text-center py-24">
             <p className="text-6xl mb-4">🌿</p>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-emerald-100 mb-2">
               No ideas found
             </h3>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-gray-400 dark:text-emerald-100/60 text-sm mb-4">
               Try adjusting your filters or search query
             </p>
             {hasFilter && (

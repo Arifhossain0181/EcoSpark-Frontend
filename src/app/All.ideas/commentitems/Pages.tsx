@@ -63,18 +63,18 @@ export default function CommentItem({
   const canDelete =
     !!user && (user.id === comment.userId || user.role === "ADMIN");
    return (
-    <div className={`${depth > 0 ? "ml-8 border-l-2 border-green-100 pl-4" : ""}`}>
-      <div className="bg-white rounded-xl p-4 border border-gray-100 mb-3">
+    <div className={`${depth > 0 ? "ml-8 border-l-2 border-green-100 dark:border-emerald-800 pl-4" : ""}`}>
+      <div className="bg-white dark:bg-emerald-950/40 rounded-xl p-4 border border-gray-100 dark:border-emerald-900 mb-3">
         <div className="flex items-start justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-[#2d6a4f] flex items-center justify-center text-white text-xs font-bold">
               {comment.user?.name?.charAt(0).toUpperCase()}
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1a3a2a]">
+              <p className="text-sm font-semibold text-[#1a3a2a] dark:text-emerald-100">
                 {comment.user?.name}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-emerald-100/60">
                 {new Date(comment.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -89,7 +89,7 @@ export default function CommentItem({
           )}
         </div>
 
-        <p className="text-sm text-gray-700 leading-relaxed mb-3">
+        <p className="text-sm text-gray-700 dark:text-emerald-100/80 leading-relaxed mb-3">
           {comment.text}
         </p>
 
@@ -109,7 +109,7 @@ export default function CommentItem({
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Write a reply..."
-              className="flex-1 border-2 border-gray-200 focus:border-[#40916c] rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+              className="flex-1 border-2 border-gray-200 dark:border-emerald-800 bg-white dark:bg-emerald-950/70 text-gray-800 dark:text-emerald-100 placeholder:text-gray-400 dark:placeholder:text-emerald-100/50 focus:border-[#40916c] dark:focus:border-emerald-500 rounded-lg px-3 py-2 text-sm outline-none transition-colors"
             />
             <button
               onClick={() => replyText.trim() && addReply(replyText)}

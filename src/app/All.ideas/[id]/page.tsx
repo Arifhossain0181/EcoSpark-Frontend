@@ -195,10 +195,10 @@ export default function IdeaDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f8f4e9] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f4e9] dark:bg-emerald-950 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-[#2d6a4f] animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Loading idea...</p>
+          <p className="text-gray-500 dark:text-emerald-100/60 text-sm">Loading idea...</p>
         </div>
       </div>
     );
@@ -206,10 +206,10 @@ export default function IdeaDetailsPage() {
 
   if (isError || !idea) {
     return (
-      <div className="min-h-screen bg-[#f8f4e9] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f4e9] dark:bg-emerald-950 flex items-center justify-center">
         <div className="text-center">
           <p className="text-5xl mb-4">🌿</p>
-          <h2 className="text-xl font-bold text-[#1a3a2a] mb-2">
+          <h2 className="text-xl font-bold text-[#1a3a2a] dark:text-emerald-100 mb-2">
             Idea not found
           </h2>
           <Link
@@ -224,7 +224,7 @@ export default function IdeaDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f4e9]">
+    <div className="min-h-screen bg-[#f8f4e9] dark:bg-emerald-950">
       {/* Payment Modal */}
       {showPayment && (
         <PaymentModal idea={idea} onClose={() => setShowPayment(false)} />
@@ -303,7 +303,7 @@ export default function IdeaDetailsPage() {
                       Admin Feedback
                     </h3>
                   </div>
-                  <p className="text-red-600 text-sm leading-relaxed">
+                  <p className="text-red-600 dark:text-red-200 text-sm leading-relaxed">
                     {idea.adminFeedback}
                   </p>
                 </div>
@@ -311,8 +311,8 @@ export default function IdeaDetailsPage() {
 
             {/* Admin Actions */}
             {(user?.role === "ADMIN" || user?.role === "MANAGER") && idea.status === "UNDER_REVIEW" && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                <h3 className="font-bold text-[#1a3a2a] mb-4 flex items-center gap-2">
+              <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+                <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 mb-4 flex items-center gap-2">
                   ⚙️ Admin Actions
                 </h3>
                 <div className="flex gap-3 mb-4">
@@ -329,7 +329,7 @@ export default function IdeaDetailsPage() {
                     value={rejectFeedback}
                     onChange={(e) => setRejectFeedback(e.target.value)}
                     placeholder="Rejection reason..."
-                    className="flex-1 border-2 border-gray-200 focus:border-red-400 rounded-xl px-4 py-2.5 text-sm outline-none transition-colors"
+                    className="flex-1 border-2 border-gray-200 dark:border-emerald-800 bg-white dark:bg-emerald-950/70 text-gray-800 dark:text-emerald-100 focus:border-red-400 rounded-xl px-4 py-2.5 text-sm outline-none transition-colors"
                   />
                   <button
                     onClick={() => rejectFeedback.trim() && rejectIdea()}
@@ -346,39 +346,39 @@ export default function IdeaDetailsPage() {
             {hasAccess ? (
               <div className="space-y-6">
                 {/* Problem */}
-                <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                  <h2 className="text-lg font-bold text-[#1a3a2a] mb-3 flex items-center gap-2">
+                <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+                  <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100 mb-3 flex items-center gap-2">
                     🔍 Problem Statement
                   </h2>
-                  <p className="text-gray-700 leading-relaxed text-sm">
+                  <p className="text-gray-700 dark:text-emerald-100/80 leading-relaxed text-sm">
                     {idea.problem}
                   </p>
                 </div>
 
                 {/* Solution */}
-                <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                  <h2 className="text-lg font-bold text-[#1a3a2a] mb-3 flex items-center gap-2">
+                <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+                  <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100 mb-3 flex items-center gap-2">
                     💡 Proposed Solution
                   </h2>
-                  <p className="text-gray-700 leading-relaxed text-sm">
+                  <p className="text-gray-700 dark:text-emerald-100/80 leading-relaxed text-sm">
                     {idea.solution}
                   </p>
                 </div>
 
                 {/* Description */}
-                <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                  <h2 className="text-lg font-bold text-[#1a3a2a] mb-3 flex items-center gap-2">
+                <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+                  <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100 mb-3 flex items-center gap-2">
                     📋 Detailed Description
                   </h2>
-                  <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-wrap">
+                  <p className="text-gray-700 dark:text-emerald-100/80 leading-relaxed text-sm whitespace-pre-wrap">
                     {idea.description}
                   </p>
                 </div>
 
                 {/* Images */}
                 {imageUrls.length > 1 && (
-                  <div className="bg-white rounded-2xl border border-gray-100 p-6">
-                    <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
+                  <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+                    <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100 mb-4">
                       Gallery
                     </h2>
                     <div className="grid grid-cols-2 gap-3">
@@ -399,8 +399,8 @@ export default function IdeaDetailsPage() {
 
                 {/* Optional Media Attachments */}
                 {mediaUrls.length > 0 && (
-                  <div className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
-                    <h2 className="text-lg font-bold text-[#1a3a2a]">Media Attachments</h2>
+                  <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6 space-y-4">
+                    <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100">Media Attachments</h2>
 
                     <div className="space-y-4">
                       {mediaUrls.map((url, index) => {
@@ -413,13 +413,13 @@ export default function IdeaDetailsPage() {
                               href={url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center justify-between rounded-xl border border-gray-200 p-4 hover:border-[#40916c] transition-colors"
+                              className="flex items-center justify-between rounded-xl border border-gray-200 dark:border-emerald-800 p-4 hover:border-[#40916c] dark:hover:border-emerald-500 transition-colors"
                             >
-                              <div className="flex items-center gap-2 text-sm text-[#1a3a2a] font-medium">
-                                <FileText className="w-4 h-4 text-[#40916c]" />
+                              <div className="flex items-center gap-2 text-sm text-[#1a3a2a] dark:text-emerald-100 font-medium">
+                                <FileText className="w-4 h-4 text-[#40916c] dark:text-emerald-300" />
                                 View PDF Attachment
                               </div>
-                              <span className="text-xs text-[#2d6a4f] font-semibold">Open</span>
+                              <span className="text-xs text-[#2d6a4f] dark:text-emerald-300 font-semibold">Open</span>
                             </a>
                           );
                         }
@@ -427,11 +427,11 @@ export default function IdeaDetailsPage() {
                         if (youtubeEmbed) {
                           return (
                             <div key={`${url}-${index}`} className="space-y-2">
-                              <div className="flex items-center gap-2 text-sm font-medium text-[#1a3a2a]">
-                                <PlayCircle className="w-4 h-4 text-[#40916c]" />
+                              <div className="flex items-center gap-2 text-sm font-medium text-[#1a3a2a] dark:text-emerald-100">
+                                <PlayCircle className="w-4 h-4 text-[#40916c] dark:text-emerald-300" />
                                 Video Attachment
                               </div>
-                              <div className="overflow-hidden rounded-xl border border-gray-200">
+                              <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-emerald-800">
                                 <iframe
                                   src={youtubeEmbed}
                                   title={`Video attachment ${index + 1}`}
@@ -446,14 +446,14 @@ export default function IdeaDetailsPage() {
 
                         return (
                           <div key={`${url}-${index}`} className="space-y-2">
-                            <div className="flex items-center gap-2 text-sm font-medium text-[#1a3a2a]">
-                              <PlayCircle className="w-4 h-4 text-[#40916c]" />
+                            <div className="flex items-center gap-2 text-sm font-medium text-[#1a3a2a] dark:text-emerald-100">
+                              <PlayCircle className="w-4 h-4 text-[#40916c] dark:text-emerald-300" />
                               Video Attachment
                             </div>
                             <video
                               src={url}
                               controls
-                              className="w-full rounded-xl border border-gray-200"
+                              className="w-full rounded-xl border border-gray-200 dark:border-emerald-800"
                             />
                           </div>
                         );
@@ -463,18 +463,18 @@ export default function IdeaDetailsPage() {
                 )}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border-2 border-amber-200 p-10 text-center">
-                <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                  <Lock className="w-10 h-10 text-amber-500" />
+              <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border-2 border-amber-200 dark:border-amber-700/40 p-10 text-center">
+                <div className="w-20 h-20 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-5">
+                  <Lock className="w-10 h-10 text-amber-500 dark:text-amber-300" />
                 </div>
-                <h3 className="text-xl font-bold text-[#1a3a2a] mb-2">
+                <h3 className="text-xl font-bold text-[#1a3a2a] dark:text-emerald-100 mb-2">
                   Premium Content
                 </h3>
-                <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto leading-relaxed">
+                <p className="text-gray-500 dark:text-emerald-100/60 text-sm mb-6 max-w-xs mx-auto leading-relaxed">
                   Unlock the full idea including the detailed solution, description, and
                   supporting materials.
                 </p>
-                <div className="text-3xl font-bold text-[#1a3a2a] mb-6">
+                <div className="text-3xl font-bold text-[#1a3a2a] dark:text-emerald-100 mb-6">
                   ${idea.price}
                 </div>
                 {user ? (
@@ -496,33 +496,33 @@ export default function IdeaDetailsPage() {
             )}
 
             {/* Votes */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
+            <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+              <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100 mb-4">
                 Vote on this Idea
               </h2>
               <VoteButtons idea={idea} />
             </div>
 
             {/* Comments */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
               <CommentSection ideaId={ideaId} />
             </div>
 
             {/* Reviews */}
             {idea.status === "APPROVED" && hasAccess && (
-              <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
                 <ReviewSection ideaId={ideaId} />
               </div>
             )}
 
             {/* Related Items */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-6">
-              <h2 className="text-lg font-bold text-[#1a3a2a] mb-4">
+            <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-6">
+              <h2 className="text-lg font-bold text-[#1a3a2a] dark:text-emerald-100 mb-4">
                 Related Items
               </h2>
 
               {relatedItems.length === 0 ? (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-emerald-100/60">
                   No related items available right now.
                 </p>
               ) : (
@@ -531,7 +531,7 @@ export default function IdeaDetailsPage() {
                     <Link
                       key={item.id}
                       href={`/ideas/${item.id}`}
-                      className="group rounded-xl border border-gray-200 overflow-hidden hover:border-[#40916c] transition-colors"
+                      className="group rounded-xl border border-gray-200 dark:border-emerald-800 overflow-hidden hover:border-[#40916c] dark:hover:border-emerald-500 transition-colors"
                     >
                       <div className="relative h-32 bg-linear-to-br from-[#1a3a2a] to-[#2d6a4f]">
                         {item.images?.[0] ? (
@@ -545,15 +545,15 @@ export default function IdeaDetailsPage() {
                         ) : null}
                       </div>
                       <div className="p-3">
-                        <p className="font-semibold text-sm text-[#1a3a2a] line-clamp-1">
+                        <p className="font-semibold text-sm text-[#1a3a2a] dark:text-emerald-100 line-clamp-1">
                           {item.title}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                        <p className="text-xs text-gray-500 dark:text-emerald-100/60 mt-1 line-clamp-2">
                           {item.description || item.problem || "No summary available"}
                         </p>
-                        <div className="mt-2 flex items-center justify-between text-xs text-gray-500">
+                        <div className="mt-2 flex items-center justify-between text-xs text-gray-500 dark:text-emerald-100/60">
                           <span>{item.category?.name ?? "General"}</span>
-                          <span className="font-semibold text-[#2d6a4f]">View Details</span>
+                          <span className="font-semibold text-[#2d6a4f] dark:text-emerald-300">View Details</span>
                         </div>
                       </div>
                     </Link>
@@ -566,8 +566,8 @@ export default function IdeaDetailsPage() {
           {/* Sidebar */}
           <div className="space-y-5">
             {/* Author */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <h3 className="font-bold text-[#1a3a2a] mb-4 text-sm uppercase tracking-wide">
+            <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-5">
+              <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 mb-4 text-sm uppercase tracking-wide">
                 Author
               </h3>
               <div className="flex items-center gap-3">
@@ -575,25 +575,25 @@ export default function IdeaDetailsPage() {
                   {idea.author?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-[#1a3a2a] text-sm">
+                  <p className="font-semibold text-[#1a3a2a] dark:text-emerald-100 text-sm">
                     {idea.author?.name}
                   </p>
-                  <p className="text-xs text-gray-400">Community Member</p>
+                  <p className="text-xs text-gray-400 dark:text-emerald-100/60">Community Member</p>
                 </div>
               </div>
             </div>
 
             {/* Meta */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <h3 className="font-bold text-[#1a3a2a] mb-4 text-sm uppercase tracking-wide">
+            <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-5">
+              <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 mb-4 text-sm uppercase tracking-wide">
                 Details
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3 text-sm">
                   <Tag className="w-4 h-4 text-[#40916c] shrink-0" />
                   <div>
-                    <p className="text-xs text-gray-400">Category</p>
-                    <p className="font-medium text-gray-700">
+                    <p className="text-xs text-gray-400 dark:text-emerald-100/60">Category</p>
+                    <p className="font-medium text-gray-700 dark:text-emerald-100">
                       {idea.category?.name}
                     </p>
                   </div>
@@ -601,8 +601,8 @@ export default function IdeaDetailsPage() {
                 <div className="flex items-center gap-3 text-sm">
                   <Clock className="w-4 h-4 text-[#40916c] shrink-0" />
                   <div>
-                    <p className="text-xs text-gray-400">Submitted</p>
-                    <p className="font-medium text-gray-700">
+                    <p className="text-xs text-gray-400 dark:text-emerald-100/60">Submitted</p>
+                    <p className="font-medium text-gray-700 dark:text-emerald-100">
                       {idea.createdAt
                         ? new Date(idea.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
@@ -616,8 +616,8 @@ export default function IdeaDetailsPage() {
                 <div className="flex items-center gap-3 text-sm">
                   <MessageSquare className="w-4 h-4 text-[#40916c] shrink-0" />
                   <div>
-                    <p className="text-xs text-gray-400">Comments</p>
-                    <p className="font-medium text-gray-700">
+                    <p className="text-xs text-gray-400 dark:text-emerald-100/60">Comments</p>
+                    <p className="font-medium text-gray-700 dark:text-emerald-100">
                       {idea._count?.comments ?? 0}
                     </p>
                   </div>
@@ -625,8 +625,8 @@ export default function IdeaDetailsPage() {
                 <div className="flex items-center gap-3 text-sm">
                   <ThumbsUp className="w-4 h-4 text-[#40916c] shrink-0" />
                   <div>
-                    <p className="text-xs text-gray-400">Total Votes</p>
-                    <p className="font-medium text-gray-700">
+                    <p className="text-xs text-gray-400 dark:text-emerald-100/60">Total Votes</p>
+                    <p className="font-medium text-gray-700 dark:text-emerald-100">
                       {idea._count?.votes ?? 0}
                     </p>
                   </div>
@@ -636,11 +636,11 @@ export default function IdeaDetailsPage() {
 
             {/* Payment CTA */}
             {idea.isPaid && !hasAccess && (
-              <div className="bg-white rounded-2xl border-2 border-amber-200 p-5">
-                <h3 className="font-bold text-[#1a3a2a] mb-2 text-sm uppercase tracking-wide">
+              <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border-2 border-amber-200 dark:border-amber-700/40 p-5">
+                <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 mb-2 text-sm uppercase tracking-wide">
                   Premium Access
                 </h3>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-gray-500 dark:text-emerald-100/60 mb-4">
                   This idea is paid content. Unlock full access for ${idea.price}.
                 </p>
                 {user ? (
@@ -668,7 +668,7 @@ export default function IdeaDetailsPage() {
                 className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 font-semibold text-sm transition-all ${
                   savedWatchlist
                     ? "bg-green-600 border-green-600 text-white"
-                    : "border-gray-200 text-gray-600 hover:border-green-500 hover:text-green-600"
+                    : "border-gray-200 dark:border-emerald-800 text-gray-600 dark:text-emerald-100/80 hover:border-green-500 hover:text-green-600 dark:hover:text-emerald-300"
                 }`}
               >
                 <Bookmark
@@ -679,8 +679,8 @@ export default function IdeaDetailsPage() {
             )}
 
             {/* Share */}
-            <div className="bg-white rounded-2xl border border-gray-100 p-5">
-              <h3 className="font-bold text-[#1a3a2a] mb-3 text-sm uppercase tracking-wide">
+            <div className="bg-white dark:bg-emerald-950/40 rounded-2xl border border-gray-100 dark:border-emerald-900 p-5">
+              <h3 className="font-bold text-[#1a3a2a] dark:text-emerald-100 mb-3 text-sm uppercase tracking-wide">
                 Share Idea
               </h3>
               <div className="flex gap-2">
@@ -709,7 +709,7 @@ export default function IdeaDetailsPage() {
                     href={s.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 text-center text-xs bg-gray-50 hover:bg-green-50 border border-gray-200 hover:border-green-300 text-gray-600 hover:text-green-700 py-2 rounded-lg font-medium transition-all"
+                    className="flex-1 text-center text-xs bg-gray-50 dark:bg-emerald-900/30 hover:bg-green-50 dark:hover:bg-emerald-900/50 border border-gray-200 dark:border-emerald-800 hover:border-green-300 dark:hover:border-emerald-500 text-gray-600 dark:text-emerald-100/80 hover:text-green-700 dark:hover:text-emerald-300 py-2 rounded-lg font-medium transition-all"
                   >
                     {s.label}
                   </a>
@@ -720,7 +720,7 @@ export default function IdeaDetailsPage() {
             {/* Back */}
             <Link
               href="/ideas"
-              className="flex items-center justify-center gap-2 w-full py-3 border-2 border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:border-[#40916c] hover:text-[#2d6a4f] transition-colors"
+              className="flex items-center justify-center gap-2 w-full py-3 border-2 border-gray-200 dark:border-emerald-800 rounded-xl text-sm font-medium text-gray-600 dark:text-emerald-100/80 hover:border-[#40916c] dark:hover:border-emerald-500 hover:text-[#2d6a4f] dark:hover:text-emerald-300 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> All Ideas
             </Link>
